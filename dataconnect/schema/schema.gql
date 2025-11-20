@@ -1,0 +1,40 @@
+type User @table {
+  email: String!
+  displayName: String!
+  createdAt: Timestamp!
+  photoUrl: String
+}
+
+type Category @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type ColoringPage @table {
+  title: String!
+  price: Float!
+  imageUrl: String!
+  createdAt: Timestamp!
+  description: String
+  category: Category
+  tags: [String]
+}
+
+type AICustomRequest @table {
+  user: User!
+  prompt: String!
+  status: String!
+  createdAt: Timestamp!
+  generatedImageUrl: String
+  completionTime: Timestamp
+  errorMessage: String
+}
+
+type Purchase @table {
+  user: User!
+  purchaseDate: Timestamp!
+  amount: Float!
+  coloringPage: ColoringPage
+  aiCustomRequest: AICustomRequest
+}
