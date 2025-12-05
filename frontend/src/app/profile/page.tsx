@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useAuthStore } from '@/store/authStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { useCartStore } from '@/store/cartStore';
+import { isAdmin } from '@/lib/adminConfig';
 import { FaHeart, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
@@ -19,6 +20,12 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) {
       router.push('/login');
+      return;
+    }
+
+    // Nếu là admin, redirect sang trang quản trị
+    if (isAdmin(user.email)) {
+      router.push('/admin');
     }
   }, [user, router]);
 
@@ -56,7 +63,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-8 relative">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">

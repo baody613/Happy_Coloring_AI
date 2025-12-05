@@ -14,6 +14,7 @@ import {
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import toast from 'react-hot-toast';
+
 import { useRouter } from 'next/navigation';
 
 export default function GeneratePage() {
@@ -99,7 +100,7 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12 relative">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div

@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { FaHeart, FaShoppingCart, FaStar, FaEye, FaFilter, FaSort } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaHeart, FaShoppingCart, FaStar, FaEye, FaFilter, FaSort, FaTimes } from 'react-icons/fa';
 import api from '@/lib/api';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
@@ -17,6 +17,7 @@ export default function GalleryPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [priceRange, setPriceRange] = useState('all');
   const [difficulty, setDifficulty] = useState('all');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
 
@@ -91,6 +92,22 @@ export default function GalleryPage() {
     }
   };
 
+  const emotions = [
+    'happy',
+    'surprised',
+    'sad',
+    'sleepy',
+    'angry',
+    'thinking',
+    'smile',
+    'cry',
+    'default',
+  ];
+  const [mascotEmotion, setMascotEmotion] = useState('happy');
+  const nextEmotion = () => {
+    const idx = emotions.indexOf(mascotEmotion);
+    setMascotEmotion(emotions[(idx + 1) % emotions.length]);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Hero Section */}
@@ -227,8 +244,11 @@ export default function GalleryPage() {
 
                   {/* Overlay on Hover */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 bg-white text-purple-600 px-6 py-3 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2">
-                      <FaEye /> Xem Chi Tiết
+                    <button
+                      onClick={() => setSelectedProduct(product)}
+                      className="opacity-0 group-hover:opacity-100 bg-white text-purple-600 px-6 py-3 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
+                    >
+                      <FaEye /> Xem Chi Tiết 3D
                     </button>
                   </div>
 
@@ -273,10 +293,10 @@ export default function GalleryPage() {
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div>
                       <p className="text-xs text-gray-500 line-through">
-                        {(product.price * 1.3).toLocaleString('vi-VN')}₫
+                        {(product.price * 1.3).toLocaleString('vi-VN')} VNĐ
                       </p>
                       <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        {product.price.toLocaleString('vi-VN')}₫
+                        {product.price.toLocaleString('vi-VN')} VNĐ
                       </p>
                     </div>
                     <button
@@ -305,6 +325,159 @@ export default function GalleryPage() {
           </motion.div>
         )}
       </div>
+
+      {/* 3D Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedProduct(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-3xl z-10 flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">{selectedProduct.title}</h2>
+                  <p className="text-white/90">{selectedProduct.description}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  className="p-3 hover:bg-white/20 rounded-full transition-all duration-300 hover:rotate-90"
+                >
+                  <FaTimes size={24} />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Product Info */}
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">📋 Thông Tin Sản Phẩm</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Kích thước:</span>
+                        <span className="font-semibold text-gray-800">
+                          {selectedProduct.dimensions}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Độ khó:</span>
+                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                          {selectedProduct.difficulty}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Số màu:</span>
+                        <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-semibold">
+                          {selectedProduct.colors} màu
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Đánh giá:</span>
+                        <span className="flex items-center gap-1 text-yellow-600 font-semibold">
+                          <FaStar /> {selectedProduct.rating || 4.8}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Đã bán:</span>
+                        <span className="font-semibold text-gray-800">
+                          {selectedProduct.sales || 0} sản phẩm
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">💰 Giá Bán</h3>
+                    <div className="flex items-center gap-4">
+                      <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        {selectedProduct.price.toLocaleString('vi-VN')} VNĐ
+                      </span>
+                      <span className="text-gray-500 line-through">
+                        {(selectedProduct.price * 1.3).toLocaleString('vi-VN')} VNĐ
+                      </span>
+                    </div>
+                    <p className="text-sm text-green-600 font-semibold mt-2">
+                      🎉 Tiết kiệm {(selectedProduct.price * 0.3).toLocaleString('vi-VN')} VNĐ
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">📦 Bộ sản phẩm bao gồm</h3>
+                    <ul className="space-y-2 text-gray-700">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600">✓</span>
+                        <span>Bộ canvas in sẵn số với khung tranh gỗ cao cấp</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600">✓</span>
+                        <span>Bộ màu acrylic {selectedProduct.colors} màu chất lượng cao</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600">✓</span>
+                        <span>3 cọ vẽ chuyên dụng (size nhỏ, vừa, lớn)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600">✓</span>
+                        <span>Hướng dẫn chi tiết và bảng màu tham khảo</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600">✓</span>
+                        <span>Móc treo tranh và vít đi kèm</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        handleAddToCart(selectedProduct);
+                        setSelectedProduct(null);
+                      }}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <FaShoppingCart /> Thêm Vào Giỏ
+                    </button>
+                    <button
+                      onClick={() => handleToggleFavorite(selectedProduct)}
+                      className={`p-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 ${
+                        isFavorite(selectedProduct.id)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-200 text-red-500 hover:bg-red-50'
+                      }`}
+                    >
+                      <FaHeart size={24} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={nextEmotion}
+        className="fixed right-4 bottom-28 z-50 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full shadow-lg font-bold hover:scale-105 transition-all"
+      >
+        Đổi biểu cảm
+      </button>
     </div>
   );
 }

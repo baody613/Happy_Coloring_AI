@@ -1,154 +1,148 @@
 import express from "express";
-import { db } from "../config/firebase.js";
 import { authenticateUser, optionalAuth } from "../middleware/auth.js";
+import {
+  getAllProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getCategories,
+} from "../services/index.js";
+import { sendSuccess, sendError } from "../utils/helpers.js";
+import {
+  validate,
+  createProductSchema,
+  updateProductSchema,
+} from "../validators/index.js";
 
 const router = express.Router();
 
-// Get all products
+// Get all products (public)
 router.get("/", optionalAuth, async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, limit = 20, page = 1 } = req.query;
+    const {
+      category,
+      difficulty,
+      minPrice,
+      maxPrice,
+      sortBy,
+      sortOrder,
+      limit = 20,
+      page = 1,
+    } = req.query;
 
-    let query = db.collection("products").where("status", "==", "active");
+    const filters = {};
+    if (category) filters.category = category;
+    if (difficulty) filters.difficulty = difficulty;
+    if (minPrice) filters.minPrice = minPrice;
+    if (maxPrice) filters.maxPrice = maxPrice;
+    if (sortBy) filters.sortBy = sortBy;
+    if (sortOrder) filters.sortOrder = sortOrder;
 
-    if (category) {
-      query = query.where("category", "==", category);
-    }
+    const result = await getAllProducts(
+      parseInt(page),
+      parseInt(limit),
+      filters
+    );
 
-    const snapshot = await query
-      .orderBy("createdAt", "desc")
-      .limit(parseInt(limit))
-      .get();
-
-    const products = [];
-    snapshot.forEach((doc) => {
-      products.push({ id: doc.id, ...doc.data() });
-    });
-
-    res.json({
-      products,
-      total: products.length,
-      page: parseInt(page),
-    });
+    sendSuccess(res, result);
   } catch (error) {
     console.error("Get products error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
-// Get single product
+// Get all categories (public)
+router.get("/categories", async (req, res) => {
+  try {
+    const categories = await getCategories();
+    sendSuccess(res, categories);
+  } catch (error) {
+    console.error("Get categories error:", error);
+    sendError(res, error.message);
+  }
+});
+
+// Get single product (public)
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const productDoc = await db.collection("products").doc(id).get();
+    const product = await getProductById(id);
 
-    if (!productDoc.exists) {
-      return res.status(404).json({ error: "Product not found" });
+    if (!product) {
+      return sendError(res, "Product not found", 404);
     }
 
-    res.json({ id: productDoc.id, ...productDoc.data() });
+    sendSuccess(res, product);
   } catch (error) {
     console.error("Get product error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
-// Create product (admin only - add admin middleware later)
-router.post("/", authenticateUser, async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      category,
-      price,
-      imageUrl,
-      thumbnailUrl,
-      difficulty,
-      dimensions,
-      colors,
-    } = req.body;
+// Create product (admin only)
+router.post(
+  "/",
+  authenticateUser,
+  validate(createProductSchema),
+  async (req, res) => {
+    try {
+      // TODO: Add admin check middleware
+      // if (req.user.role !== 'admin') {
+      //   return sendError(res, 'Unauthorized', 403);
+      // }
 
-    if (!title || !price || !imageUrl) {
-      return res
-        .status(400)
-        .json({ error: "Title, price, and imageUrl are required" });
+      const product = await createProduct(req.body);
+
+      sendSuccess(res, product, "Product created successfully", 201);
+    } catch (error) {
+      console.error("Create product error:", error);
+      sendError(res, error.message);
     }
-
-    const productRef = db.collection("products").doc();
-
-    const productData = {
-      id: productRef.id,
-      title,
-      description: description || "",
-      category: category || "general",
-      price: parseFloat(price),
-      imageUrl,
-      thumbnailUrl: thumbnailUrl || imageUrl,
-      difficulty: difficulty || "medium",
-      dimensions: dimensions || "40x50cm",
-      colors: colors || 24,
-      status: "active",
-      createdBy: req.user.uid,
-      createdAt: new Date().toISOString(),
-      sales: 0,
-      rating: 0,
-      reviews: [],
-    };
-
-    await productRef.set(productData);
-
-    res.status(201).json({
-      message: "Product created successfully",
-      product: productData,
-    });
-  } catch (error) {
-    console.error("Create product error:", error);
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
-// Update product
-router.put("/:id", authenticateUser, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
+// Update product (admin only)
+router.put(
+  "/:id",
+  authenticateUser,
+  validate(updateProductSchema),
+  async (req, res) => {
+    try {
+      // TODO: Add admin check middleware
+      const { id } = req.params;
 
-    delete updateData.id;
-    delete updateData.createdAt;
-    delete updateData.createdBy;
+      const product = await updateProduct(id, req.body);
 
-    updateData.updatedAt = new Date().toISOString();
+      if (!product) {
+        return sendError(res, "Product not found", 404);
+      }
 
-    await db.collection("products").doc(id).update(updateData);
-
-    res.json({
-      message: "Product updated successfully",
-      id,
-    });
-  } catch (error) {
-    console.error("Update product error:", error);
-    res.status(500).json({ error: error.message });
+      sendSuccess(res, product, "Product updated successfully");
+    } catch (error) {
+      console.error("Update product error:", error);
+      sendError(res, error.message);
+    }
   }
-});
+);
 
-// Delete product
+// Delete product (admin only)
 router.delete("/:id", authenticateUser, async (req, res) => {
   try {
+    // TODO: Add admin check middleware
     const { id } = req.params;
 
-    await db.collection("products").doc(id).update({
-      status: "deleted",
-      deletedAt: new Date().toISOString(),
-    });
+    const product = await deleteProduct(id);
 
-    res.json({
-      message: "Product deleted successfully",
-      id,
-    });
+    if (!product) {
+      return sendError(res, "Product not found", 404);
+    }
+
+    sendSuccess(res, { id }, "Product deleted successfully");
   } catch (error) {
     console.error("Delete product error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 

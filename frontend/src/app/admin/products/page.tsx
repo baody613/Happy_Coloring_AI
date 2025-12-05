@@ -20,7 +20,7 @@ interface Product {
 
 export default function AdminProductsPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -48,6 +48,11 @@ export default function AdminProductsPage() {
   });
 
   useEffect(() => {
+    // Đợi auth loading hoàn tất
+    if (authLoading) {
+      return;
+    }
+
     if (!user) {
       router.push('/login');
       return;
@@ -60,7 +65,7 @@ export default function AdminProductsPage() {
 
     loadProducts();
     setLoading(false);
-  }, [user, router]);
+  }, [user, router, authLoading]);
 
   const loadProducts = async () => {
     try {
@@ -132,7 +137,7 @@ export default function AdminProductsPage() {
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const numbers = value.replace(/\D/g, '');
-    const numValue = numbers ? parseInt(numbers) : 0;
+    const numValue = numbers ? parseInt(numbers) * 1000 : 0;
 
     setFormData({ ...formData, price: numValue });
     setPriceDisplay(formatPrice(numbers));
@@ -198,7 +203,8 @@ export default function AdminProductsPage() {
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
-    setPriceDisplay(product.price.toLocaleString('vi-VN'));
+    const displayPrice = Math.floor(product.price / 1000);
+    setPriceDisplay(displayPrice.toLocaleString('vi-VN'));
     setFormData({
       title: product.title,
       description: '',
@@ -212,7 +218,7 @@ export default function AdminProductsPage() {
     setShowAddForm(true);
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-2xl text-purple-600">Đang tải...</div>
@@ -294,13 +300,13 @@ export default function AdminProductsPage() {
                       value={priceDisplay}
                       onChange={handlePriceChange}
                       placeholder="0"
-                      className="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
+                      className="w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
-                      .000đ
+                      .000 VNĐ
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Ví dụ: Nhập "150" = 150.000đ</p>
+                  <p className="text-xs text-gray-500 mt-1">Ví dụ: Nhập "150" = 150.000 VNĐ</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
@@ -444,7 +450,11 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">{product.title}</td>
                     <td className="px-6 py-4 font-bold text-purple-600">
-                      {product.price.toLocaleString('vi-VN')}đ
+                      {(product.price >= 1000
+                        ? product.price
+                        : product.price * 1000
+                      ).toLocaleString('vi-VN')}{' '}
+                      VNĐ
                     </td>
                     <td className="px-6 py-4">
                       <span

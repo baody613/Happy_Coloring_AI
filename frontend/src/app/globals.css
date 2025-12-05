@@ -6,6 +6,16 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* Custom Brand Colors */
+  --magenta-primary: #e6007a;
+  --magenta-deep: #ff1493;
+  --magenta-hot: #ff69b4;
+  --violet-blue: #8a2be2;
+  --violet-dark: #9400d3;
+  --orchid-dark: #9932cc;
+  --orchid-medium: #ba55d3;
+  --purple-base: #800080;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +38,93 @@ body {
   }
 
   .store-name {
-    width: 227.139px;
-    height: 53px;
+    width: 227.1px;
+    height: 55px;
+  }
+
+  /* Brand Color Classes */
+  .bg-brand-magenta {
+    background-color: var(--magenta-primary);
+  }
+  .bg-brand-deep-pink {
+    background-color: var(--magenta-deep);
+  }
+  .bg-brand-hot-pink {
+    background-color: var(--magenta-hot);
+  }
+  .bg-brand-violet {
+    background-color: var(--violet-blue);
+  }
+  .bg-brand-dark-violet {
+    background-color: var(--violet-dark);
+  }
+  .bg-brand-orchid {
+    background-color: var(--orchid-dark);
+  }
+  .bg-brand-medium-orchid {
+    background-color: var(--orchid-medium);
+  }
+  .bg-brand-purple {
+    background-color: var(--purple-base);
+  }
+
+  .text-brand-magenta {
+    color: var(--magenta-primary);
+  }
+  .text-brand-deep-pink {
+    color: var(--magenta-deep);
+  }
+  .text-brand-hot-pink {
+    color: var(--magenta-hot);
+  }
+  .text-brand-violet {
+    color: var(--violet-blue);
+  }
+  .text-brand-dark-violet {
+    color: var(--violet-dark);
+  }
+  .text-brand-orchid {
+    color: var(--orchid-dark);
+  }
+  .text-brand-medium-orchid {
+    color: var(--orchid-medium);
+  }
+  .text-brand-purple {
+    color: var(--purple-base);
+  }
+
+  .border-brand-magenta {
+    border-color: var(--magenta-primary);
+  }
+  .border-brand-deep-pink {
+    border-color: var(--magenta-deep);
+  }
+  .border-brand-hot-pink {
+    border-color: var(--magenta-hot);
+  }
+  .border-brand-violet {
+    border-color: var(--violet-blue);
+  }
+  .border-brand-dark-violet {
+    border-color: var(--violet-dark);
+  }
+  .border-brand-orchid {
+    border-color: var(--orchid-dark);
+  }
+  .border-brand-medium-orchid {
+    border-color: var(--orchid-medium);
+  }
+  .border-brand-purple {
+    border-color: var(--purple-base);
+  }
+
+  .ring-brand-magenta {
+    --tw-ring-color: var(--magenta-primary);
+  }
+  .ring-brand-hot-pink {
+    --tw-ring-color: var(--magenta-hot);
+  }
+  .ring-brand-orchid {
+    --tw-ring-color: var(--orchid-medium);
   }
 }

@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-grow">{children}</main>
+            <main>{children}</main>
             <Footer />
           </div>
           <Toaster position="top-right" />

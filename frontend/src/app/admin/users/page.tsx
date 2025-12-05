@@ -18,11 +18,16 @@ interface User {
 
 export default function AdminUsersPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
+    // Đợi auth loading hoàn tất
+    if (authLoading) {
+      return;
+    }
+
     if (!user) {
       router.push('/login');
       return;
@@ -35,7 +40,7 @@ export default function AdminUsersPage() {
 
     loadUsers();
     setLoading(false);
-  }, [user, router]);
+  }, [user, router, authLoading]);
 
   const loadUsers = async () => {
     try {

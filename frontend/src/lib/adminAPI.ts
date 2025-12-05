@@ -102,6 +102,99 @@ export const adminStatsAPI = {
   },
 };
 
+// ================== SETTINGS MANAGEMENT ==================
+
+export const adminSettingsAPI = {
+  // Get all settings
+  getAll: async () => {
+    const response = await api.get('/admin/settings');
+    return response.data;
+  },
+
+  // System Settings
+  getSystemSettings: async () => {
+    const response = await api.get('/admin/settings/system');
+    return response.data;
+  },
+
+  updateSystemSettings: async (settings: {
+    siteName?: string;
+    siteDescription?: string;
+    maintenanceMode?: boolean;
+    allowRegistration?: boolean;
+    maxImageSize?: number;
+    defaultCurrency?: string;
+    taxRate?: number;
+    shippingFee?: number;
+  }) => {
+    const response = await api.put('/admin/settings/system', settings);
+    return response.data;
+  },
+
+  // Payment Settings
+  getPaymentSettings: async () => {
+    const response = await api.get('/admin/settings/payment');
+    return response.data;
+  },
+
+  updatePaymentSettings: async (settings: {
+    paymentMethods?: {
+      cod?: boolean;
+      vnpay?: boolean;
+      momo?: boolean;
+      banking?: boolean;
+    };
+    vnpayConfig?: {
+      tmnCode?: string;
+      hashSecret?: string;
+      url?: string;
+    };
+    momoConfig?: {
+      partnerCode?: string;
+      accessKey?: string;
+      secretKey?: string;
+    };
+    bankingInfo?: {
+      bankName?: string;
+      accountNumber?: string;
+      accountName?: string;
+    };
+  }) => {
+    const response = await api.put('/admin/settings/payment', settings);
+    return response.data;
+  },
+
+  // Email Settings
+  getEmailSettings: async () => {
+    const response = await api.get('/admin/settings/email');
+    return response.data;
+  },
+
+  updateEmailSettings: async (settings: {
+    smtpHost?: string;
+    smtpPort?: number;
+    smtpUser?: string;
+    smtpPassword?: string;
+    fromEmail?: string;
+    fromName?: string;
+    emailNotifications?: {
+      orderConfirmation?: boolean;
+      orderStatusUpdate?: boolean;
+      newUserRegistration?: boolean;
+      passwordReset?: boolean;
+    };
+  }) => {
+    const response = await api.put('/admin/settings/email', settings);
+    return response.data;
+  },
+
+  // Test email configuration
+  testEmail: async (testEmail: string) => {
+    const response = await api.post('/admin/settings/email/test', { testEmail });
+    return response.data;
+  },
+};
+
 // ================== COMBINED ADMIN API ==================
 
 export const adminAPI = {
@@ -109,6 +202,7 @@ export const adminAPI = {
   orders: adminOrderAPI,
   users: adminUserAPI,
   stats: adminStatsAPI,
+  settings: adminSettingsAPI,
 };
 
 export default adminAPI;

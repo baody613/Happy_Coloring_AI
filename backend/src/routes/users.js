@@ -1,6 +1,7 @@
 import express from "express";
-import { db } from "../config/firebase.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { getUserById, updateUser } from "../services/index.js";
+import { sendSuccess, sendError } from "../utils/helpers.js";
 
 const router = express.Router();
 
@@ -9,16 +10,16 @@ router.get("/:userId", authenticateUser, async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const userDoc = await db.collection("users").doc(userId).get();
+    const user = await getUserById(userId);
 
-    if (!userDoc.exists) {
-      return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      return sendError(res, "User not found", 404);
     }
 
-    res.json({ id: userDoc.id, ...userDoc.data() });
+    sendSuccess(res, user);
   } catch (error) {
     console.error("Get user error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
@@ -28,89 +29,34 @@ router.put("/:userId", authenticateUser, async (req, res) => {
     const { userId } = req.params;
 
     if (userId !== req.user.uid) {
-      return res.status(403).json({ error: "Unauthorized" });
+      return sendError(res, "Unauthorized", 403);
     }
 
     const { displayName, phoneNumber, address } = req.body;
 
-    const updateData = {
-      updatedAt: new Date().toISOString(),
-    };
-
+    const updateData = {};
     if (displayName) updateData.displayName = displayName;
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
     if (address) updateData.address = address;
 
-    await db.collection("users").doc(userId).update(updateData);
+    const updatedUser = await updateUser(userId, updateData);
 
-    res.json({
-      message: "Profile updated successfully",
-      userId,
-    });
+    sendSuccess(res, updatedUser, "Profile updated successfully");
   } catch (error) {
     console.error("Update user error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
+// Note: Favorites functionality removed - moved to separate favorites collection
 // Add to favorites
-router.post(
-  "/:userId/favorites/:productId",
-  authenticateUser,
-  async (req, res) => {
-    try {
-      const { userId, productId } = req.params;
-
-      if (userId !== req.user.uid) {
-        return res.status(403).json({ error: "Unauthorized" });
-      }
-
-      await db
-        .collection("users")
-        .doc(userId)
-        .update({
-          favorites: admin.firestore.FieldValue.arrayUnion(productId),
-        });
-
-      res.json({
-        message: "Added to favorites",
-        productId,
-      });
-    } catch (error) {
-      console.error("Add favorite error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
+// router.post("/:userId/favorites/:productId", authenticateUser, async (req, res) => {
+//   // Implement using dedicated favorites service
+// });
 
 // Remove from favorites
-router.delete(
-  "/:userId/favorites/:productId",
-  authenticateUser,
-  async (req, res) => {
-    try {
-      const { userId, productId } = req.params;
-
-      if (userId !== req.user.uid) {
-        return res.status(403).json({ error: "Unauthorized" });
-      }
-
-      await db
-        .collection("users")
-        .doc(userId)
-        .update({
-          favorites: admin.firestore.FieldValue.arrayRemove(productId),
-        });
-
-      res.json({
-        message: "Removed from favorites",
-        productId,
-      });
-    } catch (error) {
-      console.error("Remove favorite error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
+// router.delete("/:userId/favorites/:productId", authenticateUser, async (req, res) => {
+//   // Implement using dedicated favorites service
+// });
 
 export default router;

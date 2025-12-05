@@ -1,117 +1,110 @@
-import Link from 'next/link';
-import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+// Simple Footer component for your app
+'use client';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div>
-            <h3 className="text-2xl font-bold mb-4">🎨 PaintByNumbers</h3>
-            <p className="text-gray-400">
-              Nền tảng tranh tô màu số hóa hàng đầu Việt Nam với công nghệ AI.
-            </p>
+    <footer className="w-full bg-gradient-to-br from-purple-900 via-purple-700 to-pink-600 text-white pt-12 pb-6 mt-0 shadow-2xl">
+      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/* Logo & Slogan */}
+        <div className="md:col-span-1 flex flex-col items-start">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-4xl font-extrabold tracking-tight">
+              🎨 Happy Coloring with AI
+            </span>
           </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Liên Kết</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/gallery" className="text-gray-400 hover:text-white transition">
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link href="/generate" className="text-gray-400 hover:text-white transition">
-                  Tạo Tranh AI
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-400 hover:text-white transition">
-                  Về Chúng Tôi
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition">
-                  Liên Hệ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Hỗ Trợ</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/shipping" className="text-gray-400 hover:text-white transition">
-                  Chính Sách Giao Hàng
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-gray-400 hover:text-white transition">
-                  Đổi Trả Hàng
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white transition">
-                  Chính Sách Bảo Mật
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition">
-                  Điều Khoản Sử Dụng
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Social Media */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Kết Nối</h4>
-            <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition text-2xl"
-                aria-label="Facebook"
-              >
-                <FaFacebook />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition text-2xl"
-                aria-label="Instagram"
-              >
-                <FaInstagram />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition text-2xl"
-                aria-label="Twitter"
-              >
-                <FaTwitter />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition text-2xl"
-                aria-label="YouTube"
-              >
-                <FaYoutube />
-              </a>
-            </div>
-            <p className="text-gray-400 mt-4">
-              Email: support@paintbynumbers.vn
-              <br />
-              Hotline: 0123-456-789
-            </p>
+          <p className="text-base opacity-80 mb-6 font-light">
+            Nền tảng tranh tô màu số hóa & AI hiện đại, giúp bạn sáng tạo và thư giãn mỗi ngày.
+          </p>
+          <div className="flex gap-4 mt-2">
+            <a href="#" className="hover:text-yellow-300 transition text-xl">
+              <i className="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" className="hover:text-blue-400 transition text-xl">
+              <i className="fab fa-twitter"></i>
+            </a>
+            <a href="#" className="hover:text-pink-400 transition text-xl">
+              <i className="fab fa-instagram"></i>
+            </a>
+            <a href="#" className="hover:text-red-500 transition text-xl">
+              <i className="fab fa-youtube"></i>
+            </a>
           </div>
         </div>
-
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 PaintByNumbers AI. All rights reserved.</p>
+        {/* Sản phẩm */}
+        <div>
+          <h3 className="font-semibold text-lg mb-4 uppercase tracking-wide">Sản phẩm</h3>
+          <ul className="space-y-3 text-base">
+            <li>
+              <a href="/gallery" className="hover:text-yellow-300 transition">
+                Tranh tô màu
+              </a>
+            </li>
+            <li>
+              <a href="/generate" className="hover:text-yellow-300 transition">
+                Tạo tranh AI
+              </a>
+            </li>
+            <li>
+              <a href="/profile" className="hover:text-yellow-300 transition">
+                Tài khoản của bạn
+              </a>
+            </li>
+            <li>
+              <a href="/order-success" className="hover:text-yellow-300 transition">
+                Đơn hàng
+              </a>
+            </li>
+          </ul>
         </div>
+        {/* Hỗ trợ khách hàng */}
+        <div>
+          <h3 className="font-semibold text-lg mb-4 uppercase tracking-wide">Hỗ trợ khách hàng</h3>
+          <ul className="space-y-3 text-base">
+            <li>
+              <a href="#" className="hover:text-yellow-300 transition">
+                Câu hỏi thường gặp
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-yellow-300 transition">
+                Chính sách bảo mật
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-yellow-300 transition">
+                Điều khoản dịch vụ
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-yellow-300 transition">
+                Liên hệ hỗ trợ
+              </a>
+            </li>
+          </ul>
+        </div>
+        {/* Đăng ký nhận tin */}
+        <div>
+          <h3 className="font-semibold text-lg mb-4 uppercase tracking-wide">Đăng ký nhận tin</h3>
+          <form className="flex flex-col gap-3">
+            <input
+              type="email"
+              placeholder="Nhập email của bạn"
+              className="px-4 py-2 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-400"
+            />
+            <button
+              type="submit"
+              className="bg-yellow-400 text-purple-900 font-bold px-4 py-2 rounded-lg hover:bg-yellow-300 transition"
+            >
+              Đăng ký
+            </button>
+          </form>
+          <p className="text-xs opacity-70 mt-3">
+            Nhận thông tin khuyến mãi và sản phẩm mới nhất từ chúng tôi.
+          </p>
+        </div>
+      </div>
+      <div className="container mx-auto px-6 mt-10 border-t border-white/20 pt-4 text-center text-xs opacity-70">
+        &copy; {new Date().getFullYear()} Happy Coloring AI. All rights reserved.
       </div>
     </footer>
   );

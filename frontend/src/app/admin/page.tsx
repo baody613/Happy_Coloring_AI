@@ -8,7 +8,7 @@ import { adminAPI } from '@/lib/adminAPI';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -22,6 +22,11 @@ export default function AdminPage() {
   });
 
   useEffect(() => {
+    // Đợi auth loading hoàn tất
+    if (authLoading) {
+      return;
+    }
+
     // Check if user is logged in
     if (!user) {
       router.push('/login');
@@ -36,7 +41,7 @@ export default function AdminPage() {
 
     loadStats();
     setLoading(false);
-  }, [user, router]);
+  }, [user, router, authLoading]);
 
   const loadStats = async () => {
     try {
@@ -47,7 +52,7 @@ export default function AdminPage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-2xl text-purple-600">Đang tải...</div>
@@ -137,12 +142,6 @@ export default function AdminPage() {
               >
                 📝 Danh Sách Sản Phẩm
               </button>
-              <button
-                onClick={() => router.push('/admin/products')}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                📊 Thống Kê Sản Phẩm
-              </button>
             </div>
           </div>
 
@@ -206,13 +205,22 @@ export default function AdminPage() {
               ⚙️ Cài Đặt Hệ Thống
             </h2>
             <div className="space-y-3">
-              <button className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition">
+              <button
+                onClick={() => router.push('/admin/settings')}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+              >
                 🔧 Cấu Hình
               </button>
-              <button className="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 rounded-lg transition">
+              <button
+                onClick={() => router.push('/admin/settings')}
+                className="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+              >
                 💳 Thanh Toán
               </button>
-              <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition">
+              <button
+                onClick={() => router.push('/admin/settings')}
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition"
+              >
                 📧 Email & Thông Báo
               </button>
             </div>

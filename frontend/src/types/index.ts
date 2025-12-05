@@ -6,6 +6,7 @@ export interface User {
   address?: string;
   orders?: string[];
   favorites?: string[];
+  role?: 'user' | 'admin';
 }
 
 export interface Product {

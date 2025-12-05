@@ -1,56 +1,39 @@
 import express from "express";
-import { db } from "../config/firebase.js";
 import { authenticateUser } from "../middleware/auth.js";
+import {
+  createOrder,
+  getOrderById,
+  getOrdersByUserId,
+  updateOrderStatus,
+  cancelOrder,
+} from "../services/index.js";
+import { sendSuccess, sendError } from "../utils/helpers.js";
+import {
+  validate,
+  createOrderSchema,
+  updateOrderStatusSchema,
+} from "../validators/index.js";
 
 const router = express.Router();
 
 // Create order
-router.post("/", authenticateUser, async (req, res) => {
-  try {
-    const { items, shippingAddress, totalAmount, paymentMethod } = req.body;
-    const userId = req.user.uid;
+router.post(
+  "/",
+  authenticateUser,
+  validate(createOrderSchema),
+  async (req, res) => {
+    try {
+      const userId = req.user.uid;
 
-    if (!items || items.length === 0) {
-      return res.status(400).json({ error: "Order items are required" });
+      const order = await createOrder(userId, req.body);
+
+      sendSuccess(res, order, "Order created successfully", 201);
+    } catch (error) {
+      console.error("Create order error:", error);
+      sendError(res, error.message);
     }
-
-    if (!shippingAddress) {
-      return res.status(400).json({ error: "Shipping address is required" });
-    }
-
-    const orderRef = db.collection("orders").doc();
-
-    const orderData = {
-      id: orderRef.id,
-      userId,
-      items,
-      shippingAddress,
-      totalAmount: parseFloat(totalAmount),
-      paymentMethod: paymentMethod || "cod",
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    await orderRef.set(orderData);
-
-    // Update user's orders
-    await db
-      .collection("users")
-      .doc(userId)
-      .update({
-        orders: admin.firestore.FieldValue.arrayUnion(orderRef.id),
-      });
-
-    res.status(201).json({
-      message: "Order created successfully",
-      order: orderData,
-    });
-  } catch (error) {
-    console.error("Create order error:", error);
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 // Get user's orders
 router.get("/user/:userId", authenticateUser, async (req, res) => {
@@ -59,24 +42,21 @@ router.get("/user/:userId", authenticateUser, async (req, res) => {
 
     // Check if user is requesting their own orders
     if (userId !== req.user.uid) {
-      return res.status(403).json({ error: "Unauthorized" });
+      return sendError(res, "Unauthorized", 403);
     }
 
-    const ordersSnapshot = await db
-      .collection("orders")
-      .where("userId", "==", userId)
-      .orderBy("createdAt", "desc")
-      .get();
+    const { page = 1, limit = 10 } = req.query;
 
-    const orders = [];
-    ordersSnapshot.forEach((doc) => {
-      orders.push({ id: doc.id, ...doc.data() });
-    });
+    const result = await getOrdersByUserId(
+      userId,
+      parseInt(page),
+      parseInt(limit)
+    );
 
-    res.json({ orders });
+    sendSuccess(res, result);
   } catch (error) {
     console.error("Get orders error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
@@ -85,60 +65,77 @@ router.get("/:orderId", authenticateUser, async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const orderDoc = await db.collection("orders").doc(orderId).get();
+    const order = await getOrderById(orderId);
 
-    if (!orderDoc.exists) {
-      return res.status(404).json({ error: "Order not found" });
+    if (!order) {
+      return sendError(res, "Order not found", 404);
     }
 
-    const orderData = orderDoc.data();
-
-    // Check if user owns this order
-    if (orderData.userId !== req.user.uid) {
-      return res.status(403).json({ error: "Unauthorized" });
+    // Check if user is requesting their own order
+    if (order.userId !== req.user.uid && req.user.role !== "admin") {
+      return sendError(res, "Unauthorized", 403);
     }
 
-    res.json({ id: orderDoc.id, ...orderData });
+    sendSuccess(res, order);
   } catch (error) {
     console.error("Get order error:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error.message);
   }
 });
 
-// Update order status
-router.put("/:orderId", authenticateUser, async (req, res) => {
+// Update order status (admin only)
+router.put(
+  "/:orderId/status",
+  authenticateUser,
+  validate(updateOrderStatusSchema),
+  async (req, res) => {
+    try {
+      // TODO: Add admin check middleware
+      const { orderId } = req.params;
+      const { status } = req.body;
+
+      const order = await updateOrderStatus(orderId, status);
+
+      if (!order) {
+        return sendError(res, "Order not found", 404);
+      }
+
+      sendSuccess(res, order, "Order status updated successfully");
+    } catch (error) {
+      console.error("Update order status error:", error);
+      sendError(res, error.message);
+    }
+  }
+);
+
+// Cancel order
+router.post("/:orderId/cancel", authenticateUser, async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status } = req.body;
+    const { reason } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ error: "Status is required" });
+    const order = await getOrderById(orderId);
+
+    if (!order) {
+      return sendError(res, "Order not found", 404);
     }
 
-    const validStatuses = [
-      "pending",
-      "processing",
-      "shipped",
-      "delivered",
-      "cancelled",
-    ];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
+    // Check if user is cancelling their own order
+    if (order.userId !== req.user.uid && req.user.role !== "admin") {
+      return sendError(res, "Unauthorized", 403);
     }
 
-    await db.collection("orders").doc(orderId).update({
-      status,
-      updatedAt: new Date().toISOString(),
-    });
+    // Check if order can be cancelled
+    if (order.status === "delivered" || order.status === "cancelled") {
+      return sendError(res, "Order cannot be cancelled", 400);
+    }
 
-    res.json({
-      message: "Order updated successfully",
-      orderId,
-      status,
-    });
+    const cancelledOrder = await cancelOrder(orderId, reason);
+
+    sendSuccess(res, cancelledOrder, "Order cancelled successfully");
   } catch (error) {
-    console.error("Update order error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Cancel order error:", error);
+    sendError(res, error.message);
   }
 });
 

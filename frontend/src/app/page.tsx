@@ -14,9 +14,9 @@ export default function Home() {
   }, [initializeAuth]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20">
+      <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20 relative">
         <div className="container mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -57,25 +57,30 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gradient-to-br from-purple-50 via-pink-100 to-blue-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-purple-400">
+          <h2 className="text-5xl font-extrabold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 drop-shadow-lg">
             Tại Sao Chọn Chúng Tôi?
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white p-6 rounded-lg shadow-lg text-center"
+                transition={{ delay: index * 0.15 }}
+                className="relative bg-white rounded-3xl shadow-xl p-10 text-center transition-transform hover:-translate-y-2 hover:shadow-2xl duration-300 border-t-4 border-purple-300"
               >
-                <div className="text-4xl mb-4 text-purple-600 flex justify-center">
-                  {feature.icon}
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+                  <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-4xl font-extrabold border-4 border-white shadow-lg">
+                    {feature.icon}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <h3 className="text-2xl font-bold mb-4 mt-10 text-purple-700">{feature.title}</h3>
+                <p className="text-gray-600 text-base mb-4">{feature.description}</p>
+                <div className="flex justify-center mt-4">
+                  <span className="inline-block w-12 h-1 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"></span>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -83,17 +88,27 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="py-16">
+      <section className="py-20 bg-gradient-to-br from-purple-50 via-pink-100 to-blue-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">Cách Thức Hoạt Động</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <h2 className="text-5xl font-extrabold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 drop-shadow-lg">
+            Cách Thức Hoạt Động
+          </h2>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-12">
             {steps.map((step, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-purple-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                  {index + 1}
+              <div
+                key={index}
+                className="relative flex-1 max-w-xs bg-white rounded-3xl shadow-xl p-8 text-center transition-transform hover:-translate-y-2 hover:shadow-2xl duration-300"
+              >
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+                  <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white w-20 h-20 rounded-full flex items-center justify-center text-3xl font-extrabold border-4 border-white shadow-lg">
+                    {index + 1}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
+                <h3 className="text-2xl font-bold mb-4 mt-12 text-purple-700">{step.title}</h3>
+                <p className="text-gray-600 text-base mb-4">{step.description}</p>
+                <div className="flex justify-center mt-4">
+                  <span className="inline-block w-16 h-1 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"></span>
+                </div>
               </div>
             ))}
           </div>
@@ -101,15 +116,15 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-purple-600 text-white py-16">
+      <section className="py-20 bg-gradient-to-r from-[#E6007A] via-[#8A2BE2] to-[#FF0077] text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Sẵn Sàng Bắt Đầu Sáng Tạo?</h2>
-          <p className="text-xl mb-8">
+          <h2 className="text-4xl font-bold mb-6 drop-shadow-lg">Sẵn Sàng Bắt Đầu Sáng Tạo?</h2>
+          <p className="text-xl mb-8 opacity-90">
             Tham gia cộng đồng nghệ sĩ và tạo ra những tác phẩm độc đáo ngay hôm nay!
           </p>
           <Link
             href="/register"
-            className="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
+            className="bg-white text-[#E6007A] px-8 py-4 rounded-lg font-semibold hover:bg-pink-100 hover:text-[#8A2BE2] transition inline-block shadow-md"
           >
             Đăng Ký Miễn Phí
           </Link>
