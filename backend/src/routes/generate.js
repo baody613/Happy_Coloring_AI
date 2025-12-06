@@ -1,13 +1,21 @@
 import express from "express";
 import Replicate from "replicate";
+import axios from "axios";
+import FormData from "form-data";
 import { db, storage } from "../config/firebase.js";
 import { authenticateUser } from "../middleware/auth.js";
 import sharp from "sharp";
 
 const router = express.Router();
+
+// Initialize Replicate (fallback)
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
+
+// Stability AI configuration
+const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
+const STABILITY_API_HOST = "https://api.stability.ai";
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
@@ -87,20 +95,21 @@ async function generatePaintByNumbers(
     // Enhanced prompt for paint-by-numbers style
     const enhancedPrompt = `${prompt}, paint by numbers style, clear outlines, numbered sections, coloring book, ${style} art style, ${complexity} detail level`;
 
-    // Generate image using Replicate (SDXL model)
-    const output = await replicate.run(
-      "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-      {
-        input: {
-          prompt: enhancedPrompt,
-          negative_prompt: "blurry, low quality, watermark, text",
-          width: 1024,
-          height: 1024,
-        },
-      }
-    );
+    let imageUrl;
 
-    const imageUrl = Array.isArray(output) ? output[0] : output;
+    // Try Stability AI first (preferred - has free credits)
+    if (STABILITY_API_KEY) {
+      try {
+        imageUrl = await generateWithStabilityAI(enhancedPrompt);
+      } catch (stabilityError) {
+        console.error("Stability AI error, falling back to Replicate:", stabilityError.message);
+        // Fallback to Replicate
+        imageUrl = await generateWithReplicate(enhancedPrompt);
+      }
+    } else {
+      // Use Replicate if no Stability AI key
+      imageUrl = await generateWithReplicate(enhancedPrompt);
+    }
 
     // Download and process image
     const response = await fetch(imageUrl);
@@ -146,6 +155,57 @@ async function generatePaintByNumbers(
       failedAt: new Date().toISOString(),
     });
   }
+}
+
+// Generate with Stability AI
+async function generateWithStabilityAI(prompt) {
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+  formData.append("output_format", "png");
+  formData.append("aspect_ratio", "1:1");
+
+  const response = await axios.post(
+    `${STABILITY_API_HOST}/v2beta/stable-image/generate/sd3`,
+    formData,
+    {
+      headers: {
+        ...formData.getHeaders(),
+        Authorization: `Bearer ${STABILITY_API_KEY}`,
+        Accept: "image/*",
+      },
+      responseType: "arraybuffer",
+    }
+  );
+
+  // Upload raw image to temp storage and return URL
+  const buffer = Buffer.from(response.data);
+  const tempFilename = `temp/${Date.now()}.png`;
+  const bucket = storage.bucket();
+  const file = bucket.file(tempFilename);
+  
+  await file.save(buffer, {
+    metadata: { contentType: "image/png" },
+  });
+  
+  await file.makePublic();
+  return `https://storage.googleapis.com/${bucket.name}/${tempFilename}`;
+}
+
+// Generate with Replicate (fallback)
+async function generateWithReplicate(prompt) {
+  const output = await replicate.run(
+    "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+    {
+      input: {
+        prompt: prompt,
+        negative_prompt: "blurry, low quality, watermark, text",
+        width: 1024,
+        height: 1024,
+      },
+    }
+  );
+
+  return Array.isArray(output) ? output[0] : output;
 }
 
 export default router;
