@@ -102,7 +102,10 @@ async function generatePaintByNumbers(
       try {
         imageUrl = await generateWithStabilityAI(enhancedPrompt);
       } catch (stabilityError) {
-        console.error("Stability AI error, falling back to Replicate:", stabilityError.message);
+        console.error(
+          "Stability AI error, falling back to Replicate:",
+          stabilityError.message
+        );
         // Fallback to Replicate
         imageUrl = await generateWithReplicate(enhancedPrompt);
       }
@@ -123,7 +126,8 @@ async function generatePaintByNumbers(
       .toBuffer();
 
     // Upload to Firebase Storage
-    const bucket = storage.bucket();
+    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'paint-by-numbers-ai-607c4.firebasestorage.app';
+    const bucket = storage.bucket(bucketName);
     const filename = `generations/${userId}/${generationId}.png`;
     const file = bucket.file(filename);
 
@@ -182,11 +186,11 @@ async function generateWithStabilityAI(prompt) {
   const tempFilename = `temp/${Date.now()}.png`;
   const bucket = storage.bucket();
   const file = bucket.file(tempFilename);
-  
+
   await file.save(buffer, {
     metadata: { contentType: "image/png" },
   });
-  
+
   await file.makePublic();
   return `https://storage.googleapis.com/${bucket.name}/${tempFilename}`;
 }
