@@ -46,6 +46,48 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    // Firebase Admin SDK doesn't support sign-in directly
+    // Return success and let client use Firebase Auth SDK
+    // This endpoint can be used for additional server-side validation if needed
+    
+    // Get user by email to verify exists
+    const userRecord = await auth.getUserByEmail(email);
+    
+    // Get user profile from Firestore
+    const userDoc = await db.collection("users").doc(userRecord.uid).get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User profile not found" });
+    }
+
+    // Create custom token for the user
+    const customToken = await auth.createCustomToken(userRecord.uid);
+
+    res.json({
+      message: "Login successful",
+      token: customToken,
+      user: {
+        uid: userRecord.uid,
+        email: userRecord.email,
+        displayName: userRecord.displayName,
+        ...userDoc.data(),
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(401).json({ error: "Invalid credentials" });
+  }
+});
+
 // Get user profile
 router.get("/profile/:uid", async (req, res) => {
   try {
