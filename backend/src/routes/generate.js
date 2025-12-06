@@ -126,7 +126,9 @@ async function generatePaintByNumbers(
       .toBuffer();
 
     // Upload to Firebase Storage
-    const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'paint-by-numbers-ai-607c4.firebasestorage.app';
+    const bucketName =
+      process.env.FIREBASE_STORAGE_BUCKET ||
+      "paint-by-numbers-ai-607c4.firebasestorage.app";
     const bucket = storage.bucket(bucketName);
     const filename = `generations/${userId}/${generationId}.png`;
     const file = bucket.file(filename);
@@ -184,7 +186,8 @@ async function generateWithStabilityAI(prompt) {
   // Upload raw image to temp storage and return URL
   const buffer = Buffer.from(response.data);
   const tempFilename = `temp/${Date.now()}.png`;
-  const bucket = storage.bucket();
+  const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'paint-by-numbers-ai-607c4.firebasestorage.app';
+  const bucket = storage.bucket(bucketName);
   const file = bucket.file(tempFilename);
 
   await file.save(buffer, {
@@ -192,7 +195,7 @@ async function generateWithStabilityAI(prompt) {
   });
 
   await file.makePublic();
-  return `https://storage.googleapis.com/${bucket.name}/${tempFilename}`;
+  return `https://storage.googleapis.com/${bucketName}/${tempFilename}`;
 }
 
 // Generate with Replicate (fallback)
