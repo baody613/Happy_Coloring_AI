@@ -150,18 +150,6 @@ async function generatePaintByNumbers(
   }
 }
 
-// Generate with Stability AI
-async function generateWithStabilityAI(prompt) {
-  const formData = new FormData();
-  formData.append("prompt", prompt);
-  formData.append("output_format", "png");
-  formData.append("aspect_ratio", "1:1");
-
-  const response = await axios.post(
-    `${STABILITY_API_HOST}/v2beta/stable-image/generate/sd3`,
-    formData,
-    {
-      headers: {
 // Generate with Hugging Face Inference API (Free)
 async function generateWithHuggingFace(prompt) {
   console.log("Calling Hugging Face API...");
