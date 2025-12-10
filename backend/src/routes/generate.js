@@ -98,18 +98,25 @@ async function generatePaintByNumbers(
     let imageUrl;
 
     // Try Stability AI first (preferred - has free credits)
+    console.log("STABILITY_API_KEY exists:", !!STABILITY_API_KEY);
+    console.log("STABILITY_API_KEY prefix:", STABILITY_API_KEY ? STABILITY_API_KEY.substring(0, 6) + "..." : "undefined");
+    
     if (STABILITY_API_KEY) {
       try {
+        console.log("Attempting Stability AI generation...");
         imageUrl = await generateWithStabilityAI(enhancedPrompt);
+        console.log("Stability AI success! Image URL:", imageUrl);
       } catch (stabilityError) {
         console.error(
           "Stability AI error, falling back to Replicate:",
-          stabilityError.message
+          stabilityError.message,
+          stabilityError.response?.data || ""
         );
         // Fallback to Replicate
         imageUrl = await generateWithReplicate(enhancedPrompt);
       }
     } else {
+      console.log("No STABILITY_API_KEY found, using Replicate");
       // Use Replicate if no Stability AI key
       imageUrl = await generateWithReplicate(enhancedPrompt);
     }
@@ -186,7 +193,9 @@ async function generateWithStabilityAI(prompt) {
   // Upload raw image to temp storage and return URL
   const buffer = Buffer.from(response.data);
   const tempFilename = `temp/${Date.now()}.png`;
-  const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'paint-by-numbers-ai-607c4.firebasestorage.app';
+  const bucketName =
+    process.env.FIREBASE_STORAGE_BUCKET ||
+    "paint-by-numbers-ai-607c4.firebasestorage.app";
   const bucket = storage.bucket(bucketName);
   const file = bucket.file(tempFilename);
 

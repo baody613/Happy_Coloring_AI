@@ -58,10 +58,10 @@ router.post("/login", async (req, res) => {
     // Firebase Admin SDK doesn't support sign-in directly
     // Return success and let client use Firebase Auth SDK
     // This endpoint can be used for additional server-side validation if needed
-    
+
     // Get user by email to verify exists
     const userRecord = await auth.getUserByEmail(email);
-    
+
     // Get user profile from Firestore
     const userDoc = await db.collection("users").doc(userRecord.uid).get();
 
