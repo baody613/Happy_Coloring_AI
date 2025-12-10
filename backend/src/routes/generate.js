@@ -153,7 +153,7 @@ async function generatePaintByNumbers(
 // Generate with Hugging Face Inference API (Free)
 async function generateWithHuggingFace(prompt) {
   console.log("Calling Hugging Face API...");
-  
+
   const response = await axios.post(
     `https://api-inference.huggingface.co/models/${HF_MODEL}`,
     { inputs: prompt },

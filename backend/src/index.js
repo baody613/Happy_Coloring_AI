@@ -41,6 +41,25 @@ const limiter = rateLimit({
 });
 app.use("/api/", limiter);
 
+// Root route - Welcome message
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Welcome to Happy Coloring AI API",
+    version: "1.0.0",
+    status: "online",
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      generate: "/api/generate",
+      products: "/api/products",
+      orders: "/api/orders",
+      users: "/api/users",
+      admin: "/api/admin"
+    },
+    documentation: "https://github.com/baody613/Happy_Coloring_AI"
+  });
+});
+
 // Health check
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
