@@ -1,5 +1,4 @@
 import express from "express";
-import Replicate from "replicate";
 import axios from "axios";
 import FormData from "form-data";
 import { db, storage } from "../config/firebase.js";
@@ -8,14 +7,9 @@ import sharp from "sharp";
 
 const router = express.Router();
 
-// Initialize Replicate (fallback)
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
-
-// Stability AI configuration
-const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
-const STABILITY_API_HOST = "https://api.stability.ai";
+// Hugging Face configuration (Free API)
+const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || "hf_demo"; // Works without key for free tier
+const HF_MODEL = "stabilityai/stable-diffusion-2-1"; // Free model
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
@@ -97,28 +91,14 @@ async function generatePaintByNumbers(
 
     let imageUrl;
 
-    // Try Stability AI first (preferred - has free credits)
-    console.log("STABILITY_API_KEY exists:", !!STABILITY_API_KEY);
-    console.log("STABILITY_API_KEY prefix:", STABILITY_API_KEY ? STABILITY_API_KEY.substring(0, 6) + "..." : "undefined");
-    
-    if (STABILITY_API_KEY) {
-      try {
-        console.log("Attempting Stability AI generation...");
-        imageUrl = await generateWithStabilityAI(enhancedPrompt);
-        console.log("Stability AI success! Image URL:", imageUrl);
-      } catch (stabilityError) {
-        console.error(
-          "Stability AI error, falling back to Replicate:",
-          stabilityError.message,
-          stabilityError.response?.data || ""
-        );
-        // Fallback to Replicate
-        imageUrl = await generateWithReplicate(enhancedPrompt);
-      }
-    } else {
-      console.log("No STABILITY_API_KEY found, using Replicate");
-      // Use Replicate if no Stability AI key
-      imageUrl = await generateWithReplicate(enhancedPrompt);
+    // Use Hugging Face Inference API (Free)
+    try {
+      console.log("Generating with Hugging Face:", HF_MODEL);
+      imageUrl = await generateWithHuggingFace(enhancedPrompt);
+      console.log("Hugging Face success! Image URL:", imageUrl);
+    } catch (error) {
+      console.error("Hugging Face error:", error.message);
+      throw error;
     }
 
     // Download and process image
@@ -182,15 +162,24 @@ async function generateWithStabilityAI(prompt) {
     formData,
     {
       headers: {
-        ...formData.getHeaders(),
-        Authorization: `Bearer ${STABILITY_API_KEY}`,
-        Accept: "image/*",
+// Generate with Hugging Face Inference API (Free)
+async function generateWithHuggingFace(prompt) {
+  console.log("Calling Hugging Face API...");
+  
+  const response = await axios.post(
+    `https://api-inference.huggingface.co/models/${HF_MODEL}`,
+    { inputs: prompt },
+    {
+      headers: {
+        Authorization: `Bearer ${HF_API_KEY}`,
+        "Content-Type": "application/json",
       },
       responseType: "arraybuffer",
+      timeout: 120000, // 2 minutes timeout
     }
   );
 
-  // Upload raw image to temp storage and return URL
+  // Upload to Firebase Storage and return URL
   const buffer = Buffer.from(response.data);
   const tempFilename = `temp/${Date.now()}.png`;
   const bucketName =
@@ -204,24 +193,9 @@ async function generateWithStabilityAI(prompt) {
   });
 
   await file.makePublic();
-  return `https://storage.googleapis.com/${bucketName}/${tempFilename}`;
-}
-
-// Generate with Replicate (fallback)
-async function generateWithReplicate(prompt) {
-  const output = await replicate.run(
-    "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
-    {
-      input: {
-        prompt: prompt,
-        negative_prompt: "blurry, low quality, watermark, text",
-        width: 1024,
-        height: 1024,
-      },
-    }
-  );
-
-  return Array.isArray(output) ? output[0] : output;
+  const imageUrl = `https://storage.googleapis.com/${bucketName}/${tempFilename}`;
+  console.log("Image uploaded to:", imageUrl);
+  return imageUrl;
 }
 
 export default router;
