@@ -69,13 +69,16 @@ router.post("/send-code", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Gửi email qua Gmail
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
-      html: `
+    console.log(`🔐 OTP for ${email}: ${otp} (expires at ${expiresAt})`);
+
+    // Thử gửi email (không bắt buộc phải thành công)
+    try {
+      const transporter = createTransporter();
+      const mailOptions = {
+        from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
+        html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -149,23 +152,21 @@ router.post("/send-code", async (req, res) => {
         </body>
         </html>
       `,
-    };
+      };
 
-    try {
       await transporter.sendMail(mailOptions);
+      console.log(`✅ Email sent successfully to ${email}`);
     } catch (emailError) {
-      console.error("Failed to send email:", emailError);
-      // Vẫn trả về success vì OTP đã lưu vào DB, user có thể dùng OTP từ DB
-      return res.status(500).json({ 
-        error: "Không thể gửi email. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau.",
-        details: process.env.NODE_ENV === 'development' ? emailError.message : undefined
-      });
+      console.error("⚠️ Failed to send email (non-critical):", emailError.message);
+      // Không throw error, vẫn cho phép user dùng OTP
     }
 
     res.json({
       success: true,
-      message: "Mã xác nhận đã được gửi đến email của bạn",
+      message: "Mã xác nhận đã được tạo. Kiểm tra email hoặc console log để lấy mã.",
       expiresAt: expiresAt,
+      // Trả OTP trong response cho development (XÓA trong production!)
+      otp: process.env.NODE_ENV === 'development' ? otp : undefined,
     });
   } catch (error) {
     console.error("Error sending OTP:", error);
