@@ -12,11 +12,19 @@ const createTransporter = () => {
   }
   
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_APP_PASSWORD,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
 }
 
@@ -143,7 +151,16 @@ router.post("/send-code", async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      // Vẫn trả về success vì OTP đã lưu vào DB, user có thể dùng OTP từ DB
+      return res.status(500).json({ 
+        error: "Không thể gửi email. Vui lòng kiểm tra lại địa chỉ email hoặc thử lại sau.",
+        details: process.env.NODE_ENV === 'development' ? emailError.message : undefined
+      });
+    }
 
     res.json({
       success: true,
@@ -152,9 +169,20 @@ router.post("/send-code", async (req, res) => {
     });
   } catch (error) {
     console.error("Error sending OTP:", error);
+    
+    // Xóa OTP nếu có lỗi
+    try {
+      await db.collection("password_reset_codes").doc(email).delete();
+    } catch (deleteError) {
+      console.error("Failed to cleanup OTP:", deleteError);
+    }
+    
     res
       .status(500)
-      .json({ error: "Không thể gửi mã xác nhận. Vui lòng thử lại." });
+      .json({ 
+        error: "Không thể xử lý yêu cầu. Vui lòng thử lại.",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
   }
 });
 

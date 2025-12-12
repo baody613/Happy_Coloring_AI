@@ -36,12 +36,15 @@ app.use(
     origin: (origin, callback) => {
       // Cho phép requests không có origin (như mobile apps hoặc curl)
       if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('localhost')) {
+
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.includes("localhost")
+      ) {
         callback(null, true);
       } else {
-        console.log('Blocked by CORS:', origin);
-        callback(new Error('Not allowed by CORS'));
+        console.log("Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
