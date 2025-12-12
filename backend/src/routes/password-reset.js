@@ -143,7 +143,7 @@ router.post("/send-code", async (req, res) => {
       `,
     };
 
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
 
     res.json({
       success: true,
