@@ -149,7 +149,7 @@ router.post("/send-code", async (req, res) => {
       success: true,
       message: "Mã xác nhận đã được gửi đến email của bạn",
       expiresAt: expiresAt,
-    });transporter.sendMail(mailOptions
+    });
   } catch (error) {
     console.error("Error sending OTP:", error);
     res
