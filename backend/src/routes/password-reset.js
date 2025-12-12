@@ -7,24 +7,18 @@ const router = express.Router();
 
 // Tạo transporter cho Gmail
 const createTransporter = () => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_APP_PASSWORD) {
-    throw new Error("EMAIL_USER và EMAIL_APP_PASSWORD chưa được cấu hình");
+  const emailPassword = process.env.EMAIL_APP_PASSWORD || process.env.EMAIL_PASSWORD;
+  
+  if (!process.env.EMAIL_USER || !emailPassword) {
+    throw new Error("EMAIL_USER và EMAIL_PASSWORD/EMAIL_APP_PASSWORD chưa được cấu hình");
   }
   
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+  return nodemailer.createTransporter({
+    service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_APP_PASSWORD,
+      pass: emailPassword,
     },
-    tls: {
-      rejectUnauthorized: false,
-    },
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
   });
 }
 
