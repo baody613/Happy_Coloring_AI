@@ -1,13 +1,23 @@
 import express from "express";
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Cấu hình SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Tạo transporter cho Gmail
+const createTransporter = () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_APP_PASSWORD) {
+    throw new Error("EMAIL_USER và EMAIL_APP_PASSWORD chưa được cấu hình");
+  }
+  
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
 }
 
 // Tạo mã OTP 6 số
@@ -51,17 +61,11 @@ router.post("/send-code", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Gửi email qua SendGrid
-    if (!process.env.SENDGRID_API_KEY) {
-      console.error("SENDGRID_API_KEY not configured");
-      return res.status(500).json({ 
-        error: "Email service chưa được cấu hình. Vui lòng liên hệ admin." 
-      });
-    }
-
-    const msg = {
+    // Gửi email qua Gmail
+    const transporter = createTransporter();
+    const mailOptions = {
+      from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
       to: email,
-      from: process.env.SENDGRID_FROM_EMAIL || "noreply@yulingstore.com",
       subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
       html: `
         <!DOCTYPE html>
@@ -145,7 +149,7 @@ router.post("/send-code", async (req, res) => {
       success: true,
       message: "Mã xác nhận đã được gửi đến email của bạn",
       expiresAt: expiresAt,
-    });
+    });transporter.sendMail(mailOptions
   } catch (error) {
     console.error("Error sending OTP:", error);
     res
