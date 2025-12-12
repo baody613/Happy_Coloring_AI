@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import {
   FaCheckCircle,
   FaHome,
@@ -15,8 +15,9 @@ import {
   FaSprayCan,
   FaPencilAlt,
   FaFillDrip,
-} from 'react-icons/fa';
-import { useAuthStore } from '@/store/authStore';
+} from "react-icons/fa";
+import { useAuthStore } from "@/store/authStore";
+import { safeLocalStorage } from "@/lib/safeStorage";
 
 export default function OrderSuccessPage() {
   const router = useRouter();
@@ -25,11 +26,11 @@ export default function OrderSuccessPage() {
 
   useEffect(() => {
     // Lấy thông tin đơn hàng từ localStorage
-    const lastOrder = localStorage.getItem('lastOrder');
+    const lastOrder = safeLocalStorage.getItem("lastOrder");
     if (lastOrder) {
       setOrderInfo(JSON.parse(lastOrder));
       // Xóa sau khi đọc
-      localStorage.removeItem('lastOrder');
+      safeLocalStorage.removeItem("lastOrder");
     }
   }, []);
 
@@ -51,13 +52,13 @@ export default function OrderSuccessPage() {
           }}
           transition={{
             delay: 0.1,
-            type: 'spring',
+            type: "spring",
             stiffness: 200,
             damping: 15,
             y: {
               repeat: Infinity,
               duration: 2,
-              ease: 'easeInOut',
+              ease: "easeInOut",
             },
           }}
           className="mb-2 -mt-4 relative"
@@ -66,42 +67,67 @@ export default function OrderSuccessPage() {
           <motion.div
             className="absolute top-8 left-12 text-5xl"
             animate={{ y: [0, -15, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
           >
             🎨
           </motion.div>
           <motion.div
             className="absolute top-8 right-12 text-4xl"
             animate={{ y: [0, -20, 0] }}
-            transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', delay: 0.3 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.2,
+              ease: "easeInOut",
+              delay: 0.3,
+            }}
           >
             🖌️
           </motion.div>
           <motion.div
             className="absolute top-1/2 left-4 -translate-y-1/2 text-4xl"
             animate={{ y: [0, -18, 0] }}
-            transition={{ repeat: Infinity, duration: 2.8, ease: 'easeInOut', delay: 0.5 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.8,
+              ease: "easeInOut",
+              delay: 0.5,
+            }}
           >
             🖼️
           </motion.div>
           <motion.div
             className="absolute top-1/2 right-4 -translate-y-1/2 text-4xl"
             animate={{ y: [0, -22, 0] }}
-            transition={{ repeat: Infinity, duration: 2.3, ease: 'easeInOut', delay: 0.7 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.3,
+              ease: "easeInOut",
+              delay: 0.7,
+            }}
           >
             🎨
           </motion.div>
           <motion.div
             className="absolute bottom-8 left-12 text-4xl"
             animate={{ y: [0, -16, 0] }}
-            transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', delay: 0.2 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.6,
+              ease: "easeInOut",
+              delay: 0.2,
+            }}
           >
             ✏️
           </motion.div>
           <motion.div
             className="absolute bottom-8 right-12 text-4xl"
             animate={{ y: [0, -19, 0] }}
-            transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut', delay: 0.6 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.4,
+              ease: "easeInOut",
+              delay: 0.6,
+            }}
           >
             💧
           </motion.div>
@@ -114,7 +140,7 @@ export default function OrderSuccessPage() {
             transition={{
               repeat: Infinity,
               duration: 5,
-              ease: 'easeInOut',
+              ease: "easeInOut",
             }}
           >
             <Image
@@ -123,8 +149,10 @@ export default function OrderSuccessPage() {
               fill
               className="object-contain"
               style={{
-                maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
-                WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
+                maskImage:
+                  "radial-gradient(circle, black 60%, transparent 100%)",
+                WebkitMaskImage:
+                  "radial-gradient(circle, black 60%, transparent 100%)",
               }}
               priority
             />
@@ -137,8 +165,12 @@ export default function OrderSuccessPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">🎉 Đặt Hàng Thành Công!</h1>
-          <p className="text-xl text-gray-600 mb-8">Cảm ơn bạn đã mua hàng tại Yu Ling Store</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            🎉 Đặt Hàng Thành Công!
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Cảm ơn bạn đã mua hàng tại Yu Ling Store
+          </p>
         </motion.div>
 
         {/* Order Info */}
@@ -159,21 +191,23 @@ export default function OrderSuccessPage() {
             <p className="flex items-start gap-2">
               <span className="text-green-500 font-bold">✓</span>
               <span>
-                Thông tin chi tiết đã được gửi qua email:{' '}
-                <strong className="text-purple-700">{orderInfo?.email || user?.email}</strong>
+                Thông tin chi tiết đã được gửi qua email:{" "}
+                <strong className="text-purple-700">
+                  {orderInfo?.email || user?.email}
+                </strong>
               </span>
             </p>
             <p className="flex items-start gap-2">
               <span className="text-green-500 font-bold">✓</span>
               <span>
-                Chúng tôi sẽ liên hệ xác nhận trong vòng{' '}
+                Chúng tôi sẽ liên hệ xác nhận trong vòng{" "}
                 <strong className="text-gray-900">24 giờ</strong>
               </span>
             </p>
             <p className="flex items-start gap-2">
               <span className="text-blue-500">🚚</span>
               <span>
-                Đơn hàng sẽ được giao đến bạn trong vòng{' '}
+                Đơn hàng sẽ được giao đến bạn trong vòng{" "}
                 <strong className="text-purple-700">3-5 ngày làm việc</strong>
               </span>
             </p>
@@ -185,17 +219,19 @@ export default function OrderSuccessPage() {
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="text-yellow-500">💰</span>
-                  Tổng giá trị đơn hàng:{' '}
+                  Tổng giá trị đơn hàng:{" "}
                   <strong className="text-purple-600">
-                    {orderInfo.totalAmount.toLocaleString('vi-VN')} VNĐ
+                    {orderInfo.totalAmount.toLocaleString("vi-VN")} VNĐ
                   </strong>
                 </p>
                 {orderInfo.voucherCode && (
                   <p className="flex items-start gap-2">
                     <span className="text-green-500">🎫</span>
-                    Đã áp dụng voucher:{' '}
-                    <strong className="text-green-600">{orderInfo.voucherCode}</strong> (Giảm{' '}
-                    {orderInfo.voucherDiscount}%)
+                    Đã áp dụng voucher:{" "}
+                    <strong className="text-green-600">
+                      {orderInfo.voucherCode}
+                    </strong>{" "}
+                    (Giảm {orderInfo.voucherDiscount}%)
                   </p>
                 )}
               </>
@@ -203,8 +239,11 @@ export default function OrderSuccessPage() {
             <p className="flex items-start gap-2">
               <span className="text-orange-500">📞</span>
               <span>
-                Hotline hỗ trợ:{' '}
-                <a href="tel:0123456789" className="text-purple-600 font-semibold hover:underline">
+                Hotline hỗ trợ:{" "}
+                <a
+                  href="tel:0123456789"
+                  className="text-purple-600 font-semibold hover:underline"
+                >
                   0123-456-789
                 </a>
               </span>
@@ -243,15 +282,18 @@ export default function OrderSuccessPage() {
           className="mt-8 pt-8 border-t border-gray-200"
         >
           <p className="text-sm text-gray-600">
-            Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:{' '}
+            Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:{" "}
             <a
               href="mailto:support@yulingstore.com"
               className="text-purple-600 font-semibold hover:underline"
             >
               support@yulingstore.com
-            </a>{' '}
-            hoặc hotline{' '}
-            <a href="tel:0123456789" className="text-purple-600 font-semibold hover:underline">
+            </a>{" "}
+            hoặc hotline{" "}
+            <a
+              href="tel:0123456789"
+              className="text-purple-600 font-semibold hover:underline"
+            >
               0123-456-789
             </a>
           </p>

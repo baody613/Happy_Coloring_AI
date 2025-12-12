@@ -54,9 +54,9 @@ app.get("/", (req, res) => {
       products: "/api/products",
       orders: "/api/orders",
       users: "/api/users",
-      admin: "/api/admin"
+      admin: "/api/admin",
     },
-    documentation: "https://github.com/baody613/Happy_Coloring_AI"
+    documentation: "https://github.com/baody613/Happy_Coloring_AI",
   });
 });
 

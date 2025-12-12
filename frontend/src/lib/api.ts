@@ -1,17 +1,18 @@
-import axios from 'axios';
-import { auth } from './firebase';
+import axios from "axios";
+import { auth } from "./firebase";
+import { safeLocalStorage, safeSessionStorage } from "./safeStorage";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add auth token to requests
 api.interceptors.request.use(
   async (config) => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         // Try to get fresh token from Firebase Auth
         const currentUser = auth.currentUser;
@@ -19,25 +20,29 @@ api.interceptors.request.use(
           const token = await currentUser.getIdToken(true); // Force refresh
 
           // Save to appropriate storage based on rememberMe
-          const rememberMe = localStorage.getItem('rememberMe') === 'true';
+          const rememberMe = safeLocalStorage.getItem("rememberMe") === "true";
           if (rememberMe) {
-            localStorage.setItem('authToken', token);
+            safeLocalStorage.setItem("authToken", token);
           } else {
-            sessionStorage.setItem('authToken', token);
+            safeSessionStorage.setItem("authToken", token);
           }
 
           config.headers.Authorization = `Bearer ${token}`;
         } else {
           // Fallback to stored token (check both storages)
-          const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+          const token =
+            safeLocalStorage.getItem("authToken") ||
+            safeSessionStorage.getItem("authToken");
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
           }
         }
       } catch (error) {
-        console.error('Error getting auth token:', error);
+        console.error("Error getting auth token:", error);
         // Fallback to stored token
-        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const token =
+          safeLocalStorage.getItem("authToken") ||
+          safeSessionStorage.getItem("authToken");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -66,11 +71,11 @@ api.interceptors.response.use(
           const token = await currentUser.getIdToken(true);
 
           // Save to appropriate storage
-          const rememberMe = localStorage.getItem('rememberMe') === 'true';
+          const rememberMe = safeLocalStorage.getItem("rememberMe") === "true";
           if (rememberMe) {
-            localStorage.setItem('authToken', token);
+            safeLocalStorage.setItem("authToken", token);
           } else {
-            sessionStorage.setItem('authToken', token);
+            safeSessionStorage.setItem("authToken", token);
           }
 
           originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -78,10 +83,10 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // Token refresh failed, user needs to login again
-        localStorage.removeItem('authToken');
-        sessionStorage.removeItem('authToken');
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+        safeLocalStorage.removeItem("authToken");
+        safeSessionStorage.removeItem("authToken");
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       }

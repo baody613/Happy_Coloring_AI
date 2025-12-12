@@ -1,66 +1,73 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
-import { FaShoppingBag, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa';
-import { Product } from '@/types';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
+import { FaShoppingBag, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
+import { Product } from "@/types";
+import toast from "react-hot-toast";
+import { safeLocalStorage } from "@/lib/safeStorage";
 
 // Mock products cho phần gợi ý
 const mockProducts: Product[] = [
   {
-    id: 'p1',
-    title: 'Tranh Phong Cảnh Núi Non',
-    description: 'Tranh tô màu phong cảnh núi non tuyệt đẹp',
-    category: 'landscape',
+    id: "p1",
+    title: "Tranh Phong Cảnh Núi Non",
+    description: "Tranh tô màu phong cảnh núi non tuyệt đẹp",
+    category: "landscape",
     price: 299000,
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200',
-    difficulty: 'medium',
-    dimensions: '40x50cm',
+    imageUrl:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200",
+    difficulty: "medium",
+    dimensions: "40x50cm",
     colors: 24,
-    status: 'active',
+    status: "active",
     sales: 150,
     rating: 4.8,
     reviews: [],
-    createdAt: '2024-01-01',
+    createdAt: "2024-01-01",
   },
   {
-    id: 'p2',
-    title: 'Tranh Hoa Anh Đào',
-    description: 'Tranh hoa anh đào lãng mạn',
-    category: 'flowers',
+    id: "p2",
+    title: "Tranh Hoa Anh Đào",
+    description: "Tranh hoa anh đào lãng mạn",
+    category: "flowers",
     price: 199000,
-    imageUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=200',
-    difficulty: 'easy',
-    dimensions: '30x40cm',
+    imageUrl:
+      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=200",
+    difficulty: "easy",
+    dimensions: "30x40cm",
     colors: 18,
-    status: 'active',
+    status: "active",
     sales: 200,
     rating: 4.9,
     reviews: [],
-    createdAt: '2024-01-02',
+    createdAt: "2024-01-02",
   },
   {
-    id: 'p3',
-    title: 'Tranh Động Vật Dễ Thương',
-    description: 'Tranh động vật đáng yêu cho bé',
-    category: 'animals',
+    id: "p3",
+    title: "Tranh Động Vật Dễ Thương",
+    description: "Tranh động vật đáng yêu cho bé",
+    category: "animals",
     price: 249000,
-    imageUrl: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=500',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200',
-    difficulty: 'easy',
-    dimensions: '35x45cm',
+    imageUrl:
+      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=500",
+    thumbnailUrl:
+      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200",
+    difficulty: "easy",
+    dimensions: "35x45cm",
     colors: 20,
-    status: 'active',
+    status: "active",
     sales: 180,
     rating: 4.7,
     reviews: [],
-    createdAt: '2024-01-03',
+    createdAt: "2024-01-03",
   },
 ];
 
@@ -81,34 +88,38 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Filter only selected items
-  const selectedCartItems = items.filter((item) => selectedItems.includes(item.product.id));
+  const selectedCartItems = items.filter((item) =>
+    selectedItems.includes(item.product.id)
+  );
   const [formData, setFormData] = useState({
-    fullName: user?.displayName || '',
-    email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    district: '',
-    ward: '',
-    note: '',
-    paymentMethod: 'cod', // cod, bank_transfer, credit_card
+    fullName: user?.displayName || "",
+    email: user?.email || "",
+    phone: "",
+    address: "",
+    city: "",
+    district: "",
+    ward: "",
+    note: "",
+    paymentMethod: "cod", // cod, bank_transfer, credit_card
   });
 
   useEffect(() => {
     if (!user) {
-      toast.error('Vui lòng đăng nhập để thanh toán!');
-      router.push('/login');
+      toast.error("Vui lòng đăng nhập để thanh toán!");
+      router.push("/login");
       return;
     }
 
     if (selectedCartItems.length === 0) {
-      toast.error('Vui lòng chọn sản phẩm để thanh toán!');
-      router.push('/cart');
+      toast.error("Vui lòng chọn sản phẩm để thanh toán!");
+      router.push("/cart");
     }
   }, [user, selectedCartItems.length, router]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -117,21 +128,26 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('Form submitted!', formData);
-    console.log('Selected items:', selectedCartItems);
+    console.log("Form submitted!", formData);
+    console.log("Selected items:", selectedCartItems);
 
     // Validation
-    if (!formData.fullName || !formData.phone || !formData.address || !formData.city) {
-      toast.error('Vui lòng điền đầy đủ thông tin!');
+    if (
+      !formData.fullName ||
+      !formData.phone ||
+      !formData.address ||
+      !formData.city
+    ) {
+      toast.error("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
     if (!/^[0-9]{10,11}$/.test(formData.phone)) {
-      toast.error('Số điện thoại không hợp lệ!');
+      toast.error("Số điện thoại không hợp lệ!");
       return;
     }
 
-    console.log('Validation passed!');
+    console.log("Validation passed!");
     setIsProcessing(true);
 
     try {
@@ -159,19 +175,19 @@ export default function CheckoutPage() {
         voucherDiscount: voucherDiscount || 0,
         paymentMethod: formData.paymentMethod,
         note: formData.note,
-        status: 'pending',
+        status: "pending",
         createdAt: new Date().toISOString(),
       };
 
       // TODO: Gửi API tạo đơn hàng
-      console.log('Order Data:', orderData);
+      console.log("Order Data:", orderData);
 
       // Giả lập API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Lưu thông tin đơn hàng vào localStorage để hiển thị ở trang success
-      localStorage.setItem(
-        'lastOrder',
+      safeLocalStorage.setItem(
+        "lastOrder",
         JSON.stringify({
           totalAmount: orderData.totalAmount,
           itemCount: selectedCartItems.length,
@@ -181,21 +197,21 @@ export default function CheckoutPage() {
         })
       );
 
-      console.log('Order data saved to localStorage');
-      console.log('Clearing selected items...');
+      console.log("Order data saved to localStorage");
+      console.log("Clearing selected items...");
 
       // Xóa các sản phẩm đã chọn khỏi giỏ hàng
       clearSelectedItems();
 
-      console.log('Redirecting to order-success page...');
+      console.log("Redirecting to order-success page...");
 
       // Chuyển hướng đến trang thông báo thành công - dùng window.location để force reload
-      window.location.href = '/order-success';
+      window.location.href = "/order-success";
 
-      console.log('Window.location.href called!');
+      console.log("Window.location.href called!");
     } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error('Có lỗi xảy ra khi đặt hàng!');
+      console.error("Checkout error:", error);
+      toast.error("Có lỗi xảy ra khi đặt hàng!");
     } finally {
       setIsProcessing(false);
     }
@@ -223,7 +239,9 @@ export default function CheckoutPage() {
               <div className="lg:col-span-2 space-y-6">
                 {/* Thông tin người nhận */}
                 <div className="bg-white rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">📋 Thông Tin Người Nhận</h2>
+                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                    📋 Thông Tin Người Nhận
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -272,7 +290,9 @@ export default function CheckoutPage() {
 
                 {/* Địa chỉ giao hàng */}
                 <div className="bg-white rounded-xl shadow-md p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">📍 Địa Chỉ Giao Hàng</h2>
+                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                    📍 Địa Chỉ Giao Hàng
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -355,7 +375,7 @@ export default function CheckoutPage() {
                         type="radio"
                         name="paymentMethod"
                         value="cod"
-                        checked={formData.paymentMethod === 'cod'}
+                        checked={formData.paymentMethod === "cod"}
                         onChange={handleInputChange}
                         className="w-5 h-5 text-purple-600"
                       />
@@ -375,13 +395,15 @@ export default function CheckoutPage() {
                         type="radio"
                         name="paymentMethod"
                         value="bank_transfer"
-                        checked={formData.paymentMethod === 'bank_transfer'}
+                        checked={formData.paymentMethod === "bank_transfer"}
                         onChange={handleInputChange}
                         className="w-5 h-5 text-purple-600"
                       />
                       <FaCreditCard className="text-blue-600 text-2xl ml-3 mr-3" />
                       <div>
-                        <div className="font-semibold text-gray-800">Chuyển Khoản Ngân Hàng</div>
+                        <div className="font-semibold text-gray-800">
+                          Chuyển Khoản Ngân Hàng
+                        </div>
                         <div className="text-sm text-gray-600">
                           Chuyển khoản qua ngân hàng (sẽ được hướng dẫn sau)
                         </div>
@@ -418,7 +440,8 @@ export default function CheckoutPage() {
                             {item.product.title}
                           </h4>
                           <p className="text-sm text-gray-600">
-                            {item.quantity} x {item.product.price.toLocaleString('vi-VN')} VNĐ
+                            {item.quantity} x{" "}
+                            {item.product.price.toLocaleString("vi-VN")} VNĐ
                           </p>
                         </div>
                       </div>
@@ -430,7 +453,7 @@ export default function CheckoutPage() {
                     <div className="flex justify-between text-gray-600">
                       <span>Tạm tính:</span>
                       <span className="font-semibold">
-                        {getDiscountedTotal().toLocaleString('vi-VN')} VNĐ
+                        {getDiscountedTotal().toLocaleString("vi-VN")} VNĐ
                       </span>
                     </div>
                     {voucherDiscount > 0 && (
@@ -441,22 +464,25 @@ export default function CheckoutPage() {
                         <span className="font-semibold">
                           -
                           {(
-                            (getDiscountedTotal() / (100 - voucherDiscount)) * 100 -
+                            (getDiscountedTotal() / (100 - voucherDiscount)) *
+                              100 -
                             getDiscountedTotal()
-                          ).toLocaleString('vi-VN')}{' '}
+                          ).toLocaleString("vi-VN")}{" "}
                           VNĐ
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between text-gray-600">
                       <span>Phí vận chuyển:</span>
-                      <span className="font-semibold text-green-600">Miễn phí</span>
+                      <span className="font-semibold text-green-600">
+                        Miễn phí
+                      </span>
                     </div>
                     <div className="border-t border-gray-200 pt-3">
                       <div className="flex justify-between text-xl font-bold text-gray-800">
                         <span>Tổng cộng:</span>
                         <span className="text-purple-600">
-                          {getDiscountedTotal().toLocaleString('vi-VN')} VNĐ
+                          {getDiscountedTotal().toLocaleString("vi-VN")} VNĐ
                         </span>
                       </div>
                     </div>
@@ -470,7 +496,10 @@ export default function CheckoutPage() {
                   >
                     {isProcessing ? (
                       <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          viewBox="0 0 24 24"
+                        >
                           <circle
                             className="opacity-25"
                             cx="12"

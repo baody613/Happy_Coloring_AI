@@ -1,21 +1,14 @@
 import express from "express";
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Cấu hình email transporter (dùng Gmail hoặc SendGrid)
-const createTransporter = () => {
-  // Sử dụng Gmail
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER, // Email của bạn
-      pass: process.env.EMAIL_PASSWORD, // App Password của Gmail
-    },
-  });
-};
+// Cấu hình SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 // Tạo mã OTP 6 số
 const generateOTP = () => {
@@ -58,11 +51,17 @@ router.post("/send-code", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Gửi email
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
+    // Gửi email qua SendGrid
+    if (!process.env.SENDGRID_API_KEY) {
+      console.error("SENDGRID_API_KEY not configured");
+      return res.status(500).json({ 
+        error: "Email service chưa được cấu hình. Vui lòng liên hệ admin." 
+      });
+    }
+
+    const msg = {
       to: email,
+      from: process.env.SENDGRID_FROM_EMAIL || "noreply@yulingstore.com",
       subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
       html: `
         <!DOCTYPE html>
@@ -140,7 +139,7 @@ router.post("/send-code", async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
 
     res.json({
       success: true,
