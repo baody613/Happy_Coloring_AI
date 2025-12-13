@@ -156,11 +156,11 @@ router.post("/send-code", async (req, res) => {
 
     res.json({
       success: true,
-      message:
-        "Mã xác nhận đã được tạo. Kiểm tra email hoặc console log để lấy mã.",
+      message: "Mã xác nhận đã được gửi. Vui lòng kiểm tra email của bạn.",
       expiresAt: expiresAt,
-      // Trả OTP trong response cho development (XÓA trong production!)
-      otp: process.env.NODE_ENV === "development" ? otp : undefined,
+      // Trả OTP trong response để test (vì Resend chỉ gửi được đến email đã đăng ký)
+      // TODO: Xóa dòng này sau khi verify domain trên Resend
+      otp: otp,
     });
   } catch (error) {
     console.error("Error sending OTP:", error);

@@ -35,9 +35,16 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await passwordResetAPI.sendCode(email);
+      const response = await passwordResetAPI.sendCode(email);
       setStep('verify');
       setError('');
+      
+      // Hiển thị OTP nếu có trong response (để test khi email không nhận được)
+      if (response.otp) {
+        console.log('🔐 OTP for testing:', response.otp);
+        alert(`Mã OTP của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`);
+      }
+      
       startResendTimer();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Có lỗi xảy ra. Vui lòng thử lại.');
@@ -98,8 +105,15 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await passwordResetAPI.sendCode(email);
+      const response = await passwordResetAPI.sendCode(email);
       setError('');
+      
+      // Hiển thị OTP nếu có trong response
+      if (response.otp) {
+        console.log('🔐 OTP for testing:', response.otp);
+        alert(`Mã OTP mới của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`);
+      }
+      
       startResendTimer();
       alert('Mã xác nhận mới đã được gửi đến email của bạn!');
     } catch (err: any) {
