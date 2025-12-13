@@ -69,18 +69,24 @@ router.post("/send-code", async (req, res) => {
     try {
       const transporter = createTransporter();
       console.log("Attempting to send email to:", email);
-      const mailOptions = {
+      
+      const sendPromise = transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Password Reset Code - Yu Ling Store",
         html: `<div style="padding:20px;max-width:600px"><h2>Password Reset</h2><p>Your verification code:</p><div style="font-size:32px;font-weight:bold;color:#667eea;padding:20px;background:#f0f0f0;text-align:center;border-radius:8px;letter-spacing:8px">${otp}</div><p>Code expires in 10 minutes</p></div>`,
-      };
-
-      const info = await transporter.sendMail(mailOptions);
+      });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Email timeout after 10 seconds')), 10000)
+      );
+      
+      const info = await Promise.race([sendPromise, timeoutPromise]);
       console.log("Email sent successfully:", info.messageId);
       emailSent = true;
     } catch (emailErr) {
       console.error("Email sending failed:", emailErr.message);
+      console.error("Full error:", emailErr);
       emailError = emailErr.message;
     }
 
