@@ -1,15 +1,20 @@
 import express from "express";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Khởi tạo Resend (chỉ khi có API key)
-let resend = null;
-if (process.env.RESEND_API_KEY) {
-  resend = new Resend(process.env.RESEND_API_KEY);
-}
+// Cấu hình email transporter (dùng Gmail)
+const createTransporter = () => {
+  return nodemailer.createTransporter({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+};
 
 // Tạo mã OTP 6 số
 const generateOTP = () => {
@@ -54,17 +59,12 @@ router.post("/send-code", async (req, res) => {
 
     console.log(`🔐 OTP for ${email}: ${otp} (expires at ${expiresAt})`);
 
-    // Gửi email qua Resend
-    try {
-      if (!resend) {
-        console.warn("⚠️ RESEND_API_KEY not configured, skipping email");
-        throw new Error("Email service chưa được cấu hình");
-      }
-
-      const { data, error } = await resend.emails.send({
-        from: "Yu Ling Store <onboarding@resend.dev>",
-        to: email,
-        subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
+    // Gửi email
+    const transporter = createTransporter();
+    const mailOptions = {
+      from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
         html: `
         <!DOCTYPE html>
         <html>
@@ -142,25 +142,15 @@ router.post("/send-code", async (req, res) => {
       });
 
       if (error) {
-        throw error;
-      }
+        `,
+    };
 
-      console.log(`✅ Email sent successfully to ${email} (ID: ${data?.id})`);
-    } catch (emailError) {
-      console.error(
-        "⚠️ Failed to send email (non-critical):",
-        emailError.message
-      );
-      // Không throw error, vẫn cho phép user dùng OTP
-    }
+    await transporter.sendMail(mailOptions);
 
     res.json({
       success: true,
-      message: "Mã xác nhận đã được gửi. Vui lòng kiểm tra email của bạn.",
+      message: "Mã xác nhận đã được gửi đến email của bạn",
       expiresAt: expiresAt,
-      // Trả OTP trong response để test (vì Resend chỉ gửi được đến email đã đăng ký)
-      // TODO: Xóa dòng này sau khi verify domain trên Resend
-      otp: otp,
     });
   } catch (error) {
     console.error("Error sending OTP:", error);
