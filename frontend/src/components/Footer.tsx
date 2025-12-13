@@ -5,11 +5,11 @@ export default function Footer() {
   return (
     <footer className="w-full bg-gradient-to-br from-purple-900 via-purple-700 to-pink-600 text-white py-8 md:py-12 mt-0 shadow-2xl">
       <div className="container mx-auto px-4 md:px-6">
-        {/* Mobile: Single Column, Desktop: 4 Columns */}
+        {/* Mobile: 2 Columns, Desktop: 4 Columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
           
-          {/* Logo & Slogan - Compact on mobile */}
-          <div className="md:col-span-1">
+          {/* Logo & Slogan - Full width on mobile */}
+          <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-2xl md:text-3xl font-bold">
                 🎨 Happy Coloring AI
@@ -33,8 +33,11 @@ export default function Footer() {
               </a>
             </div>
           </div>
+        </div>
 
-          {/* Sản phẩm - Compact spacing */}
+        {/* Products & Support - 2 columns on mobile, part of 4-col grid on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mt-6 md:mt-0">
+          {/* Sản phẩm */}
           <div>
             <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">Sản phẩm</h3>
             <ul className="space-y-2 text-sm md:text-base">
@@ -88,8 +91,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter - Simplified on mobile */}
-          <div>
+          {/* Newsletter - Full width on mobile */}
+          <div className="col-span-2 md:col-span-2">
             <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">Nhận tin</h3>
             <form className="flex flex-col gap-2">
               <input
