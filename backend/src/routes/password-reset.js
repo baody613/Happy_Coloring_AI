@@ -6,9 +6,16 @@ import { db } from "../config/firebase.js";
 const router = express.Router();
 
 const createTransporter = () => {
-  console.log('Creating email transporter with user:', process.env.EMAIL_USER);
-  return nodemailer.createTransporter({
-    host: 'smtp.gmail.com',
+  console.log("Creating email transporter with user:", process.env.EMAIL_USER);
+  console.log("Nodemailer type:", typeof nodemailer);
+  console.log("createTransporter type:", typeof nodemailer.createTransport);
+  
+  if (!nodemailer || !nodemailer.createTransport) {
+    throw new Error("Nodemailer not properly loaded");
+  }
+  
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
     port: 587,
     secure: false,
     auth: {
@@ -16,11 +23,11 @@ const createTransporter = () => {
       pass: process.env.EMAIL_PASSWORD,
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     },
     connectionTimeout: 30000,
     greetingTimeout: 30000,
-    socketTimeout: 30000
+    socketTimeout: 30000,
   });
 };
 
@@ -61,7 +68,7 @@ router.post("/send-code", async (req, res) => {
 
     try {
       const transporter = createTransporter();
-      console.log('Attempting to send email to:', email);
+      console.log("Attempting to send email to:", email);
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
@@ -70,27 +77,34 @@ router.post("/send-code", async (req, res) => {
       };
 
       const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully:', info.messageId);
+      console.log("Email sent successfully:", info.messageId);
       emailSent = true;
     } catch (emailErr) {
-      console.error('Email sending failed:', emailErr.message);
+      console.error("Email sending failed:", emailErr.message);
       emailError = emailErr.message;
     }
 
     res.json({
       success: true,
-      message: emailSent ? "Verification code sent to email" : "Code saved but email failed to send",
+      message: emailSent
+        ? "Verification code sent to email"
+        : "Code saved but email failed to send",
       expiresAt: expiresAt,
-      otp: process.env.NODE_ENV === 'production' ? (emailSent ? undefined : otp) : otp,
+      otp:
+        process.env.NODE_ENV === "production"
+          ? emailSent
+            ? undefined
+            : otp
+          : otp,
       emailSent,
-      emailError: emailSent ? undefined : emailError
+      emailError: emailSent ? undefined : emailError,
     });
   } catch (error) {
     console.error("Error sending code:", error);
     console.error("Error details:", error.message, error.code);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to send verification code",
-      details: error.message 
+      details: error.message,
     });
   }
 });
