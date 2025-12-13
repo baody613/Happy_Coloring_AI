@@ -62,26 +62,26 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Center: Search Bar */}
-            <div className="hidden md:flex items-center flex-1 max-w-xl mx-8">
+            {/* Center: Search Bar - Full width on mobile, limited on desktop */}
+            <div className="flex-1 flex items-center mx-2 md:mx-8 md:max-w-xl">
               <div className="relative w-full group">
                 <input
                   type="text"
-                  placeholder="Tìm kiếm tranh yêu thích của bạn..."
+                  placeholder="Tìm kiếm..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-6 py-3 pl-12 pr-4 rounded-full border-2 border-brand-hot-pink hover:border-brand-magenta focus:border-brand-orchid focus:outline-none focus:ring-4 ring-brand-hot-pink transition-all duration-300 text-gray-700 font-medium shadow-sm hover:shadow-md"
+                  className="w-full px-3 md:px-6 py-2 md:py-3 pl-9 md:pl-12 pr-3 md:pr-4 rounded-full border-2 border-brand-hot-pink hover:border-brand-magenta focus:border-brand-orchid focus:outline-none focus:ring-2 md:focus:ring-4 ring-brand-hot-pink transition-all duration-300 text-gray-700 text-sm md:text-base font-medium shadow-sm hover:shadow-md"
                   style={{ backgroundColor: '#FFF0F5' }}
                 />
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-medium-orchid group-focus-within:text-brand-orchid transition-colors">
-                  <FaSearch className="text-lg" />
+                <div className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 text-brand-medium-orchid group-focus-within:text-brand-orchid transition-colors">
+                  <FaSearch className="text-sm md:text-lg" />
                 </div>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-magenta transition-colors"
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-magenta transition-colors"
                   >
-                    <FaTimes />
+                    <FaTimes className="text-sm md:text-base" />
                   </button>
                 )}
               </div>
