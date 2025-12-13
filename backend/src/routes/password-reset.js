@@ -7,27 +7,13 @@ const router = express.Router();
 
 const createTransporter = () => {
   console.log("Creating email transporter with user:", process.env.EMAIL_USER);
-  console.log("Nodemailer type:", typeof nodemailer);
-  console.log("createTransporter type:", typeof nodemailer.createTransport);
-  
-  if (!nodemailer || !nodemailer.createTransport) {
-    throw new Error("Nodemailer not properly loaded");
-  }
-  
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     },
-    tls: {
-      rejectUnauthorized: false,
-    },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000,
   });
 };
 
