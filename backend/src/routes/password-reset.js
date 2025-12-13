@@ -5,8 +5,11 @@ import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Khởi tạo Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Khởi tạo Resend (chỉ khi có API key)
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 // Tạo mã OTP 6 số
 const generateOTP = () => {
@@ -53,8 +56,9 @@ router.post("/send-code", async (req, res) => {
 
     // Gửi email qua Resend
     try {
-      if (!process.env.RESEND_API_KEY) {
-        throw new Error("RESEND_API_KEY chưa được cấu hình");
+      if (!resend) {
+        console.warn("⚠️ RESEND_API_KEY not configured, skipping email");
+        throw new Error("Email service chưa được cấu hình");
       }
 
       const { data, error } = await resend.emails.send({
