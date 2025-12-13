@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { passwordResetAPI } from '@/lib/passwordResetAPI';
+import { useState } from "react";
+import Link from "next/link";
+import { passwordResetAPI } from "@/lib/passwordResetAPI";
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<'email' | 'verify' | 'reset'>('email');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [step, setStep] = useState<"email" | "verify" | "reset">("email");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
@@ -31,23 +31,25 @@ export default function ForgotPasswordPage() {
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const response = await passwordResetAPI.sendCode(email);
-      setStep('verify');
-      setError('');
-      
+      setStep("verify");
+      setError("");
+
       // Hiển thị OTP nếu có trong response (để test khi email không nhận được)
       if (response.otp) {
-        console.log('🔐 OTP for testing:', response.otp);
-        alert(`Mã OTP của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`);
+        console.log("🔐 OTP for testing:", response.otp);
+        alert(
+          `Mã OTP của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`
+        );
       }
-      
+
       startResendTimer();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -55,15 +57,15 @@ export default function ForgotPasswordPage() {
 
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       await passwordResetAPI.verifyCode(email, code);
-      setStep('reset');
-      setError('');
+      setStep("reset");
+      setError("");
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Mã xác nhận không chính xác.');
+      setError(err.response?.data?.error || "Mã xác nhận không chính xác.");
     } finally {
       setLoading(false);
     }
@@ -71,15 +73,15 @@ export default function ForgotPasswordPage() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (newPassword !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp!');
+      setError("Mật khẩu xác nhận không khớp!");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự!');
+      setError("Mật khẩu phải có ít nhất 6 ký tự!");
       return;
     }
 
@@ -89,10 +91,10 @@ export default function ForgotPasswordPage() {
       await passwordResetAPI.resetPassword(email, code, newPassword);
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = '/login';
+        window.location.href = "/login";
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -101,23 +103,25 @@ export default function ForgotPasswordPage() {
   const handleResendCode = async () => {
     if (resendTimer > 0) return;
 
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const response = await passwordResetAPI.sendCode(email);
-      setError('');
-      
+      setError("");
+
       // Hiển thị OTP nếu có trong response
       if (response.otp) {
-        console.log('🔐 OTP for testing:', response.otp);
-        alert(`Mã OTP mới của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`);
+        console.log("🔐 OTP for testing:", response.otp);
+        alert(
+          `Mã OTP mới của bạn là: ${response.otp}\n(Vì đang trong chế độ test, mã hiển thị ở đây)`
+        );
       }
-      
+
       startResendTimer();
-      alert('Mã xác nhận mới đã được gửi đến email của bạn!');
+      alert("Mã xác nhận mới đã được gửi đến email của bạn!");
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -130,23 +134,23 @@ export default function ForgotPasswordPage() {
         <div>
           <div className="text-center">
             <span className="text-6xl">
-              {step === 'email' ? '🔑' : step === 'verify' ? '📧' : '🔐'}
+              {step === "email" ? "🔑" : step === "verify" ? "📧" : "🔐"}
             </span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {step === 'email' && 'Quên Mật Khẩu'}
-            {step === 'verify' && 'Nhập Mã Xác Nhận'}
-            {step === 'reset' && 'Đặt Lại Mật Khẩu'}
+            {step === "email" && "Quên Mật Khẩu"}
+            {step === "verify" && "Nhập Mã Xác Nhận"}
+            {step === "reset" && "Đặt Lại Mật Khẩu"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {step === 'email' && 'Nhập email để nhận mã xác nhận 6 số'}
-            {step === 'verify' && 'Mã OTP đã được gửi đến email của bạn'}
-            {step === 'reset' && 'Nhập mật khẩu mới của bạn'}
+            {step === "email" && "Nhập email để nhận mã xác nhận 6 số"}
+            {step === "verify" && "Mã OTP đã được gửi đến email của bạn"}
+            {step === "reset" && "Nhập mật khẩu mới của bạn"}
           </p>
         </div>
 
         {/* Step 1: Email Form */}
-        {step === 'email' && (
+        {step === "email" && (
           <form className="mt-8 space-y-6" onSubmit={handleSendCode}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
@@ -155,7 +159,10 @@ export default function ForgotPasswordPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email
               </label>
               <input
@@ -177,7 +184,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Đang gửi mã...' : 'Gửi Mã OTP'}
+                {loading ? "Đang gửi mã..." : "Gửi Mã OTP"}
               </button>
             </div>
 
@@ -189,7 +196,7 @@ export default function ForgotPasswordPage() {
                 ← Quay lại đăng nhập
               </Link>
               <p className="text-sm text-gray-600">
-                Chưa có tài khoản?{' '}
+                Chưa có tài khoản?{" "}
                 <Link
                   href="/register"
                   className="font-medium text-purple-600 hover:text-purple-500"
@@ -202,7 +209,7 @@ export default function ForgotPasswordPage() {
         )}
 
         {/* Step 2: Verify OTP */}
-        {step === 'verify' && (
+        {step === "verify" && (
           <form className="mt-8 space-y-6" onSubmit={handleVerifyCode}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
@@ -213,11 +220,16 @@ export default function ForgotPasswordPage() {
             <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
               📧 Mã OTP 6 số đã được gửi đến: <strong>{email}</strong>
               <br />
-              <span className="text-xs">Vui lòng kiểm tra hộp thư và spam folder.</span>
+              <span className="text-xs">
+                Vui lòng kiểm tra hộp thư và spam folder.
+              </span>
             </div>
 
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="code"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Mã OTP (6 số)
               </label>
               <input
@@ -227,11 +239,13 @@ export default function ForgotPasswordPage() {
                 required
                 maxLength={6}
                 value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                 className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-center text-2xl tracking-widest"
                 placeholder="000000"
               />
-              <p className="mt-1 text-xs text-gray-500 text-center">Mã có hiệu lực trong 10 phút</p>
+              <p className="mt-1 text-xs text-gray-500 text-center">
+                Mã có hiệu lực trong 10 phút
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -240,7 +254,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading || code.length !== 6}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Đang xác thực...' : 'Xác Nhận Mã'}
+                {loading ? "Đang xác thực..." : "Xác Nhận Mã"}
               </button>
 
               <button
@@ -249,15 +263,17 @@ export default function ForgotPasswordPage() {
                 disabled={resendTimer > 0 || loading}
                 className="w-full py-3 px-4 border border-purple-600 text-purple-600 font-medium rounded-lg hover:bg-purple-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {resendTimer > 0 ? `Gửi lại sau ${resendTimer}s` : '↻ Gửi Lại Mã'}
+                {resendTimer > 0
+                  ? `Gửi lại sau ${resendTimer}s`
+                  : "↻ Gửi Lại Mã"}
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  setStep('email');
-                  setCode('');
-                  setError('');
+                  setStep("email");
+                  setCode("");
+                  setError("");
                 }}
                 className="w-full py-3 px-4 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -268,7 +284,7 @@ export default function ForgotPasswordPage() {
         )}
 
         {/* Step 3: Reset Password */}
-        {step === 'reset' && (
+        {step === "reset" && (
           <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
@@ -278,7 +294,8 @@ export default function ForgotPasswordPage() {
 
             {success && (
               <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg text-sm font-medium">
-                🎉 Đặt lại mật khẩu thành công! Đang chuyển đến trang đăng nhập...
+                🎉 Đặt lại mật khẩu thành công! Đang chuyển đến trang đăng
+                nhập...
               </div>
             )}
 
@@ -287,7 +304,10 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Mật Khẩu Mới
               </label>
               <input
@@ -328,7 +348,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading || success}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Đang đặt lại mật khẩu...' : 'Đặt Lại Mật Khẩu'}
+                {loading ? "Đang đặt lại mật khẩu..." : "Đặt Lại Mật Khẩu"}
               </button>
             </div>
 
