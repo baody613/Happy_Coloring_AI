@@ -56,22 +56,34 @@ router.post("/send-code", async (req, res) => {
       createdAt: new Date(),
     });
 
-    const transporter = createTransporter();
-    console.log('Attempting to send email to:', email);
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Password Reset Code - Yu Ling Store",
-      html: `<div style="padding:20px;max-width:600px"><h2>Password Reset</h2><p>Your verification code:</p><div style="font-size:32px;font-weight:bold;color:#667eea;padding:20px;background:#f0f0f0;text-align:center;border-radius:8px;letter-spacing:8px">${otp}</div><p>Code expires in 10 minutes</p></div>`,
-    };
+    let emailSent = false;
+    let emailError = null;
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
+    try {
+      const transporter = createTransporter();
+      console.log('Attempting to send email to:', email);
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Password Reset Code - Yu Ling Store",
+        html: `<div style="padding:20px;max-width:600px"><h2>Password Reset</h2><p>Your verification code:</p><div style="font-size:32px;font-weight:bold;color:#667eea;padding:20px;background:#f0f0f0;text-align:center;border-radius:8px;letter-spacing:8px">${otp}</div><p>Code expires in 10 minutes</p></div>`,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully:', info.messageId);
+      emailSent = true;
+    } catch (emailErr) {
+      console.error('Email sending failed:', emailErr.message);
+      emailError = emailErr.message;
+    }
 
     res.json({
       success: true,
-      message: "Verification code sent to email",
+      message: emailSent ? "Verification code sent to email" : "Code saved but email failed to send",
       expiresAt: expiresAt,
+      otp: process.env.NODE_ENV === 'production' ? (emailSent ? undefined : otp) : otp,
+      emailSent,
+      emailError: emailSent ? undefined : emailError
     });
   } catch (error) {
     console.error("Error sending code:", error);
