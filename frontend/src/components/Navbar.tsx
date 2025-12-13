@@ -88,16 +88,16 @@ export default function Navbar() {
             </div>
 
             {/* Right Side: Cart + User Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               {/* Shopping Cart - Always visible */}
               <Link
                 href="/cart"
-                className="relative p-3 hover:bg-opacity-80 rounded-full transition-all"
+                className="relative p-2 md:p-3 hover:bg-opacity-80 rounded-full transition-all"
                 style={{ backgroundColor: '#FFE4F0' }}
               >
-                <FaShoppingCart className="text-brand-magenta text-2xl" />
+                <FaShoppingCart className="text-brand-magenta text-xl md:text-2xl" />
                 {getTotalItems() > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center">
                     {getTotalItems()}
                   </span>
                 )}
@@ -106,14 +106,14 @@ export default function Navbar() {
               {user ? (
                 <>
                   <span
-                    className="text-brand-orchid font-semibold px-4 py-2 rounded whitespace-nowrap"
+                    className="hidden lg:block text-brand-orchid font-semibold px-4 py-2 rounded whitespace-nowrap"
                     style={{ backgroundColor: '#F5E6FF' }}
                   >
                     Xin chào {user.displayName || user.email}!
                   </span>
                   <Link
                     href={isAdmin(user.email) ? '/admin' : '/profile'}
-                    className="relative flex items-center justify-center w-12 h-12 rounded-full font-bold text-2xl transition-all duration-300 transform hover:scale-110 hover:rotate-12 shadow-lg hover:shadow-xl"
+                    className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full font-bold text-xl md:text-2xl transition-all duration-300 transform hover:scale-110 hover:rotate-12 shadow-lg hover:shadow-xl"
                     style={{
                       background: 'linear-gradient(135deg, #E6007A 0%, #9932CC 50%, #8A2BE2 100%)',
                       color: 'white',
@@ -127,13 +127,20 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="relative px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 whitespace-nowrap"
+                    className="hidden sm:block relative px-3 md:px-6 py-2 md:py-2.5 rounded-lg font-semibold text-sm md:text-base text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 whitespace-nowrap"
                   >
                     Đăng Nhập
                   </Link>
                   <Link
+                    href="/login"
+                    className="sm:hidden relative p-2 rounded-full font-bold text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg"
+                    title="Đăng nhập"
+                  >
+                    <FaUser className="text-lg" />
+                  </Link>
+                  <Link
                     href="/register"
-                    className="relative px-6 py-2.5 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 whitespace-nowrap"
+                    className="hidden md:block relative px-3 md:px-6 py-2 md:py-2.5 rounded-lg font-semibold text-sm md:text-base text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 whitespace-nowrap"
                   >
                     Đăng Ký
                   </Link>
