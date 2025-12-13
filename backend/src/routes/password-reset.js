@@ -1,26 +1,12 @@
 import express from "express";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Tạo transporter cho Gmail
-const createTransporter = () => {
-  const emailPassword = process.env.EMAIL_APP_PASSWORD || process.env.EMAIL_PASSWORD;
-  
-  if (!process.env.EMAIL_USER || !emailPassword) {
-    throw new Error("EMAIL_USER và EMAIL_PASSWORD/EMAIL_APP_PASSWORD chưa được cấu hình");
-  }
-  
-  return nodemailer.createTransporter({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: emailPassword,
-    },
-  });
-}
+// Khởi tạo Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Tạo mã OTP 6 số
 const generateOTP = () => {
@@ -65,11 +51,14 @@ router.post("/send-code", async (req, res) => {
 
     console.log(`🔐 OTP for ${email}: ${otp} (expires at ${expiresAt})`);
 
-    // Thử gửi email (không bắt buộc phải thành công)
+    // Gửi email qua Resend
     try {
-      const transporter = createTransporter();
-      const mailOptions = {
-        from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
+      if (!process.env.RESEND_API_KEY) {
+        throw new Error("RESEND_API_KEY chưa được cấu hình");
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: "Yu Ling Store <onboarding@resend.dev>",
         to: email,
         subject: "Mã Xác Nhận Đặt Lại Mật Khẩu - Yu Ling Store",
         html: `
@@ -146,38 +135,44 @@ router.post("/send-code", async (req, res) => {
         </body>
         </html>
       `,
-      };
+      });
 
-      await transporter.sendMail(mailOptions);
-      console.log(`✅ Email sent successfully to ${email}`);
+      if (error) {
+        throw error;
+      }
+
+      console.log(`✅ Email sent successfully to ${email} (ID: ${data?.id})`);
     } catch (emailError) {
-      console.error("⚠️ Failed to send email (non-critical):", emailError.message);
+      console.error(
+        "⚠️ Failed to send email (non-critical):",
+        emailError.message
+      );
       // Không throw error, vẫn cho phép user dùng OTP
     }
 
     res.json({
       success: true,
-      message: "Mã xác nhận đã được tạo. Kiểm tra email hoặc console log để lấy mã.",
+      message:
+        "Mã xác nhận đã được tạo. Kiểm tra email hoặc console log để lấy mã.",
       expiresAt: expiresAt,
       // Trả OTP trong response cho development (XÓA trong production!)
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+      otp: process.env.NODE_ENV === "development" ? otp : undefined,
     });
   } catch (error) {
     console.error("Error sending OTP:", error);
-    
+
     // Xóa OTP nếu có lỗi
     try {
       await db.collection("password_reset_codes").doc(email).delete();
     } catch (deleteError) {
       console.error("Failed to cleanup OTP:", deleteError);
     }
-    
-    res
-      .status(500)
-      .json({ 
-        error: "Không thể xử lý yêu cầu. Vui lòng thử lại.",
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
+
+    res.status(500).json({
+      error: "Không thể xử lý yêu cầu. Vui lòng thử lại.",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 });
 
