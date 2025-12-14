@@ -69,15 +69,15 @@ router.post("/send-code", async (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
       <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px;">
+        <div style="background: #F6E8DF; padding: 40px 20px;">
           <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
             
             <!-- Header -->
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">
+            <div style="background: #F6E8DF; padding: 30px; text-align: center;">
+              <h1 style="color: #333; margin: 0; font-size: 28px; font-weight: bold;">
                 🔐 Đặt Lại Mật Khẩu
               </h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+              <p style="color: #555; margin: 10px 0 0 0; font-size: 16px;">
                 Yu Ling Store - Happy Coloring with AI
               </p>
             </div>
