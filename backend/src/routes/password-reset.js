@@ -73,11 +73,11 @@ router.post("/send-code", async (req, res) => {
           <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
             
             <!-- Header -->
-            <div style="background: #F6E8DF; padding: 30px; text-align: center;">
-              <h1 style="color: #333; margin: 0; font-size: 28px; font-weight: bold;">
+            <div style="background: #3E3C6E; padding: 30px; text-align: center; border-radius: 16px 16px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">
                 🔐 Đặt Lại Mật Khẩu
               </h1>
-              <p style="color: #555; margin: 10px 0 0 0; font-size: 16px;">
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
                 Yu Ling Store - Happy Coloring with AI
               </p>
             </div>
@@ -93,25 +93,25 @@ router.post("/send-code", async (req, res) => {
               </p>
 
               <!-- OTP Box -->
-              <div style="background: #1a1a2e; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
-                <div style="color: #a8b3ff; font-size: 48px; font-weight: bold; letter-spacing: 12px; font-family: 'Courier New', monospace;">
+              <div style="background: linear-gradient(135deg, #FE979B 0%, #FEAE97 100%); border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0; box-shadow: 0 4px 15px rgba(254, 151, 155, 0.3);">
+                <div style="color: white; font-size: 48px; font-weight: bold; letter-spacing: 12px; font-family: 'Courier New', monospace; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
                   ${otp}
                 </div>
               </div>
 
               <!-- Info Box -->
-              <div style="background: #f8f9ff; border-radius: 8px; padding: 20px; margin: 25px 0;">
+              <div style="background: #FEAE97; background: linear-gradient(135deg, rgba(254, 174, 151, 0.15) 0%, rgba(246, 232, 223, 0.3) 100%); border-radius: 8px; padding: 20px; margin: 25px 0; border-left: 4px solid #FE979B;">
                 <p style="margin: 0 0 10px 0; color: #555; font-size: 14px;">
-                  ⏰ <strong>Mã có hiệu lực trong:</strong> 10 phút
+                  ⏰ <strong style="color: #3E3C6E;">Mã có hiệu lực trong:</strong> 10 phút
                 </p>
                 <p style="margin: 0; color: #555; font-size: 14px;">
-                  📧 <strong>Email:</strong> <span style="color: #667eea;">${email}</span>
+                  📧 <strong style="color: #3E3C6E;">Email:</strong> <span style="color: #FE979B; font-weight: 600;">${email}</span>
                 </p>
               </div>
 
               <!-- Notes -->
-              <div style="margin-top: 30px;">
-                <p style="color: #333; font-size: 15px; font-weight: bold; margin: 0 0 15px 0;">
+              <div style="margin-top: 30px; padding: 20px; background: #F6E8DF; border-radius: 8px;">
+                <p style="color: #3E3C6E; font-size: 15px; font-weight: bold; margin: 0 0 15px 0;">
                   Lưu ý:
                 </p>
                 <ul style="color: #555; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
@@ -123,11 +123,11 @@ router.post("/send-code", async (req, res) => {
             </div>
 
             <!-- Footer -->
-            <div style="background: #f8f9ff; padding: 25px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">
+            <div style="background: #3E3C6E; padding: 25px 30px; text-align: center; border-radius: 0 0 16px 16px;">
+              <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0; line-height: 1.6;">
                 Email này được gửi tự động từ hệ thống. Vui lòng không trả lời email này.
               </p>
-              <p style="color: #999; font-size: 13px; margin: 10px 0 0 0;">
+              <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 10px 0 0 0;">
                 © 2025 Yu Ling Store. All rights reserved.
               </p>
             </div>
