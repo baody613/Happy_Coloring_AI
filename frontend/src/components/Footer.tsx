@@ -1,5 +1,5 @@
 // Simple Footer component for your app
-'use client';
+"use client";
 
 export default function Footer() {
   return (
@@ -7,7 +7,6 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         {/* Mobile: 2 Columns, Desktop: 4 Columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
-          
           {/* Logo & Slogan - Full width on mobile */}
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
@@ -19,16 +18,32 @@ export default function Footer() {
               Nền tảng tranh tô màu số hóa & AI hiện đại
             </p>
             <div className="flex gap-3">
-              <a href="#" className="hover:text-yellow-300 transition text-lg md:text-xl" aria-label="Facebook">
+              <a
+                href="#"
+                className="hover:text-yellow-300 transition text-lg md:text-xl"
+                aria-label="Facebook"
+              >
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#" className="hover:text-blue-400 transition text-lg md:text-xl" aria-label="Twitter">
+              <a
+                href="#"
+                className="hover:text-blue-400 transition text-lg md:text-xl"
+                aria-label="Twitter"
+              >
                 <i className="fab fa-twitter"></i>
               </a>
-              <a href="#" className="hover:text-pink-400 transition text-lg md:text-xl" aria-label="Instagram">
+              <a
+                href="#"
+                className="hover:text-pink-400 transition text-lg md:text-xl"
+                aria-label="Instagram"
+              >
                 <i className="fab fa-instagram"></i>
               </a>
-              <a href="#" className="hover:text-red-500 transition text-lg md:text-xl" aria-label="YouTube">
+              <a
+                href="#"
+                className="hover:text-red-500 transition text-lg md:text-xl"
+                aria-label="YouTube"
+              >
                 <i className="fab fa-youtube"></i>
               </a>
             </div>
@@ -39,7 +54,9 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mt-6 md:mt-0">
           {/* Sản phẩm */}
           <div>
-            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">Sản phẩm</h3>
+            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">
+              Sản phẩm
+            </h3>
             <ul className="space-y-2 text-sm md:text-base">
               <li>
                 <a href="/gallery" className="hover:text-yellow-300 transition">
@@ -47,7 +64,10 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/generate" className="hover:text-yellow-300 transition">
+                <a
+                  href="/generate"
+                  className="hover:text-yellow-300 transition"
+                >
                   Tạo tranh AI
                 </a>
               </li>
@@ -66,7 +86,9 @@ export default function Footer() {
 
           {/* Hỗ trợ - Compact spacing */}
           <div>
-            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">Hỗ trợ</h3>
+            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">
+              Hỗ trợ
+            </h3>
             <ul className="space-y-2 text-sm md:text-base">
               <li>
                 <a href="#" className="hover:text-yellow-300 transition">
@@ -93,7 +115,9 @@ export default function Footer() {
 
           {/* Newsletter - Full width on mobile */}
           <div className="col-span-2 md:col-span-2">
-            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">Nhận tin</h3>
+            <h3 className="font-semibold text-base md:text-lg mb-3 uppercase tracking-wide">
+              Nhận tin
+            </h3>
             <form className="flex flex-col gap-2">
               <input
                 type="email"
@@ -115,7 +139,8 @@ export default function Footer() {
 
         {/* Copyright - Smaller padding */}
         <div className="mt-6 md:mt-8 pt-4 border-t border-white/20 text-center text-xs opacity-70">
-          &copy; {new Date().getFullYear()} Happy Coloring AI. All rights reserved.
+          &copy; {new Date().getFullYear()} Happy Coloring AI. All rights
+          reserved.
         </div>
       </div>
     </footer>

@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSearch } from 'react-icons/fa';
-import { useAuthStore } from '@/store/authStore';
-import { useCartStore } from '@/store/cartStore';
-import { isAdmin } from '@/lib/adminConfig';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  FaShoppingCart,
+  FaUser,
+  FaBars,
+  FaTimes,
+  FaSearch,
+} from "react-icons/fa";
+import { useAuthStore } from "@/store/authStore";
+import { useCartStore } from "@/store/cartStore";
+import { isAdmin } from "@/lib/adminConfig";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const { user, signOut } = useAuthStore();
   const { getTotalItems } = useCartStore();
 
@@ -18,7 +24,7 @@ export default function Navbar() {
     try {
       await signOut();
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
     }
   };
 
@@ -53,7 +59,8 @@ export default function Navbar() {
                     className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent block store-name"
                     style={{
                       fontFamily: "'Pacifico', cursive",
-                      backgroundImage: 'linear-gradient(to right, #9400D3, #E6007A, #8A2BE2)',
+                      backgroundImage:
+                        "linear-gradient(to right, #9400D3, #E6007A, #8A2BE2)",
                     }}
                   >
                     Yu Ling Store
@@ -71,14 +78,14 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-3 md:px-6 py-2 md:py-3 pl-9 md:pl-12 pr-3 md:pr-4 rounded-full border-2 border-brand-hot-pink hover:border-brand-magenta focus:border-brand-orchid focus:outline-none focus:ring-2 md:focus:ring-4 ring-brand-hot-pink transition-all duration-300 text-gray-700 text-sm md:text-base font-medium shadow-sm hover:shadow-md"
-                  style={{ backgroundColor: '#FFF0F5' }}
+                  style={{ backgroundColor: "#FFF0F5" }}
                 />
                 <div className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 text-brand-medium-orchid group-focus-within:text-brand-orchid transition-colors">
                   <FaSearch className="text-sm md:text-lg" />
                 </div>
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => setSearchQuery("")}
                     className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-magenta transition-colors"
                   >
                     <FaTimes className="text-sm md:text-base" />
@@ -93,7 +100,7 @@ export default function Navbar() {
               <Link
                 href="/cart"
                 className="relative p-2 md:p-3 hover:bg-opacity-80 rounded-full transition-all"
-                style={{ backgroundColor: '#FFE4F0' }}
+                style={{ backgroundColor: "#FFE4F0" }}
               >
                 <FaShoppingCart className="text-brand-magenta text-xl md:text-2xl" />
                 {getTotalItems() > 0 && (
@@ -107,20 +114,21 @@ export default function Navbar() {
                 <>
                   <span
                     className="hidden lg:block text-brand-orchid font-semibold px-4 py-2 rounded whitespace-nowrap"
-                    style={{ backgroundColor: '#F5E6FF' }}
+                    style={{ backgroundColor: "#F5E6FF" }}
                   >
                     Xin chào {user.displayName || user.email}!
                   </span>
                   <Link
-                    href={isAdmin(user.email) ? '/admin' : '/profile'}
+                    href={isAdmin(user.email) ? "/admin" : "/profile"}
                     className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full font-bold text-xl md:text-2xl transition-all duration-300 transform hover:scale-110 hover:rotate-12 shadow-lg hover:shadow-xl"
                     style={{
-                      background: 'linear-gradient(135deg, #E6007A 0%, #9932CC 50%, #8A2BE2 100%)',
-                      color: 'white',
+                      background:
+                        "linear-gradient(135deg, #E6007A 0%, #9932CC 50%, #8A2BE2 100%)",
+                      color: "white",
                     }}
-                    title={isAdmin(user.email) ? 'Quản Trị Admin' : 'Tài Khoản'}
+                    title={isAdmin(user.email) ? "Quản Trị Admin" : "Tài Khoản"}
                   >
-                    {isAdmin(user.email) ? '⚙️' : '👤'}
+                    {isAdmin(user.email) ? "⚙️" : "👤"}
                   </Link>
                 </>
               ) : (

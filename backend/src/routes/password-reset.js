@@ -1,20 +1,30 @@
 import express from "express";
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-const createTransporter = () => {
-  console.log("Creating email transporter with user:", process.env.EMAIL_USER);
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+// Configure SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// Function to send email via SendGrid
+const sendEmailViaSendGrid = async (to, subject, htmlContent) => {
+  const msg = {
+    to: to,
+    from: process.env.EMAIL_USER || "baody613@gmail.com",
+    subject: subject,
+    html: htmlContent,
+  };
+
+  try {
+    const result = await sgMail.send(msg);
+    console.log("✅ Email sent successfully via SendGrid to:", to);
+    return result;
+  } catch (error) {
+    console.error("❌ SendGrid error:", error.response?.body || error.message);
+    throw error;
+  }
 };
 
 const generateOTP = () => {
@@ -49,27 +59,39 @@ router.post("/send-code", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Try to send email in background (non-blocking)
-    const transporter = createTransporter();
-    console.log("Attempting to send email to:", email);
-    transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Password Reset Code - Yu Ling Store",
-      html: `<div style="padding:20px;max-width:600px"><h2>Password Reset</h2><p>Your verification code:</p><div style="font-size:32px;font-weight:bold;color:#667eea;padding:20px;background:#f0f0f0;text-align:center;border-radius:8px;letter-spacing:8px">${otp}</div><p>Code expires in 10 minutes</p></div>`,
-    }).then(info => {
-      console.log("Email sent successfully:", info.messageId);
-    }).catch(err => {
-      console.error("Email failed (non-blocking):", err.message);
-    });
+    // Send email via SendGrid
+    console.log("📧 Sending password reset code to:", email);
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333;">Password Reset - Yu Ling Store</h2>
+        <p style="color: #666;">You requested to reset your password. Use the verification code below:</p>
+        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+          <div style="font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px;">${otp}</div>
+        </div>
+        <p style="color: #666;">This code will expire in 10 minutes.</p>
+        <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore this email.</p>
+      </div>
+    `;
 
-    // Return immediately with OTP (Gmail SMTP often blocked on cloud hosting)
-    res.json({
-      success: true,
-      message: "Verification code generated. Check email or use code below.",
-      expiresAt: expiresAt,
-      otp: otp,
-    });
+    try {
+      await sendEmailViaSendGrid(
+        email,
+        "Password Reset Code - Yu Ling Store",
+        htmlContent
+      );
+
+      res.json({
+        success: true,
+        message: "Verification code has been sent to your email",
+        expiresAt: expiresAt,
+      });
+    } catch (emailError) {
+      console.error("❌ Failed to send email:", emailError);
+      return res.status(500).json({
+        error: "Failed to send verification code",
+        details: "Email service error. Please try again later.",
+      });
+    }
   } catch (error) {
     console.error("Error sending code:", error);
     console.error("Error details:", error.message, error.code);
