@@ -62,15 +62,80 @@ router.post("/send-code", async (req, res) => {
     // Send email via SendGrid
     console.log("📧 Sending password reset code to:", email);
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #333;">Password Reset - Yu Ling Store</h2>
-        <p style="color: #666;">You requested to reset your password. Use the verification code below:</p>
-        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-          <div style="font-size: 36px; font-weight: bold; color: #667eea; letter-spacing: 8px;">${otp}</div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">
+                🔐 Đặt Lại Mật Khẩu
+              </h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">
+                Yu Ling Store - Happy Coloring with AI
+              </p>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 40px 30px;">
+              <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Xin chào,
+              </p>
+              
+              <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 30px 0;">
+                Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình. Vui lòng sử dụng mã xác nhận bên dưới:
+              </p>
+
+              <!-- OTP Box -->
+              <div style="background: #1a1a2e; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
+                <div style="color: #a8b3ff; font-size: 48px; font-weight: bold; letter-spacing: 12px; font-family: 'Courier New', monospace;">
+                  ${otp}
+                </div>
+              </div>
+
+              <!-- Info Box -->
+              <div style="background: #f8f9ff; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <p style="margin: 0 0 10px 0; color: #555; font-size: 14px;">
+                  ⏰ <strong>Mã có hiệu lực trong:</strong> 10 phút
+                </p>
+                <p style="margin: 0; color: #555; font-size: 14px;">
+                  📧 <strong>Email:</strong> <span style="color: #667eea;">${email}</span>
+                </p>
+              </div>
+
+              <!-- Notes -->
+              <div style="margin-top: 30px;">
+                <p style="color: #333; font-size: 15px; font-weight: bold; margin: 0 0 15px 0;">
+                  Lưu ý:
+                </p>
+                <ul style="color: #555; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+                  <li>Không chia sẻ mã này với bất kỳ ai</li>
+                  <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này</li>
+                  <li>Mã chỉ được sử dụng một lần</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background: #f8f9ff; padding: 25px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">
+                Email này được gửi tự động từ hệ thống. Vui lòng không trả lời email này.
+              </p>
+              <p style="color: #999; font-size: 13px; margin: 10px 0 0 0;">
+                © 2025 Yu Ling Store. All rights reserved.
+              </p>
+            </div>
+
+          </div>
         </div>
-        <p style="color: #666;">This code will expire in 10 minutes.</p>
-        <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore this email.</p>
-      </div>
+      </body>
+      </html>
     `;
 
     try {
