@@ -9,7 +9,11 @@ router.post("/", async (req, res) => {
   try {
     const { message } = req.body;
 
-    if (!message || typeof message !== "string" || message.trim().length === 0) {
+    if (
+      !message ||
+      typeof message !== "string" ||
+      message.trim().length === 0
+    ) {
       return sendError(res, "Message is required", 400);
     }
 

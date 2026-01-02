@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
 import { isAdmin } from '@/lib/adminConfig';
 import { adminAPI } from '@/lib/adminAPI';
+import { uploadProductImage, validateImageFile } from '@/lib/uploadHelpers';
 
 interface Product {
   id: string;
@@ -26,6 +27,7 @@ export default function AdminProductsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [priceDisplay, setPriceDisplay] = useState('');
   const [formData, setFormData] = useState<{
     title: string;
@@ -80,47 +82,34 @@ export default function AdminProductsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Vui lòng chọn file hình ảnh!');
-      return;
-    }
-
-    // Validate file size (max 5MB for ImgBB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Kích thước ảnh không được vượt quá 5MB!');
+    // Validate file
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      alert(validation.error);
       return;
     }
 
     try {
       setUploadingImage(true);
+      setUploadProgress(0);
 
-      // Upload to ImgBB (Free image hosting)
-      const uploadFormData = new FormData();
-      uploadFormData.append('image', file);
+      // Upload to Firebase Storage
+      const imageUrl = await uploadProductImage(
+        file,
+        editingProduct?.id, // Use product ID if editing
+        (progress) => {
+          setUploadProgress(Math.round(progress));
+        }
+      );
 
-      // ImgBB API key from environment
-      const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY || '9c3a8f6d4e8c8b5a8e4f9d6b5c8a7e9f';
-
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: 'POST',
-        body: uploadFormData,
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const imageUrl = data.data.url;
-        setFormData((prev) => ({ ...prev, imageUrl, thumbnailUrl: imageUrl }));
-        alert('✅ Tải ảnh lên thành công!');
-      } else {
-        throw new Error('Upload failed');
-      }
+      setFormData((prev) => ({ ...prev, imageUrl, thumbnailUrl: imageUrl }));
+      alert('✅ Tải ảnh lên Firebase Storage thành công!');
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('❌ Có lỗi khi tải ảnh lên! Vui lòng nhập URL thay thế.');
+      alert('❌ Có lỗi khi tải ảnh lên! ' + (error as Error).message);
     } finally {
       setUploadingImage(false);
+      setUploadProgress(0);
     }
   };
 
@@ -310,19 +299,24 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Hình Ảnh Sản Phẩm *
+                    Hình Ảnh Sản Phẩm * 
+                    <span className="text-xs text-gray-500 ml-2">(JPG, PNG, WebP - Max 5MB)</span>
                   </label>
                   <div className="space-y-3">
                     {/* Upload Button */}
                     <div className="flex gap-3">
                       <label className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:shadow-lg text-white rounded-lg font-semibold transition-all transform hover:scale-105">
+                        <div className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FE979B] to-[#FEAE97] hover:shadow-lg text-white rounded-lg font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
                           <span>📁</span>
-                          <span>{uploadingImage ? 'Đang tải...' : 'Chọn Ảnh Từ Máy Tính'}</span>
+                          <span>
+                            {uploadingImage 
+                              ? `Đang tải... ${uploadProgress}%` 
+                              : '🔥 Tải Ảnh Lên Firebase Storage'}
+                          </span>
                         </div>
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           onChange={handleImageUpload}
                           disabled={uploadingImage}
                           className="hidden"
@@ -332,6 +326,16 @@ export default function AdminProductsPage() {
                       <div className="flex-1"></div>
                     </div>
 
+                    {/* Progress Bar */}
+                    {uploadingImage && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-gradient-to-r from-[#FE979B] to-[#FEAE97] h-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    )}
+
                     {/* URL Input */}
                     <input
                       type="text"
@@ -339,13 +343,14 @@ export default function AdminProductsPage() {
                       value={formData.imageUrl}
                       onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                       placeholder="Hoặc nhập URL hình ảnh (https://...)"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE979B] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
+                      disabled={uploadingImage}
                     />
 
                     {/* Image Preview */}
                     {formData.imageUrl && (
                       <div className="mt-3 p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">Xem trước:</p>
+                        <p className="text-sm font-semibold text-gray-700 mb-2">✨ Xem trước:</p>
                         <img
                           src={formData.imageUrl}
                           alt="Preview"
@@ -355,6 +360,11 @@ export default function AdminProductsPage() {
                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3EKh%C3%B4ng t%E1%BA%A3i %C4%91%C6%B0%E1%BB%A3c%3C/text%3E%3C/svg%3E';
                           }}
                         />
+                        <p className="text-xs text-gray-500 mt-2 break-all">
+                          {formData.imageUrl.includes('firebasestorage') 
+                            ? '🔥 Lưu trên Firebase Storage' 
+                            : '🌐 URL bên ngoài'}
+                        </p>
                       </div>
                     )}
                   </div>

@@ -5,10 +5,19 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
-import { FaShoppingBag, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
+import { auth } from "@/lib/firebase";
+import {
+  FaShoppingBag,
+  FaCreditCard,
+  FaMoneyBillWave,
+  FaMobile,
+} from "react-icons/fa";
+import { SiVisa } from "react-icons/si";
 import { Product } from "@/types";
 import toast from "react-hot-toast";
 import { safeLocalStorage } from "@/lib/safeStorage";
+import { createPayment } from "@/lib/paymentAPI";
+import api from "@/lib/api";
 
 // Mock products cho phần gợi ý
 const mockProducts: Product[] = [
@@ -104,6 +113,9 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
+    // Không redirect khi đang xử lý thanh toán
+    if (isProcessing) return;
+
     if (!user) {
       toast.error("Vui lòng đăng nhập để thanh toán!");
       router.push("/login");
@@ -114,7 +126,7 @@ export default function CheckoutPage() {
       toast.error("Vui lòng chọn sản phẩm để thanh toán!");
       router.push("/cart");
     }
-  }, [user, selectedCartItems.length, router]);
+  }, [user, selectedCartItems.length, router, isProcessing]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -179,16 +191,63 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
-      // TODO: Gửi API tạo đơn hàng
       console.log("Order Data:", orderData);
 
-      // Giả lập API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Gửi API tạo đơn hàng
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("User not authenticated");
+      }
+      
+      const token = await currentUser.getIdToken();
 
-      // Lưu thông tin đơn hàng vào localStorage để hiển thị ở trang success
+      const orderResponse = await api.post("/orders", orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const createdOrder = orderResponse.data.data;
+      console.log("Order created:", createdOrder);
+
+      // Xử lý theo phương thức thanh toán
+      if (
+        formData.paymentMethod === "vnpay" ||
+        formData.paymentMethod === "momo"
+      ) {
+        // Tạo payment URL
+        const paymentResponse = await createPayment(
+          {
+            orderId: createdOrder.id,
+            paymentMethod: formData.paymentMethod,
+          },
+          token
+        );
+
+        if (paymentResponse.success && paymentResponse.data?.paymentUrl) {
+          // Lưu thông tin đơn hàng trước khi redirect
+          safeLocalStorage.setItem(
+            "lastOrder",
+            JSON.stringify({
+              orderId: createdOrder.id,
+              totalAmount: orderData.totalAmount,
+              itemCount: selectedCartItems.length,
+              email: formData.email,
+              paymentMethod: formData.paymentMethod,
+            })
+          );
+
+          // Redirect đến payment gateway
+          window.location.href = paymentResponse.data.paymentUrl;
+          return;
+        }
+      }
+
+      // Nếu COD hoặc không có payment URL
       safeLocalStorage.setItem(
         "lastOrder",
         JSON.stringify({
+          orderId: createdOrder.id,
           totalAmount: orderData.totalAmount,
           itemCount: selectedCartItems.length,
           email: formData.email,
@@ -197,21 +256,15 @@ export default function CheckoutPage() {
         })
       );
 
-      console.log("Order data saved to localStorage");
-      console.log("Clearing selected items...");
+      toast.success("Đặt hàng thành công!");
+      router.push("/order-success");
 
-      // Xóa các sản phẩm đã chọn khỏi giỏ hàng
-      clearSelectedItems();
-
-      console.log("Redirecting to order-success page...");
-
-      // Chuyển hướng đến trang thông báo thành công - dùng window.location để force reload
-      window.location.href = "/order-success";
-
-      console.log("Window.location.href called!");
-    } catch (error) {
+      setTimeout(() => {
+        clearSelectedItems();
+      }, 100);
+    } catch (error: any) {
       console.error("Checkout error:", error);
-      toast.error("Có lỗi xảy ra khi đặt hàng!");
+      toast.error(error?.message || "Có lỗi xảy ra khi đặt hàng!");
     } finally {
       setIsProcessing(false);
     }
@@ -394,18 +447,36 @@ export default function CheckoutPage() {
                       <input
                         type="radio"
                         name="paymentMethod"
-                        value="bank_transfer"
-                        checked={formData.paymentMethod === "bank_transfer"}
+                        value="vnpay"
+                        checked={formData.paymentMethod === "vnpay"}
                         onChange={handleInputChange}
                         className="w-5 h-5 text-purple-600"
                       />
-                      <FaCreditCard className="text-blue-600 text-2xl ml-3 mr-3" />
+                      <SiVisa className="text-blue-600 text-2xl ml-3 mr-3" />
+                      <div>
+                        <div className="font-semibold text-gray-800">VNPay</div>
+                        <div className="text-sm text-gray-600">
+                          Thanh toán qua VNPay (ATM, Visa, Mastercard)
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 transition">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="momo"
+                        checked={formData.paymentMethod === "momo"}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 text-purple-600"
+                      />
+                      <FaMobile className="text-pink-600 text-2xl ml-3 mr-3" />
                       <div>
                         <div className="font-semibold text-gray-800">
-                          Chuyển Khoản Ngân Hàng
+                          MoMo E-Wallet
                         </div>
                         <div className="text-sm text-gray-600">
-                          Chuyển khoản qua ngân hàng (sẽ được hướng dẫn sau)
+                          Thanh toán qua ví điện tử MoMo
                         </div>
                       </div>
                     </label>

@@ -32,6 +32,21 @@ export default function OrderSuccessPage() {
       // Xóa sau khi đọc
       safeLocalStorage.removeItem("lastOrder");
     }
+
+    // Lấy payment status từ URL query params (từ payment callback)
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+    const status = params.get("status");
+
+    if (paymentStatus && lastOrder) {
+      const order = JSON.parse(lastOrder);
+      order.paymentStatus = paymentStatus;
+      setOrderInfo(order);
+    } else if (status && lastOrder) {
+      const order = JSON.parse(lastOrder);
+      order.paymentStatus = status;
+      setOrderInfo(order);
+    }
   }, []);
 
   return (

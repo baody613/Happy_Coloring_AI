@@ -51,17 +51,19 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chat`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text.trim() }),
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
 
+      // Backend returns { success: true, data: { text, suggestions, products } }
       if (data.success && data.data) {
         const botMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -74,7 +76,7 @@ export default function Chatbot() {
 
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        throw new Error("Invalid response");
+        throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error("Chat error:", error);
@@ -144,7 +146,7 @@ export default function Chatbot() {
                     className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                       msg.sender === "user"
                         ? "bg-gradient-to-r from-[#FE979B] to-[#FEAE97] text-white"
-                        : "bg-white shadow-sm"
+                        : "bg-white shadow-sm text-black"
                     }`}
                   >
                     <p className="text-sm whitespace-pre-line">{msg.text}</p>

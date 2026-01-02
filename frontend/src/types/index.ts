@@ -1,3 +1,5 @@
+import { User as FirebaseUser } from 'firebase/auth';
+
 export interface User {
   uid: string;
   email: string;
@@ -9,12 +11,18 @@ export interface User {
   role?: 'user' | 'admin';
 }
 
+// Extended user with Firebase methods
+export type AuthUser = User & {
+  getIdToken: () => Promise<string>;
+};
+
 export interface Product {
   id: string;
   title: string;
   description: string;
   category: string;
   price: number;
+  originalPrice?: number;
   imageUrl: string;
   thumbnailUrl: string;
   difficulty: 'easy' | 'medium' | 'hard';
