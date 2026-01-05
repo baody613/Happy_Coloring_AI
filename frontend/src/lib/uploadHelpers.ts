@@ -1,5 +1,10 @@
 import { storage } from "./firebase";
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 export interface UploadProgress {
   progress: number;
@@ -50,7 +55,8 @@ export const uploadFile = async (
       "state_changed",
       (snapshot) => {
         // Progress callback
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         if (onProgress) {
           onProgress(progress);
         }
@@ -87,7 +93,7 @@ export const uploadProductImage = async (
 ): Promise<string> => {
   const timestamp = Date.now();
   const fileName = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-  const path = productId 
+  const path = productId
     ? `products/${productId}/${fileName}`
     : `products/temp/${fileName}`;
 
@@ -121,13 +127,13 @@ const extractPathFromURL = (url: string): string | null => {
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
-    
+
     // Firebase Storage URL format: /v0/b/{bucket}/o/{path}
     const match = pathname.match(/\/o\/(.+)$/);
     if (match && match[1]) {
       return decodeURIComponent(match[1]);
     }
-    
+
     return null;
   } catch (error) {
     console.error("Extract path error:", error);
@@ -143,14 +149,16 @@ export const generateUniqueFileName = (originalName: string): string => {
   const randomStr = Math.random().toString(36).substring(2, 8);
   const ext = originalName.split(".").pop();
   const nameWithoutExt = originalName.replace(/\.[^/.]+$/, "");
-  
+
   return `${nameWithoutExt}-${timestamp}-${randomStr}.${ext}`;
 };
 
 /**
  * Validate image file
  */
-export const validateImageFile = (file: File): { valid: boolean; error?: string } => {
+export const validateImageFile = (
+  file: File
+): { valid: boolean; error?: string } => {
   const maxSize = 5 * 1024 * 1024; // 5MB
   const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
@@ -163,7 +171,10 @@ export const validateImageFile = (file: File): { valid: boolean; error?: string 
   }
 
   if (!allowedTypes.includes(file.type)) {
-    return { valid: false, error: "Only JPG, PNG, and WebP images are allowed" };
+    return {
+      valid: false,
+      error: "Only JPG, PNG, and WebP images are allowed",
+    };
   }
 
   return { valid: true };

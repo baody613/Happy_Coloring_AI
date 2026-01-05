@@ -1,4 +1,4 @@
-import { User as FirebaseUser } from 'firebase/auth';
+import { User as FirebaseUser } from "firebase/auth";
 
 export interface User {
   uid: string;
@@ -8,7 +8,7 @@ export interface User {
   address?: string;
   orders?: string[];
   favorites?: string[];
-  role?: 'user' | 'admin';
+  role?: "user" | "admin";
 }
 
 // Extended user with Firebase methods
@@ -25,10 +25,10 @@ export interface Product {
   originalPrice?: number;
   imageUrl: string;
   thumbnailUrl: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
   dimensions: string;
   colors: number;
-  status: 'active' | 'inactive' | 'deleted';
+  status: "active" | "inactive" | "deleted";
   sales: number;
   rating: number;
   reviews: Review[];
@@ -56,7 +56,7 @@ export interface Order {
   shippingAddress: Address;
   totalAmount: number;
   paymentMethod: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
   updatedAt: string;
 }
@@ -77,7 +77,7 @@ export interface Generation {
   prompt: string;
   style: string;
   complexity: string;
-  status: 'processing' | 'completed' | 'failed';
+  status: "processing" | "completed" | "failed";
   imageUrl?: string;
   error?: string;
   createdAt: string;

@@ -154,19 +154,21 @@ export default function Chatbot() {
                     {/* Products */}
                     {msg.products && msg.products.length > 0 && (
                       <div className="mt-3 space-y-2">
-                        {msg.products.map((product) => (
+                        {msg.products.map((product, idx) => (
                           <div
-                            key={product.id}
+                            key={product?.id || idx}
                             className="bg-gray-50 rounded-lg p-2 text-gray-800"
                           >
                             <p className="font-semibold text-sm">
-                              {product.name}
+                              {product?.title || product?.name || "Sản phẩm"}
                             </p>
                             <p className="text-xs text-[#FE979B] font-bold">
-                              {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(product.price)}
+                              {typeof product?.price === "number"
+                                ? new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(product.price)
+                                : "Liên hệ"}
                             </p>
                           </div>
                         ))}

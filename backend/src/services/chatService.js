@@ -220,14 +220,22 @@ const searchProducts = async (filters = {}) => {
     const products = [];
 
     snapshot.forEach((doc) => {
-      products.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+      products.push({
+        id: doc.id,
+        title: data.title || data.name || "Sản phẩm",
+        price: data.price || 0,
+        imageUrl: data.imageUrl || "",
+        category: data.category || "",
+        description: data.description || "",
+      });
     });
 
     // Filter by keywords if provided
     if (filters.keywords && filters.keywords.length > 0) {
       return products.filter((p) => {
         const searchText =
-          `${p.name} ${p.description} ${p.category}`.toLowerCase();
+          `${p.title} ${p.description} ${p.category}`.toLowerCase();
         return filters.keywords.some((kw) =>
           searchText.includes(kw.toLowerCase())
         );

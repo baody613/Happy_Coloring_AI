@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuthStore } from '@/store/authStore';
-import { isAdmin } from '@/lib/adminConfig';
-import { adminAPI } from '@/lib/adminAPI';
-import { uploadProductImage, validateImageFile } from '@/lib/uploadHelpers';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
+import { isAdmin } from "@/lib/adminConfig";
+import { adminAPI } from "@/lib/adminAPI";
+import { uploadProductImage, validateImageFile } from "@/lib/uploadHelpers";
 
 interface Product {
   id: string;
@@ -28,7 +28,7 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [priceDisplay, setPriceDisplay] = useState('');
+  const [priceDisplay, setPriceDisplay] = useState("");
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -36,16 +36,16 @@ export default function AdminProductsPage() {
     price: number;
     imageUrl: string;
     thumbnailUrl: string;
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: "easy" | "medium" | "hard";
     colors: number;
   }>({
-    title: '',
-    description: '',
-    category: 'paint-by-numbers',
+    title: "",
+    description: "",
+    category: "paint-by-numbers",
     price: 0,
-    imageUrl: '',
-    thumbnailUrl: '',
-    difficulty: 'medium',
+    imageUrl: "",
+    thumbnailUrl: "",
+    difficulty: "medium",
     colors: 24,
   });
 
@@ -56,12 +56,12 @@ export default function AdminProductsPage() {
     }
 
     if (!user) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     if (!isAdmin(user.email)) {
-      router.push('/');
+      router.push("/");
       return;
     }
 
@@ -74,7 +74,7 @@ export default function AdminProductsPage() {
       const data = await adminAPI.products.getAll();
       setProducts(data.products || []);
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error("Error loading products:", error);
     }
   };
 
@@ -103,10 +103,10 @@ export default function AdminProductsPage() {
       );
 
       setFormData((prev) => ({ ...prev, imageUrl, thumbnailUrl: imageUrl }));
-      alert('✅ Tải ảnh lên Firebase Storage thành công!');
+      alert("✅ Tải ảnh lên Firebase Storage thành công!");
     } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('❌ Có lỗi khi tải ảnh lên! ' + (error as Error).message);
+      console.error("Error uploading image:", error);
+      alert("❌ Có lỗi khi tải ảnh lên! " + (error as Error).message);
     } finally {
       setUploadingImage(false);
       setUploadProgress(0);
@@ -115,17 +115,17 @@ export default function AdminProductsPage() {
 
   const formatPrice = (value: string) => {
     // Remove non-digit characters
-    const numbers = value.replace(/\D/g, '');
-    if (!numbers) return '';
+    const numbers = value.replace(/\D/g, "");
+    if (!numbers) return "";
 
     // Convert to number and format with thousands separator
     const num = parseInt(numbers);
-    return num.toLocaleString('vi-VN');
+    return num.toLocaleString("vi-VN");
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const numbers = value.replace(/\D/g, '');
+    const numbers = value.replace(/\D/g, "");
     const numValue = numbers ? parseInt(numbers) * 1000 : 0;
 
     setFormData({ ...formData, price: numValue });
@@ -137,71 +137,74 @@ export default function AdminProductsPage() {
 
     // Validation
     if (!formData.title.trim()) {
-      alert('Vui lòng nhập tên sản phẩm!');
+      alert("Vui lòng nhập tên sản phẩm!");
       return;
     }
     if (formData.price <= 0) {
-      alert('Vui lòng nhập giá sản phẩm hợp lệ!');
+      alert("Vui lòng nhập giá sản phẩm hợp lệ!");
       return;
     }
     if (!formData.imageUrl) {
-      alert('Vui lòng tải lên hình ảnh sản phẩm!');
+      alert("Vui lòng tải lên hình ảnh sản phẩm!");
       return;
     }
 
     try {
       if (editingProduct) {
         await adminAPI.products.update(editingProduct.id, formData);
-        alert('Cập nhật sản phẩm thành công!');
+        alert("Cập nhật sản phẩm thành công!");
       } else {
         await adminAPI.products.create(formData);
-        alert('Thêm sản phẩm thành công!');
+        alert("Thêm sản phẩm thành công!");
       }
       setShowAddForm(false);
       setEditingProduct(null);
-      setPriceDisplay('');
+      setPriceDisplay("");
       setFormData({
-        title: '',
-        description: '',
-        category: 'paint-by-numbers',
+        title: "",
+        description: "",
+        category: "paint-by-numbers",
         price: 0,
-        imageUrl: '',
-        thumbnailUrl: '',
-        difficulty: 'medium',
+        imageUrl: "",
+        thumbnailUrl: "",
+        difficulty: "medium",
         colors: 24,
       });
       loadProducts();
     } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Có lỗi xảy ra!');
+      console.error("Error saving product:", error);
+      alert("Có lỗi xảy ra!");
     }
   };
 
   const handleDelete = async (productId: string) => {
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+    if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
 
     try {
       await adminAPI.products.delete(productId);
-      alert('Xóa sản phẩm thành công!');
+      alert("Xóa sản phẩm thành công!");
       loadProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Có lỗi xảy ra!');
+      console.error("Error deleting product:", error);
+      alert("Có lỗi xảy ra!");
     }
   };
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     const displayPrice = Math.floor(product.price / 1000);
-    setPriceDisplay(displayPrice.toLocaleString('vi-VN'));
+    setPriceDisplay(displayPrice.toLocaleString("vi-VN"));
     setFormData({
       title: product.title,
-      description: '',
-      category: 'paint-by-numbers',
+      description: "",
+      category: "paint-by-numbers",
       price: product.price,
       imageUrl: product.imageUrl,
       thumbnailUrl: product.imageUrl,
-      difficulty: (product.difficulty || 'medium') as 'easy' | 'medium' | 'hard',
+      difficulty: (product.difficulty || "medium") as
+        | "easy"
+        | "medium"
+        | "hard",
       colors: 24,
     });
     setShowAddForm(true);
@@ -240,21 +243,21 @@ export default function AdminProductsPage() {
             onClick={() => {
               setShowAddForm(!showAddForm);
               setEditingProduct(null);
-              setPriceDisplay('');
+              setPriceDisplay("");
               setFormData({
-                title: '',
-                description: '',
-                category: 'paint-by-numbers',
+                title: "",
+                description: "",
+                category: "paint-by-numbers",
                 price: 0,
-                imageUrl: '',
-                thumbnailUrl: '',
-                difficulty: 'medium',
+                imageUrl: "",
+                thumbnailUrl: "",
+                difficulty: "medium",
                 colors: 24,
               });
             }}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-xl text-white px-8 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
           >
-            {showAddForm ? '❌ Đóng Form' : '➕ Thêm Sản Phẩm'}
+            {showAddForm ? "❌ Đóng Form" : "➕ Thêm Sản Phẩm"}
           </button>
         </div>
 
@@ -262,8 +265,8 @@ export default function AdminProductsPage() {
         {showAddForm && (
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-              <span className="text-3xl">{editingProduct ? '✏️' : '➕'}</span>
-              {editingProduct ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}
+              <span className="text-3xl">{editingProduct ? "✏️" : "➕"}</span>
+              {editingProduct ? "Chỉnh Sửa Sản Phẩm" : "Thêm Sản Phẩm Mới"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -275,13 +278,17 @@ export default function AdminProductsPage() {
                     type="text"
                     required
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="Nhập tên sản phẩm..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Giá *</label>
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                    Giá *
+                  </label>
                   <div className="relative">
                     <input
                       type="text"
@@ -295,12 +302,16 @@ export default function AdminProductsPage() {
                       .000 VNĐ
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Ví dụ: Nhập "150" = 150.000 VNĐ</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Ví dụ: Nhập "150" = 150.000 VNĐ
+                  </p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Hình Ảnh Sản Phẩm * 
-                    <span className="text-xs text-gray-500 ml-2">(JPG, PNG, WebP - Max 5MB)</span>
+                    Hình Ảnh Sản Phẩm *
+                    <span className="text-xs text-gray-500 ml-2">
+                      (JPG, PNG, WebP - Max 5MB)
+                    </span>
                   </label>
                   <div className="space-y-3">
                     {/* Upload Button */}
@@ -309,9 +320,9 @@ export default function AdminProductsPage() {
                         <div className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FE979B] to-[#FEAE97] hover:shadow-lg text-white rounded-lg font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
                           <span>📁</span>
                           <span>
-                            {uploadingImage 
-                              ? `Đang tải... ${uploadProgress}%` 
-                              : '🔥 Tải Ảnh Lên Firebase Storage'}
+                            {uploadingImage
+                              ? `Đang tải... ${uploadProgress}%`
+                              : "🔥 Tải Ảnh Lên Firebase Storage"}
                           </span>
                         </div>
                         <input
@@ -322,14 +333,16 @@ export default function AdminProductsPage() {
                           className="hidden"
                         />
                       </label>
-                      <span className="flex items-center text-gray-400 font-semibold">HOẶC</span>
+                      <span className="flex items-center text-gray-400 font-semibold">
+                        HOẶC
+                      </span>
                       <div className="flex-1"></div>
                     </div>
 
                     {/* Progress Bar */}
                     {uploadingImage && (
                       <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-[#FE979B] to-[#FEAE97] h-full transition-all duration-300"
                           style={{ width: `${uploadProgress}%` }}
                         />
@@ -341,7 +354,9 @@ export default function AdminProductsPage() {
                       type="text"
                       required
                       value={formData.imageUrl}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, imageUrl: e.target.value })
+                      }
                       placeholder="Hoặc nhập URL hình ảnh (https://...)"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE979B] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
                       disabled={uploadingImage}
@@ -350,7 +365,9 @@ export default function AdminProductsPage() {
                     {/* Image Preview */}
                     {formData.imageUrl && (
                       <div className="mt-3 p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">✨ Xem trước:</p>
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                          ✨ Xem trước:
+                        </p>
                         <img
                           src={formData.imageUrl}
                           alt="Preview"
@@ -361,22 +378,27 @@ export default function AdminProductsPage() {
                           }}
                         />
                         <p className="text-xs text-gray-500 mt-2 break-all">
-                          {formData.imageUrl.includes('firebasestorage') 
-                            ? '🔥 Lưu trên Firebase Storage' 
-                            : '🌐 URL bên ngoài'}
+                          {formData.imageUrl.includes("firebasestorage")
+                            ? "🔥 Lưu trên Firebase Storage"
+                            : "🌐 URL bên ngoài"}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Độ Khó</label>
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                    Độ Khó
+                  </label>
                   <select
                     value={formData.difficulty}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        difficulty: e.target.value as 'easy' | 'medium' | 'hard',
+                        difficulty: e.target.value as
+                          | "easy"
+                          | "medium"
+                          | "hard",
                       })
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 bg-white transition-all"
@@ -387,10 +409,14 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Mô Tả</label>
+                  <label className="block text-sm font-semibold mb-2 text-gray-700">
+                    Mô Tả
+                  </label>
                   <textarea
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Mô tả chi tiết về sản phẩm..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all resize-none"
                     rows={4}
@@ -402,22 +428,22 @@ export default function AdminProductsPage() {
                   type="submit"
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-xl text-white px-8 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
                 >
-                  {editingProduct ? '💾 Cập Nhật' : '➕ Thêm Mới'}
+                  {editingProduct ? "💾 Cập Nhật" : "➕ Thêm Mới"}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setShowAddForm(false);
                     setEditingProduct(null);
-                    setPriceDisplay('');
+                    setPriceDisplay("");
                     setFormData({
-                      title: '',
-                      description: '',
-                      category: 'paint-by-numbers',
+                      title: "",
+                      description: "",
+                      category: "paint-by-numbers",
                       price: 0,
-                      imageUrl: '',
-                      thumbnailUrl: '',
-                      difficulty: 'medium',
+                      imageUrl: "",
+                      thumbnailUrl: "",
+                      difficulty: "medium",
                       colors: 24,
                     });
                   }}
@@ -436,13 +462,21 @@ export default function AdminProductsPage() {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Hình Ảnh</th>
-                  <th className="px-6 py-4 text-left font-semibold">Tên Sản Phẩm</th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Hình Ảnh
+                  </th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Tên Sản Phẩm
+                  </th>
                   <th className="px-6 py-4 text-left font-semibold">Giá</th>
                   <th className="px-6 py-4 text-left font-semibold">Độ Khó</th>
-                  <th className="px-6 py-4 text-left font-semibold">Trạng Thái</th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Trạng Thái
+                  </th>
                   <th className="px-6 py-4 text-left font-semibold">Đã Bán</th>
-                  <th className="px-6 py-4 text-left font-semibold">Thao Tác</th>
+                  <th className="px-6 py-4 text-left font-semibold">
+                    Thao Tác
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -458,43 +492,47 @@ export default function AdminProductsPage() {
                         className="w-20 h-20 object-cover rounded-xl shadow-md border border-gray-200"
                       />
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">{product.title}</td>
+                    <td className="px-6 py-4 font-semibold text-gray-900">
+                      {product.title}
+                    </td>
                     <td className="px-6 py-4 font-bold text-purple-600">
                       {(product.price >= 1000
                         ? product.price
                         : product.price * 1000
-                      ).toLocaleString('vi-VN')}{' '}
+                      ).toLocaleString("vi-VN")}{" "}
                       VNĐ
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${
-                          product.difficulty === 'easy'
-                            ? 'bg-green-100 text-green-700 border-green-200'
-                            : product.difficulty === 'hard'
-                            ? 'bg-red-100 text-red-700 border-red-200'
-                            : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                          product.difficulty === "easy"
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : product.difficulty === "hard"
+                            ? "bg-red-100 text-red-700 border-red-200"
+                            : "bg-yellow-100 text-yellow-700 border-yellow-200"
                         }`}
                       >
-                        {product.difficulty === 'easy'
-                          ? '🟢 Dễ'
-                          : product.difficulty === 'hard'
-                          ? '🔴 Khó'
-                          : '🟡 Trung Bình'}
+                        {product.difficulty === "easy"
+                          ? "🟢 Dễ"
+                          : product.difficulty === "hard"
+                          ? "🔴 Khó"
+                          : "🟡 Trung Bình"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${
-                          product.status === 'active'
-                            ? 'bg-green-100 text-green-700 border-green-200'
-                            : 'bg-gray-100 text-gray-700 border-gray-200'
+                          product.status === "active"
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : "bg-gray-100 text-gray-700 border-gray-200"
                         }`}
                       >
-                        {product.status === 'active' ? '✅ Hoạt động' : '⏸️ Ẩn'}
+                        {product.status === "active" ? "✅ Hoạt động" : "⏸️ Ẩn"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-700">{product.sales} đơn</td>
+                    <td className="px-6 py-4 font-semibold text-gray-700">
+                      {product.sales} đơn
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
