@@ -1,6 +1,5 @@
 import express from "express";
-import { authenticateUser } from "../../middleware/auth.js";
-import { requireAdmin } from "../../middleware/adminAuth.js";
+import { requireAdmin } from "../../middleware/auth.js";
 import {
   getAllOrders,
   getOrderById,
@@ -15,7 +14,6 @@ import { validate, updateOrderStatusSchema } from "../../validators/index.js";
 const router = express.Router();
 
 // All routes require authentication and admin role
-router.use(authenticateUser);
 router.use(requireAdmin);
 
 // Get all orders

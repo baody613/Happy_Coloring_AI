@@ -17,34 +17,37 @@ import api from "@/lib/api";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
+import { useHydration } from "@/hooks/useHydration";
 import toast from "react-hot-toast";
 
+
 export default function GalleryPage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [priceRange, setPriceRange] = useState("all");
   const [difficulty, setDifficulty] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
+  const hydrated = useHydration();
 
   useEffect(() => {
-    // Thử load từ API, nếu fail thì dùng mock data
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get("/api/products");
-      if (data.products && data.products.length > 0) {
-        setProducts(data.products);
-      }
+      const { data } = await api.get("/products?limit=100");
+      console.log("API Response:", data); // Debug log
+      // API returns { success, message, data: { products, pagination } }
+      setProducts(data.data?.products || data.products || []);
     } catch (error) {
-      console.log("Using mock products");
-      // Đã set mockProducts ở state ban đầu
+      console.error("Error loading products:", error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -273,7 +276,7 @@ export default function GalleryPage() {
                       onClick={() => setSelectedProduct(product)}
                       className="opacity-0 group-hover:opacity-100 bg-white text-purple-600 px-6 py-3 rounded-full font-semibold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2"
                     >
-                      <FaEye /> Xem Chi Tiết 3D
+                      <FaEye /> Xem Chi Tiết Sản Phẩm
                     </button>
                   </div>
 
@@ -281,7 +284,7 @@ export default function GalleryPage() {
                   <button
                     onClick={() => handleToggleFavorite(product)}
                     className={`absolute top-4 right-4 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
-                      isFavorite(product.id)
+                      hydrated && isFavorite(product.id)
                         ? "bg-red-500 text-white"
                         : "bg-white text-red-500 hover:bg-red-50"
                     }`}
@@ -399,7 +402,9 @@ export default function GalleryPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Kích thước:</span>
                         <span className="font-semibold text-gray-800">
-                          {selectedProduct.dimensions}
+                          {typeof selectedProduct.dimensions === 'string' 
+                            ? selectedProduct.dimensions 
+                            : `${selectedProduct.dimensions?.width || 40} x ${selectedProduct.dimensions?.height || 50} ${selectedProduct.dimensions?.unit || 'cm'}`}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -507,7 +512,7 @@ export default function GalleryPage() {
                     <button
                       onClick={() => handleToggleFavorite(selectedProduct)}
                       className={`w-full p-4 rounded-xl font-bold transition flex items-center justify-center gap-2 ${
-                        isFavorite(selectedProduct.id)
+                        hydrated && isFavorite(selectedProduct.id)
                           ? "bg-red-500 text-white hover:bg-red-600"
                           : "bg-gray-200 text-red-500 hover:bg-red-50"
                       }`}
@@ -517,6 +522,97 @@ export default function GalleryPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Instruction Images Section */}
+              <div className="px-6 pb-6">
+                <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">
+                  📚 Hướng Dẫn Chi Tiết
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Image 1: Phụ kiện */}
+                  <div 
+                    onClick={() => setFullScreenImage("/images/guides/phu-kien-treo-tranh.webp")}
+                    className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className="relative w-full h-80 mb-3 rounded-xl overflow-hidden">
+                      <Image
+                        src="/images/guides/phu-kien-treo-tranh.webp"
+                        alt="Phụ kiện đi kèm hộp tranh tô màu"
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://via.placeholder.com/400x400/ecfccb/16a34a?text=Phụ+Kiện+Treo+Tranh";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                        <FaEye className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-800 text-center">
+                      Phụ Kiện Đi Kèm & Hướng Dẫn Treo Tranh
+                    </h4>
+                  </div>
+
+                  {/* Image 2: Hướng dẫn tô màu */}
+                  <div 
+                    onClick={() => setFullScreenImage("/images/guides/huong-dan-to-mau.webp")}
+                    className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className="relative w-full h-80 mb-3 rounded-xl overflow-hidden">
+                      <Image
+                        src="/images/guides/huong-dan-to-mau.webp"
+                        alt="Hướng dẫn tô màu tranh"
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://via.placeholder.com/400x400/fce7f3/db2777?text=Hướng+Dẫn+Tô+Màu";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                        <FaEye className="text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-800 text-center">
+                      Hướng Dẫn Tô Màu Chi Tiết
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Full Screen Image Viewer */}
+      <AnimatePresence>
+        {fullScreenImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setFullScreenImage(null)}
+            className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center p-4 cursor-zoom-out"
+          >
+            <button
+              onClick={() => setFullScreenImage(null)}
+              className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 z-10"
+            >
+              <FaTimes className="text-white text-2xl" />
+            </button>
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-6xl h-[90vh] cursor-default"
+            >
+              <Image
+                src={fullScreenImage}
+                alt="Hướng dẫn chi tiết"
+                fill
+                className="object-contain"
+                quality={100}
+              />
             </motion.div>
           </motion.div>
         )}
@@ -534,241 +630,8 @@ export default function GalleryPage() {
 
 const categories = [
   { value: "all", label: "Tất Cả", icon: "🎨" },
-  { value: "animals", label: "Động Vật", icon: "🦁" },
-  { value: "landscapes", label: "Phong Cảnh", icon: "🏞️" },
+  { value: "animals", label: "Động Vật", icon: "🐾" },
+  { value: "landscape", label: "Phong Cảnh", icon: "🏞️" },
   { value: "flowers", label: "Hoa", icon: "🌸" },
-  { value: "abstract", label: "Trừu Tượng", icon: "✨" },
-  { value: "people", label: "Con Người", icon: "👤" },
-];
-
-// Mock Products Data
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    title: "Mèo Xinh Bên Cửa Sổ",
-    description: "Tranh tô màu mèo dễ thương ngồi bên cửa sổ nhìn ra khu vườn",
-    price: 299000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&h=500&fit=crop",
-    category: "animals",
-    difficulty: "easy",
-    dimensions: "40x50cm",
-    colors: 18,
-    status: "active" as const,
-    sales: 125,
-    rating: 4.8,
-    reviews: [],
-    createdAt: "2024-01-01",
-  },
-  {
-    id: "2",
-    title: "Phong Cảnh Biển Hoàng Hôn",
-    description: "Cảnh biển đẹp lúc hoàng hôn với sóng vỗ nhẹ nhàng",
-    price: 399000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&h=500&fit=crop",
-    category: "landscapes",
-    difficulty: "medium",
-    dimensions: "50x60cm",
-    colors: 24,
-    status: "active" as const,
-    sales: 203,
-    rating: 4.9,
-    reviews: [],
-    createdAt: "2024-01-02",
-  },
-  {
-    id: "3",
-    title: "Hoa Anh Đào Nhật Bản",
-    description: "Hoa anh đào nở rộ mùa xuân",
-    price: 349000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500&h=500&fit=crop",
-    category: "flowers",
-    difficulty: "easy",
-    dimensions: "40x50cm",
-    colors: 16,
-    status: "active" as const,
-    sales: 89,
-    rating: 4.7,
-    reviews: [],
-    createdAt: "2024-01-03",
-  },
-  {
-    id: "4",
-    title: "Sư Tử Uy Nghiêm",
-    description: "Chân dung sư tử hùng vĩ",
-    price: 450000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=500&h=500&fit=crop",
-    category: "animals",
-    difficulty: "hard",
-    dimensions: "60x70cm",
-    colors: 32,
-    status: "active" as const,
-    sales: 167,
-    rating: 4.9,
-    reviews: [],
-    createdAt: "2024-01-04",
-  },
-  {
-    id: "5",
-    title: "Cô Gái Anime",
-    description: "Cô gái phong cách anime với mái tóc dài",
-    price: 380000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&h=500&fit=crop",
-    category: "people",
-    difficulty: "medium",
-    dimensions: "50x60cm",
-    colors: 28,
-    status: "active" as const,
-    sales: 142,
-    rating: 4.8,
-    reviews: [],
-    createdAt: "2024-01-05",
-  },
-  {
-    id: "6",
-    title: "Rừng Thu Vàng",
-    description: "Rừng cây mùa thu với lá vàng rơi",
-    price: 420000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=500&fit=crop",
-    category: "landscapes",
-    difficulty: "hard",
-    dimensions: "60x70cm",
-    colors: 36,
-    status: "active" as const,
-    sales: 198,
-    rating: 4.9,
-    reviews: [],
-    createdAt: "2024-01-06",
-  },
-  {
-    id: "7",
-    title: "Hoa Hồng Đỏ",
-    description: "Bông hồng đỏ tươi đẹp",
-    price: 280000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&h=500&fit=crop",
-    category: "flowers",
-    difficulty: "easy",
-    dimensions: "40x50cm",
-    colors: 14,
-    status: "active" as const,
-    sales: 76,
-    rating: 4.6,
-    reviews: [],
-    createdAt: "2024-01-07",
-  },
-  {
-    id: "8",
-    title: "Nghệ Thuật Trừu Tượng",
-    description: "Tranh trừu tượng đầy màu sắc",
-    price: 520000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=500&h=500&fit=crop",
-    category: "abstract",
-    difficulty: "hard",
-    dimensions: "70x80cm",
-    colors: 40,
-    status: "active" as const,
-    sales: 134,
-    rating: 4.7,
-    reviews: [],
-    createdAt: "2024-01-08",
-  },
-  {
-    id: "9",
-    title: "Chó Golden Retriever",
-    description: "Chú chó Golden dễ thương",
-    price: 320000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=500&h=500&fit=crop",
-    category: "animals",
-    difficulty: "medium",
-    dimensions: "50x60cm",
-    colors: 22,
-    status: "active" as const,
-    sales: 156,
-    rating: 4.8,
-    reviews: [],
-    createdAt: "2024-01-09",
-  },
-  {
-    id: "10",
-    title: "Núi Non Hùng Vĩ",
-    description: "Dãy núi cao với đỉnh phủ tuyết",
-    price: 480000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=500&fit=crop",
-    category: "landscapes",
-    difficulty: "hard",
-    dimensions: "60x70cm",
-    colors: 34,
-    status: "active" as const,
-    sales: 221,
-    rating: 4.9,
-    reviews: [],
-    createdAt: "2024-01-10",
-  },
-  {
-    id: "11",
-    title: "Hoa Tulip Hà Lan",
-    description: "Cánh đồng hoa tulip rực rỡ",
-    price: 360000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=500&h=500&fit=crop",
-    category: "flowers",
-    difficulty: "medium",
-    dimensions: "50x60cm",
-    colors: 26,
-    status: "active" as const,
-    sales: 112,
-    rating: 4.7,
-    reviews: [],
-    createdAt: "2024-01-11",
-  },
-  {
-    id: "12",
-    title: "Chân Dung Phụ Nữ",
-    description: "Chân dung phụ nữ nghệ thuật",
-    price: 440000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=500&fit=crop",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=500&fit=crop",
-    category: "people",
-    difficulty: "hard",
-    dimensions: "60x70cm",
-    colors: 30,
-    status: "active" as const,
-    sales: 189,
-    rating: 4.8,
-    reviews: [],
-    createdAt: "2024-01-12",
-  },
+  { value: "architecture", label: "Kiến Trúc", icon: "🏛️" },
 ];

@@ -26,7 +26,7 @@ export interface Product {
   imageUrl: string;
   thumbnailUrl: string;
   difficulty: "easy" | "medium" | "hard";
-  dimensions: string;
+  dimensions: string | { width: number; height: number; unit: string };
   colors: number;
   status: "active" | "inactive" | "deleted";
   sales: number;

@@ -13,10 +13,12 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { isAdmin } from "@/lib/adminConfig";
+import { useHydration } from "@/hooks";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const hydrated = useHydration();
   const { user, signOut } = useAuthStore();
   const { getTotalItems } = useCartStore();
 
@@ -103,7 +105,7 @@ export default function Navbar() {
                 style={{ backgroundColor: "#FFE4F0" }}
               >
                 <FaShoppingCart className="text-brand-magenta text-xl md:text-2xl" />
-                {getTotalItems() > 0 && (
+                {hydrated && getTotalItems() > 0 && (
                   <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center">
                     {getTotalItems()}
                   </span>

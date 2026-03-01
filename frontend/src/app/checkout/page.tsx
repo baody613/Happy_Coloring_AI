@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import { useHydration } from "@/hooks";
 import { auth } from "@/lib/firebase";
 import {
   FaShoppingBag,
@@ -19,69 +20,9 @@ import { safeLocalStorage } from "@/lib/safeStorage";
 import { createPayment } from "@/lib/paymentAPI";
 import api from "@/lib/api";
 
-// Mock products cho phần gợi ý
-const mockProducts: Product[] = [
-  {
-    id: "p1",
-    title: "Tranh Phong Cảnh Núi Non",
-    description: "Tranh tô màu phong cảnh núi non tuyệt đẹp",
-    category: "landscape",
-    price: 299000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200",
-    difficulty: "medium",
-    dimensions: "40x50cm",
-    colors: 24,
-    status: "active",
-    sales: 150,
-    rating: 4.8,
-    reviews: [],
-    createdAt: "2024-01-01",
-  },
-  {
-    id: "p2",
-    title: "Tranh Hoa Anh Đào",
-    description: "Tranh hoa anh đào lãng mạn",
-    category: "flowers",
-    price: 199000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=200",
-    difficulty: "easy",
-    dimensions: "30x40cm",
-    colors: 18,
-    status: "active",
-    sales: 200,
-    rating: 4.9,
-    reviews: [],
-    createdAt: "2024-01-02",
-  },
-  {
-    id: "p3",
-    title: "Tranh Động Vật Dễ Thương",
-    description: "Tranh động vật đáng yêu cho bé",
-    category: "animals",
-    price: 249000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=500",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200",
-    difficulty: "easy",
-    dimensions: "35x45cm",
-    colors: 20,
-    status: "active",
-    sales: 180,
-    rating: 4.7,
-    reviews: [],
-    createdAt: "2024-01-03",
-  },
-];
-
 export default function CheckoutPage() {
   const router = useRouter();
+  const hydrated = useHydration();
   const { user } = useAuthStore();
   const {
     items,
@@ -270,7 +211,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!user || items.length === 0) {
+  if (!hydrated || !user || items.length === 0) {
     return null;
   }
 

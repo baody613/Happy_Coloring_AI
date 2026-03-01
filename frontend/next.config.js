@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   images: {
     unoptimized: true,
-    domains: ['storage.googleapis.com', 'firebasestorage.googleapis.com'],
+    domains: ["storage.googleapis.com", "firebasestorage.googleapis.com"],
   },
+  reactStrictMode: true,
 };
 
 module.exports = nextConfig;

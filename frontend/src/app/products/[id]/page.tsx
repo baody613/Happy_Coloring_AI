@@ -25,6 +25,7 @@ import { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { useAuthStore } from "@/store/authStore";
+import { useHydration } from "@/hooks";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 
@@ -40,11 +41,11 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
 
+  const hydrated = useHydration();
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
   const { user } = useAuthStore();
 
-  // Mock product images
   const productImages = product
     ? [
         product.imageUrl,
@@ -73,8 +74,6 @@ export default function ProductDetailPage() {
     } catch (error) {
       console.error("Error fetching product:", error);
       toast.error("Không tìm thấy sản phẩm!");
-      // Use mock data if API fails
-      setProduct(getMockProduct(productId));
     } finally {
       setLoading(false);
     }
@@ -87,7 +86,7 @@ export default function ProductDetailPage() {
       setRelatedProducts(products.filter((p: Product) => p.id !== excludeId));
     } catch (error) {
       console.error("Error fetching related products:", error);
-      setRelatedProducts(getMockRelatedProducts());
+      setRelatedProducts([]);
     }
   };
 
@@ -322,7 +321,11 @@ export default function ProductDetailPage() {
                   <FaRuler className="text-purple-600 text-xl" />
                   <span className="text-gray-600">
                     <strong>Kích thước:</strong>{" "}
-                    {product.dimensions || "40x50cm"}
+                    {typeof product.dimensions === 'string' 
+                      ? product.dimensions 
+                      : product.dimensions 
+                        ? `${product.dimensions.width}x${product.dimensions.height}${product.dimensions.unit}` 
+                        : "40x50cm"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -416,15 +419,15 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleToggleFavorite}
                   className={`flex-1 flex items-center justify-center gap-2 border-2 px-4 py-3 rounded-lg font-medium transition ${
-                    isFavorite(product.id)
+                    hydrated && isFavorite(product.id)
                       ? "border-red-500 text-red-500 bg-red-50"
                       : "border-gray-300 text-gray-600 hover:border-red-500 hover:text-red-500"
                   }`}
                 >
                   <FaHeart
-                    className={isFavorite(product.id) ? "fill-current" : ""}
+                    className={hydrated && isFavorite(product.id) ? "fill-current" : ""}
                   />
-                  {isFavorite(product.id) ? "Đã yêu thích" : "Yêu thích"}
+                  {hydrated && isFavorite(product.id) ? "Đã yêu thích" : "Yêu thích"}
                 </button>
                 <button
                   onClick={handleShare}
@@ -554,72 +557,4 @@ export default function ProductDetailPage() {
       </AnimatePresence>
     </div>
   );
-}
-
-// Mock data helpers
-function getMockProduct(id: string): Product {
-  return {
-    id,
-    title: "Tranh Tô Màu Phong Cảnh Núi Non",
-    description:
-      "Bộ tranh tô màu số hóa với chất lượng cao, bao gồm canvas in sẵn số, bộ màu acrylic đầy đủ, và cọ vẽ chuyên dụng. Phù hợp cho mọi lứa tuổi.",
-    category: "landscape",
-    price: 299000,
-    originalPrice: 399000,
-    imageUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200",
-    difficulty: "medium",
-    dimensions: "40x50cm",
-    colors: 24,
-    status: "active",
-    sales: 150,
-    rating: 4.8,
-    reviews: [],
-    createdAt: new Date().toISOString(),
-  };
-}
-
-function getMockRelatedProducts(): Product[] {
-  return [
-    {
-      id: "p2",
-      title: "Tranh Hoa Anh Đào",
-      description: "Tranh hoa anh đào lãng mạn",
-      category: "flowers",
-      price: 199000,
-      imageUrl:
-        "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=500",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=200",
-      difficulty: "easy",
-      dimensions: "30x40cm",
-      colors: 18,
-      status: "active",
-      sales: 200,
-      rating: 4.9,
-      reviews: [],
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "p3",
-      title: "Tranh Động Vật Dễ Thương",
-      description: "Tranh động vật đáng yêu",
-      category: "animals",
-      price: 249000,
-      imageUrl:
-        "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=500",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=200",
-      difficulty: "easy",
-      dimensions: "35x45cm",
-      colors: 20,
-      status: "active",
-      sales: 180,
-      rating: 4.7,
-      reviews: [],
-      createdAt: new Date().toISOString(),
-    },
-  ];
 }

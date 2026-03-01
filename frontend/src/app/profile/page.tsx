@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useAuthStore } from '@/store/authStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { useCartStore } from '@/store/cartStore';
+import { useHydration } from '@/hooks';
 import { isAdmin } from '@/lib/adminConfig';
 import { FaHeart, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -14,6 +15,7 @@ export default function ProfilePage() {
   const { user, signOut } = useAuthStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('info');
+  const hydrated = useHydration();
   const { favorites, removeFavorite } = useFavoriteStore();
   const { addItem } = useCartStore();
 
@@ -31,7 +33,6 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  // Mock data - sẽ được thay thế bằng dữ liệu thật từ API
   const orderHistory = [
     {
       id: 'DH001',
@@ -111,7 +112,7 @@ export default function ProfilePage() {
                   : 'text-gray-600'
               }`}
             >
-              ❤️ Yêu Thích ({favorites.length})
+              ❤️ Yêu Thích {hydrated && `(${favorites.length})`}
             </button>
             <button
               onClick={() => setActiveTab('utilities')}
@@ -251,10 +252,10 @@ export default function ProfilePage() {
           {activeTab === 'favorites' && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                ❤️ Sản Phẩm Yêu Thích ({favorites.length})
+                ❤️ Sản Phẩm Yêu Thích {hydrated && `(${favorites.length})`}
               </h2>
 
-              {favorites.length > 0 ? (
+              {hydrated && favorites.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {favorites.map((product) => (
                     <div

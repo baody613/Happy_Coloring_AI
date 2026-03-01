@@ -1,6 +1,7 @@
 // Admin email configuration
 export const ADMIN_EMAILS = [
   'admin@yulingstore.com',
+  'baody613@gmail.com',
   // Add more admin emails here if needed
 ];
 

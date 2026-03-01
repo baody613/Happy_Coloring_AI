@@ -48,7 +48,16 @@ router.get("/", optionalAuth, async (req, res) => {
     sendSuccess(res, result);
   } catch (error) {
     console.error("Get products error:", error);
-    sendError(res, error.message);
+    // Return empty result instead of error
+    sendSuccess(res, {
+      products: [],
+      pagination: {
+        page: parseInt(req.query.page || 1),
+        limit: parseInt(req.query.limit || 20),
+        total: 0,
+        totalPages: 0,
+      },
+    });
   }
 });
 

@@ -75,7 +75,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Tổng Đơn Hàng</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.totalOrders}</h3>
+                <h3 className="text-2xl font-bold text-gray-800">{stats?.totalOrders || 0}</h3>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-2xl">📦</span>
@@ -87,7 +87,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Sản Phẩm</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.totalProducts}</h3>
+                <h3 className="text-2xl font-bold text-gray-800">{stats?.totalProducts || 0}</h3>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <span className="text-2xl">🎨</span>
@@ -99,7 +99,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Người Dùng</p>
-                <h3 className="text-2xl font-bold text-gray-800">{stats.totalUsers}</h3>
+                <h3 className="text-2xl font-bold text-gray-800">{stats?.totalUsers || 0}</h3>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-2xl">👥</span>
@@ -112,7 +112,7 @@ export default function AdminPage() {
               <div>
                 <p className="text-gray-600 text-sm">Doanh Thu</p>
                 <h3 className="text-2xl font-bold text-gray-800">
-                  {stats.totalRevenue.toLocaleString('vi-VN')}đ
+                  {(stats?.totalRevenue || 0).toLocaleString('vi-VN')}đ
                 </h3>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">

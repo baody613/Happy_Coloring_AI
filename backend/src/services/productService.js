@@ -16,58 +16,114 @@ export const getProductById = async (productId) => {
 
 // Get all products with pagination and filters
 export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
-  let query = db.collection("products");
+  try {
+    let query = db.collection("products");
 
-  // Apply filters
-  if (filters.category) {
-    query = query.where("category", "==", filters.category);
+    // Apply filters
+    if (filters.category) {
+      query = query.where("category", "==", filters.category);
+    }
+
+    if (filters.difficulty) {
+      query = query.where("difficulty", "==", filters.difficulty);
+    }
+
+    if (filters.status) {
+      query = query.where("status", "==", filters.status);
+    } else {
+      // Default: only active products
+      query = query.where("status", "==", "active");
+    }
+
+    // Price range
+    if (filters.minPrice) {
+      query = query.where("price", ">=", parseFloat(filters.minPrice));
+    }
+
+    if (filters.maxPrice) {
+      query = query.where("price", "<=", parseFloat(filters.maxPrice));
+    }
+
+    // Get total count
+    const totalSnapshot = await query.get();
+    const total = totalSnapshot.size;
+
+    // Handle empty result
+    if (total === 0) {
+      return {
+        products: [],
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total: 0,
+          totalPages: 0,
+        },
+      };
+    }
+
+    // For pagination, use the results we already have if within first page
+    const skip = (page - 1) * limit;
+    const limitNum = parseInt(limit);
+    
+    let products;
+    if (skip === 0 && limitNum >= total) {
+      // Use existing snapshot
+      products = totalSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } else {
+      // Need to query again with pagination
+      let paginatedQuery = db.collection("products");
+      
+      // Reapply all filters
+      if (filters.category) {
+        paginatedQuery = paginatedQuery.where("category", "==", filters.category);
+      }
+      if (filters.difficulty) {
+        paginatedQuery = paginatedQuery.where("difficulty", "==", filters.difficulty);
+      }
+      if (filters.status) {
+        paginatedQuery = paginatedQuery.where("status", "==", filters.status);
+      } else {
+        paginatedQuery = paginatedQuery.where("status", "==", "active");
+      }
+      if (filters.minPrice) {
+        paginatedQuery = paginatedQuery.where("price", ">=", parseFloat(filters.minPrice));
+      }
+      if (filters.maxPrice) {
+        paginatedQuery = paginatedQuery.where("price", "<=", parseFloat(filters.maxPrice));
+      }
+      
+      // Apply sorting if specified
+      if (filters.sortBy) {
+        paginatedQuery = paginatedQuery.orderBy(filters.sortBy, filters.sortOrder || "desc");
+      }
+      
+      paginatedQuery = paginatedQuery.offset(skip).limit(limitNum);
+      const snapshot = await paginatedQuery.get();
+      products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    }
+
+    return {
+      products,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getAllProducts error:", error);
+    // Return empty result on error instead of throwing
+    return {
+      products: [],
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: 0,
+        totalPages: 0,
+      },
+    };
   }
-
-  if (filters.difficulty) {
-    query = query.where("difficulty", "==", filters.difficulty);
-  }
-
-  if (filters.status) {
-    query = query.where("status", "==", filters.status);
-  } else {
-    // Default: only active products
-    query = query.where("status", "==", "active");
-  }
-
-  // Price range
-  if (filters.minPrice) {
-    query = query.where("price", ">=", parseFloat(filters.minPrice));
-  }
-
-  if (filters.maxPrice) {
-    query = query.where("price", "<=", parseFloat(filters.maxPrice));
-  }
-
-  // Get total count
-  const totalSnapshot = await query.get();
-  const total = totalSnapshot.size;
-
-  // Apply sorting
-  const sortBy = filters.sortBy || "createdAt";
-  const sortOrder = filters.sortOrder || "desc";
-  query = query.orderBy(sortBy, sortOrder);
-
-  // Apply pagination
-  const skip = (page - 1) * limit;
-  query = query.offset(skip).limit(limit);
-
-  const snapshot = await query.get();
-  const products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-  return {
-    products,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
-  };
 };
 
 // Create new product

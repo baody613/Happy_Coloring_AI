@@ -118,16 +118,32 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV}`);
-  console.log(
-    `🌐 CORS Origin: ${
-      process.env.CORS_ORIGIN ||
-      process.env.FRONTEND_URL ||
-      "http://localhost:3000"
-    }`
-  );
+app
+  .listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV}`);
+    console.log(
+      `🌐 CORS Origin: ${
+        process.env.CORS_ORIGIN ||
+        process.env.FRONTEND_URL ||
+        "http://localhost:3000"
+      }`
+    );
+  })
+  .on("error", (err) => {
+    console.error("❌ Server error:", err);
+    process.exit(1);
+  });
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.error("💥 Uncaught Exception:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("💥 Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
 });
 
 export default app;

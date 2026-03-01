@@ -1,7 +1,7 @@
 import { auth } from "../config/firebase.js";
 
 // Admin emails
-const ADMIN_EMAILS = ["admin@yulingstore.com"];
+const ADMIN_EMAILS = ["admin@yulingstore.com", "baody613@gmail.com"];
 
 export const authenticateUser = async (req, res, next) => {
   try {
