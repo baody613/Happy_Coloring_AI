@@ -4,7 +4,7 @@ Thư mục này chứa 2 hình ảnh hướng dẫn hiển thị trong modal chi
 
 ## Yêu cầu:
 
-1. **phu-kien-treo-tranh.jpg** 
+1. **phu-kien-treo-tranh.jpg**
    - Hình ảnh về phụ kiện đi kèm hộp tranh (đinh 3 chân, bộ định vị treo tranh, son bông đệ quét)
    - Kích thước đề xuất: 800x800px hoặc tỉ lệ 1:1
    - Format: JPG, PNG, hoặc WEBP

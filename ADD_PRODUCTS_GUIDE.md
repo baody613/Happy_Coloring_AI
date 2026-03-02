@@ -3,12 +3,14 @@
 ## 🎯 Cách Thêm Sản Phẩm Mới (Tự Động)
 
 ### **Bước 1: Chuẩn bị ảnh**
+
 1. Lưu ảnh sản phẩm vào: `frontend/public/images/Products/`
 2. Đặt tên file có ý nghĩa (VD: `phong-canh-hoang-hon.webp`, `doraemon.webp`)
 3. Format ảnh: `.jpg`, `.png`, `.webp`, `.gif`
 4. Kích thước đề xuất: 800x800px hoặc tỉ lệ 1:1
 
 ### **Bước 2: Chạy script sync**
+
 Mở PowerShell trong thư mục project:
 
 ```powershell
@@ -20,6 +22,7 @@ node scripts/sync-local-products.js
 ```
 
 Script sẽ:
+
 - ✅ Quét tất cả ảnh trong `frontend/public/images/Products/`
 - ✅ Tự động tạo tên sản phẩm từ tên file
 - ✅ Random category, độ khó, số màu, giá
@@ -28,6 +31,7 @@ Script sẽ:
 - ✅ Bỏ qua ảnh đã tồn tại (không duplicate)
 
 ### **Bước 3: Xem kết quả**
+
 Refresh trang gallery: http://localhost:3000/gallery
 
 ---
@@ -44,28 +48,30 @@ node scripts/show-seed-data.js
 ## 🗑️ Xóa Sản Phẩm Không Cần
 
 ### Xóa sản phẩm từ Firebase Storage:
+
 ```powershell
 cd backend
 node scripts/clean-firebase-products.js
 ```
 
 ### Xóa tất cả sản phẩm:
+
 ```javascript
 // Tạo file: backend/scripts/delete-all-products.js
-import admin from 'firebase-admin';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import admin from "firebase-admin";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const privateKey = (() => {
   const base64 = process.env.FIREBASE_PRIVATE_KEY_BASE64;
-  if (base64) return Buffer.from(base64, 'base64').toString('utf8');
-  return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  if (base64) return Buffer.from(base64, "base64").toString("utf8");
+  return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 })();
 
 if (!admin.apps.length) {
@@ -81,14 +87,14 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function deleteAllProducts() {
-  const snapshot = await db.collection('products').get();
+  const snapshot = await db.collection("products").get();
   console.log(`🗑️  Deleting ${snapshot.size} products...`);
-  
+
   const batch = db.batch();
-  snapshot.docs.forEach(doc => batch.delete(doc.ref));
+  snapshot.docs.forEach((doc) => batch.delete(doc.ref));
   await batch.commit();
-  
-  console.log('✅ All products deleted!');
+
+  console.log("✅ All products deleted!");
 }
 
 deleteAllProducts().catch(console.error);
@@ -101,13 +107,14 @@ Chạy: `node scripts/delete-all-products.js`
 ## ⚙️ Tùy Chỉnh Sản Phẩm
 
 ### Sửa thông tin tự động:
+
 Mở file: `backend/scripts/sync-local-products.js`
 
 ```javascript
 // Dòng 101-107: Thay đổi category
 function getRandomCategory() {
   const categories = [
-    "Động vật",     // Thêm/xóa category ở đây
+    "Động vật", // Thêm/xóa category ở đây
     "Thiên nhiên",
     "Phong cảnh",
     // ... thêm category mới
@@ -126,7 +133,9 @@ function generatePrice(min = 150000, max = 500000) {
 ## 📝 Thêm Sản Phẩm Thủ Công (Qua Admin Panel)
 
 ### Tính năng đang phát triển!
+
 Hiện tại sử dụng script, sau này sẽ có:
+
 1. Admin Dashboard → Products → Add New
 2. Form upload ảnh + điền thông tin
 3. Auto-save vào Firestore
@@ -165,6 +174,7 @@ curl http://localhost:3001/api/products
 ## ❓ Troubleshooting
 
 ### Lỗi: "Firebase credentials not found"
+
 ```powershell
 # Kiểm tra file .env trong backend/
 cd backend
@@ -172,11 +182,13 @@ cat .env | Select-String "FIREBASE"
 ```
 
 ### Sản phẩm không hiển thị
+
 1. Kiểm tra console.log trong browser (F12)
 2. Test API: `Invoke-WebRequest http://localhost:3001/api/products`
 3. Refresh cache: Ctrl + Shift + R
 
 ### Ảnh không load
+
 - Đảm bảo file tồn tại: `frontend/public/images/Products/ten-file.webp`
 - Kiểm tra đường dẫn trong database: phải là `/images/Products/ten-file.webp`
 - Clear Next.js cache: Xóa folder `frontend/.next/`
@@ -186,6 +198,7 @@ cat .env | Select-String "FIREBASE"
 ## 📞 Support
 
 Nếu gặp vấn đề, check:
+
 1. Backend server đang chạy: http://localhost:3001/api/health
 2. Firebase connection: Xem console log khi start backend
 3. Image path: Debug trong gallery page console

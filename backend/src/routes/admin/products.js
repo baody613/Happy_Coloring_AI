@@ -35,7 +35,13 @@ router.get("/", async (req, res) => {
     const filters = {};
     if (category) filters.category = category;
     if (difficulty) filters.difficulty = difficulty;
-    if (status) filters.status = status;
+    // Admin can see all statuses by default, or filter if specified
+    if (status) {
+      filters.status = status;
+    } else {
+      // Pass null to indicate "fetch all statuses"
+      filters.status = null;
+    }
     if (sortBy) filters.sortBy = sortBy;
     if (sortOrder) filters.sortOrder = sortOrder;
 

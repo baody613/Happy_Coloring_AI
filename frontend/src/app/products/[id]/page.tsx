@@ -217,7 +217,7 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() =>
                       setSelectedImage((prev) =>
-                        prev === 0 ? productImages.length - 1 : prev - 1
+                        prev === 0 ? productImages.length - 1 : prev - 1,
                       )
                     }
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition"
@@ -227,7 +227,7 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() =>
                       setSelectedImage((prev) =>
-                        prev === productImages.length - 1 ? 0 : prev + 1
+                        prev === productImages.length - 1 ? 0 : prev + 1,
                       )
                     }
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition"
@@ -321,10 +321,10 @@ export default function ProductDetailPage() {
                   <FaRuler className="text-purple-600 text-xl" />
                   <span className="text-gray-600">
                     <strong>Kích thước:</strong>{" "}
-                    {typeof product.dimensions === 'string' 
-                      ? product.dimensions 
-                      : product.dimensions 
-                        ? `${product.dimensions.width}x${product.dimensions.height}${product.dimensions.unit}` 
+                    {typeof product.dimensions === "string"
+                      ? product.dimensions
+                      : product.dimensions
+                        ? `${product.dimensions.width}x${product.dimensions.height}${product.dimensions.unit}`
                         : "40x50cm"}
                   </span>
                 </div>
@@ -343,15 +343,15 @@ export default function ProductDetailPage() {
                         product.difficulty === "easy"
                           ? "text-green-600"
                           : product.difficulty === "medium"
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                       }`}
                     >
                       {product.difficulty === "easy"
                         ? "Dễ"
                         : product.difficulty === "medium"
-                        ? "Trung bình"
-                        : "Khó"}
+                          ? "Trung bình"
+                          : "Khó"}
                     </span>
                   </span>
                 </div>
@@ -425,9 +425,13 @@ export default function ProductDetailPage() {
                   }`}
                 >
                   <FaHeart
-                    className={hydrated && isFavorite(product.id) ? "fill-current" : ""}
+                    className={
+                      hydrated && isFavorite(product.id) ? "fill-current" : ""
+                    }
                   />
-                  {hydrated && isFavorite(product.id) ? "Đã yêu thích" : "Yêu thích"}
+                  {hydrated && isFavorite(product.id)
+                    ? "Đã yêu thích"
+                    : "Yêu thích"}
                 </button>
                 <button
                   onClick={handleShare}

@@ -29,6 +29,7 @@ export default function AdminProductsPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [priceDisplay, setPriceDisplay] = useState("");
+  const [newProductIds, setNewProductIds] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -71,8 +72,12 @@ export default function AdminProductsPage() {
 
   const loadProducts = async () => {
     try {
-      const data = await adminAPI.products.getAll();
-      setProducts(data.products || []);
+      const data = await adminAPI.products.getAll({ limit: 100 });
+      console.log("Admin Products Response:", data);
+      // Backend trả về { success, message, data: { products, pagination } }
+      const productsList = data?.data?.products || data?.products || [];
+      console.log("Products List:", productsList);
+      setProducts(productsList);
     } catch (error) {
       console.error("Error loading products:", error);
     }
@@ -99,7 +104,7 @@ export default function AdminProductsPage() {
         editingProduct?.id, // Use product ID if editing
         (progress) => {
           setUploadProgress(Math.round(progress));
-        }
+        },
       );
 
       setFormData((prev) => ({ ...prev, imageUrl, thumbnailUrl: imageUrl }));
@@ -150,13 +155,20 @@ export default function AdminProductsPage() {
     }
 
     try {
+      let isCreating = !editingProduct;
+      let newProductId = null;
+
       if (editingProduct) {
         await adminAPI.products.update(editingProduct.id, formData);
-        alert("Cập nhật sản phẩm thành công!");
       } else {
-        await adminAPI.products.create(formData);
-        alert("Thêm sản phẩm thành công!");
+        const response = await adminAPI.products.create(formData);
+        console.log("Create Product Response:", response);
+        // Backend trả về { success, message, data: { id, title, ... } }
+        newProductId = response?.data?.id || response?.id;
+        console.log("New Product ID:", newProductId);
       }
+
+      // Close form and reset immediately
       setShowAddForm(false);
       setEditingProduct(null);
       setPriceDisplay("");
@@ -170,10 +182,26 @@ export default function AdminProductsPage() {
         difficulty: "medium",
         colors: 24,
       });
-      loadProducts();
+
+      // Add new product ID to the set for "New" tag
+      if (isCreating && newProductId) {
+        console.log("Adding new product ID to set:", newProductId);
+        setNewProductIds((prev) => new Set(prev).add(newProductId));
+      }
+
+      // Reload products and show success message
+      await loadProducts();
+      alert(
+        isCreating
+          ? "✅ Thêm sản phẩm thành công!"
+          : "✅ Cập nhật sản phẩm thành công!",
+      );
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("Có lỗi xảy ra!");
+      alert(
+        "❌ Có lỗi xảy ra: " + (error as any)?.response?.data?.message ||
+          (error as Error).message,
+      );
     }
   };
 
@@ -486,11 +514,18 @@ export default function AdminProductsPage() {
                     className="border-b border-gray-100 hover:bg-purple-50 transition-colors"
                   >
                     <td className="px-6 py-4">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.title}
-                        className="w-20 h-20 object-cover rounded-xl shadow-md border border-gray-200"
-                      />
+                      <div className="relative">
+                        <img
+                          src={product.imageUrl}
+                          alt={product.title}
+                          className="w-20 h-20 object-cover rounded-xl shadow-md border border-gray-200"
+                        />
+                        {newProductIds.has(product.id) && (
+                          <span className="absolute -top-1 -left-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg animate-pulse">
+                            🆕 NEW
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 font-semibold text-gray-900">
                       {product.title}
@@ -508,15 +543,15 @@ export default function AdminProductsPage() {
                           product.difficulty === "easy"
                             ? "bg-green-100 text-green-700 border-green-200"
                             : product.difficulty === "hard"
-                            ? "bg-red-100 text-red-700 border-red-200"
-                            : "bg-yellow-100 text-yellow-700 border-yellow-200"
+                              ? "bg-red-100 text-red-700 border-red-200"
+                              : "bg-yellow-100 text-yellow-700 border-yellow-200"
                         }`}
                       >
                         {product.difficulty === "easy"
                           ? "🟢 Dễ"
                           : product.difficulty === "hard"
-                          ? "🔴 Khó"
-                          : "🟡 Trung Bình"}
+                            ? "🔴 Khó"
+                            : "🟡 Trung Bình"}
                       </span>
                     </td>
                     <td className="px-6 py-4">

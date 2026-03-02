@@ -20,7 +20,6 @@ import { useFavoriteStore } from "@/store/favoriteStore";
 import { useHydration } from "@/hooks/useHydration";
 import toast from "react-hot-toast";
 
-
 export default function GalleryPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -402,9 +401,9 @@ export default function GalleryPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Kích thước:</span>
                         <span className="font-semibold text-gray-800">
-                          {typeof selectedProduct.dimensions === 'string' 
-                            ? selectedProduct.dimensions 
-                            : `${selectedProduct.dimensions?.width || 40} x ${selectedProduct.dimensions?.height || 50} ${selectedProduct.dimensions?.unit || 'cm'}`}
+                          {typeof selectedProduct.dimensions === "string"
+                            ? selectedProduct.dimensions
+                            : `${selectedProduct.dimensions?.width || 40} x ${selectedProduct.dimensions?.height || 50} ${selectedProduct.dimensions?.unit || "cm"}`}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -530,8 +529,12 @@ export default function GalleryPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Image 1: Phụ kiện */}
-                  <div 
-                    onClick={() => setFullScreenImage("/images/guides/phu-kien-treo-tranh.webp")}
+                  <div
+                    onClick={() =>
+                      setFullScreenImage(
+                        "/images/guides/phu-kien-treo-tranh.webp",
+                      )
+                    }
                     className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   >
                     <div className="relative w-full h-80 mb-3 rounded-xl overflow-hidden">
@@ -541,7 +544,8 @@ export default function GalleryPage() {
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
-                          e.currentTarget.src = "https://via.placeholder.com/400x400/ecfccb/16a34a?text=Phụ+Kiện+Treo+Tranh";
+                          e.currentTarget.src =
+                            "https://via.placeholder.com/400x400/ecfccb/16a34a?text=Phụ+Kiện+Treo+Tranh";
                         }}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
@@ -554,8 +558,10 @@ export default function GalleryPage() {
                   </div>
 
                   {/* Image 2: Hướng dẫn tô màu */}
-                  <div 
-                    onClick={() => setFullScreenImage("/images/guides/huong-dan-to-mau.webp")}
+                  <div
+                    onClick={() =>
+                      setFullScreenImage("/images/guides/huong-dan-to-mau.webp")
+                    }
                     className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   >
                     <div className="relative w-full h-80 mb-3 rounded-xl overflow-hidden">
@@ -565,7 +571,8 @@ export default function GalleryPage() {
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
-                          e.currentTarget.src = "https://via.placeholder.com/400x400/fce7f3/db2777?text=Hướng+Dẫn+Tô+Màu";
+                          e.currentTarget.src =
+                            "https://via.placeholder.com/400x400/fce7f3/db2777?text=Hướng+Dẫn+Tô+Màu";
                         }}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">

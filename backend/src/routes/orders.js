@@ -24,12 +24,14 @@ router.post(
   async (req, res) => {
     try {
       const userId = req.user.uid;
+      
+      console.log("📦 Order request body:", JSON.stringify(req.body, null, 2));
 
       const order = await createOrder(userId, req.body);
 
       sendSuccess(res, order, "Order created successfully", 201);
     } catch (error) {
-      console.error("Create order error:", error);
+      console.error("❌ Create order error:", error);
       sendError(res, error.message);
     }
   }

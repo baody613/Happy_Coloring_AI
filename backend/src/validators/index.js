@@ -64,12 +64,15 @@ export const updateProductSchema = Joi.object({
 
 // Order validation schemas
 export const createOrderSchema = Joi.object({
+  userId: Joi.string().optional(), // Frontend sends this but backend overrides with authenticated user
   items: Joi.array()
     .items(
       Joi.object({
         productId: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         price: Joi.number().min(0).required(),
+        title: Joi.string().optional(), // Allow title for order history display
+        imageUrl: Joi.string().optional(), // Allow both relative path and full URL
       })
     )
     .min(1)
@@ -83,9 +86,15 @@ export const createOrderSchema = Joi.object({
     ward: Joi.string().allow(""),
   }).required(),
   totalAmount: Joi.number().min(0).required(),
+  originalAmount: Joi.number().min(0).optional(), // Allow original amount before discount
+  voucherCode: Joi.string().allow("", null).optional(), // Allow voucher code
+  voucherDiscount: Joi.number().min(0).optional(), // Allow voucher discount
+  note: Joi.string().allow("").optional(), // Allow order note
   paymentMethod: Joi.string()
     .valid("cod", "vnpay", "momo", "banking")
     .required(),
+  status: Joi.string().optional(), // Frontend may send but backend sets default
+  createdAt: Joi.string().optional(), // Frontend may send timestamp
 });
 
 export const updateOrderStatusSchema = Joi.object({
@@ -155,6 +164,9 @@ export const validate = (schema) => {
         field: detail.path.join("."),
         message: detail.message,
       }));
+      
+      console.error("❌ Validation failed:", JSON.stringify(errors, null, 2));
+      console.error("📦 Request body:", JSON.stringify(req.body, null, 2));
 
       return res.status(400).json({
         success: false,

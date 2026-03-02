@@ -17,14 +17,19 @@ import {
   FaFillDrip,
 } from "react-icons/fa";
 import { useAuthStore } from "@/store/authStore";
+import { useCartStore } from "@/store/cartStore";
 import { safeLocalStorage } from "@/lib/safeStorage";
 
 export default function OrderSuccessPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { clearSelectedItems } = useCartStore();
   const [orderInfo, setOrderInfo] = useState<any>(null);
 
   useEffect(() => {
+    // Clear selected items sau khi order success
+    clearSelectedItems();
+    
     // Lấy thông tin đơn hàng từ localStorage
     const lastOrder = safeLocalStorage.getItem("lastOrder");
     if (lastOrder) {

@@ -1,28 +1,34 @@
 import express from "express";
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
-// Configure SendGrid
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Configure Nodemailer with Gmail
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
-// Function to send email via SendGrid
-const sendEmailViaSendGrid = async (to, subject, htmlContent) => {
-  const msg = {
+// Function to send email via Gmail
+const sendEmailViaGmail = async (to, subject, htmlContent) => {
+  const mailOptions = {
+    from: `"Yu Ling Store" <${process.env.EMAIL_USER}>`,
     to: to,
-    from: process.env.EMAIL_USER || "baody613@gmail.com",
     subject: subject,
     html: htmlContent,
   };
 
   try {
-    const result = await sgMail.send(msg);
-    console.log("✅ Email sent successfully via SendGrid to:", to);
+    const result = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully via Gmail to:", to);
     return result;
   } catch (error) {
-    console.error("❌ SendGrid error:", error.response?.body || error.message);
+    console.error("❌ Gmail error:", error.message);
     throw error;
   }
 };
@@ -139,7 +145,7 @@ router.post("/send-code", async (req, res) => {
     `;
 
     try {
-      await sendEmailViaSendGrid(
+      await sendEmailViaGmail(
         email,
         "Password Reset Code - Yu Ling Store",
         htmlContent

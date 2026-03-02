@@ -28,7 +28,11 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       query = query.where("difficulty", "==", filters.difficulty);
     }
 
-    if (filters.status) {
+    // Status filter: null means fetch all, undefined means default to active
+    if (filters.status === null) {
+      // Fetch all statuses (for admin)
+      // Don't apply status filter
+    } else if (filters.status) {
       query = query.where("status", "==", filters.status);
     } else {
       // Default: only active products
@@ -64,39 +68,65 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
     // For pagination, use the results we already have if within first page
     const skip = (page - 1) * limit;
     const limitNum = parseInt(limit);
-    
+
     let products;
     if (skip === 0 && limitNum >= total) {
       // Use existing snapshot
-      products = totalSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      products = totalSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
     } else {
       // Need to query again with pagination
       let paginatedQuery = db.collection("products");
-      
+
       // Reapply all filters
       if (filters.category) {
-        paginatedQuery = paginatedQuery.where("category", "==", filters.category);
+        paginatedQuery = paginatedQuery.where(
+          "category",
+          "==",
+          filters.category,
+        );
       }
       if (filters.difficulty) {
-        paginatedQuery = paginatedQuery.where("difficulty", "==", filters.difficulty);
+        paginatedQuery = paginatedQuery.where(
+          "difficulty",
+          "==",
+          filters.difficulty,
+        );
       }
-      if (filters.status) {
+      // Status filter: null means fetch all, undefined means default to active
+      if (filters.status === null) {
+        // Fetch all statuses (for admin)
+        // Don't apply status filter
+      } else if (filters.status) {
         paginatedQuery = paginatedQuery.where("status", "==", filters.status);
       } else {
         paginatedQuery = paginatedQuery.where("status", "==", "active");
       }
       if (filters.minPrice) {
-        paginatedQuery = paginatedQuery.where("price", ">=", parseFloat(filters.minPrice));
+        paginatedQuery = paginatedQuery.where(
+          "price",
+          ">=",
+          parseFloat(filters.minPrice),
+        );
       }
       if (filters.maxPrice) {
-        paginatedQuery = paginatedQuery.where("price", "<=", parseFloat(filters.maxPrice));
+        paginatedQuery = paginatedQuery.where(
+          "price",
+          "<=",
+          parseFloat(filters.maxPrice),
+        );
       }
-      
+
       // Apply sorting if specified
       if (filters.sortBy) {
-        paginatedQuery = paginatedQuery.orderBy(filters.sortBy, filters.sortOrder || "desc");
+        paginatedQuery = paginatedQuery.orderBy(
+          filters.sortBy,
+          filters.sortOrder || "desc",
+        );
       }
-      
+
       paginatedQuery = paginatedQuery.offset(skip).limit(limitNum);
       const snapshot = await paginatedQuery.get();
       products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

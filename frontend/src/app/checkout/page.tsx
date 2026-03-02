@@ -148,8 +148,18 @@ export default function CheckoutPage() {
         },
       });
 
+      console.log("✅ API Response:", orderResponse);
+      console.log("✅ Response data:", orderResponse.data);
+      console.log("✅ Response data.data:", orderResponse.data.data);
+
       const createdOrder = orderResponse.data.data;
-      console.log("Order created:", createdOrder);
+      console.log("✅ Order created:", createdOrder);
+
+      if (!createdOrder || !createdOrder.id) {
+        throw new Error("Invalid order response - missing order ID");
+      }
+
+      console.log("✅ Order ID:", createdOrder.id);
 
       // Xử lý theo phương thức thanh toán
       if (
@@ -185,6 +195,9 @@ export default function CheckoutPage() {
       }
 
       // Nếu COD hoặc không có payment URL
+      console.log("💰 Payment method:", formData.paymentMethod);
+      console.log("📦 Saving lastOrder to localStorage...");
+      
       safeLocalStorage.setItem(
         "lastOrder",
         JSON.stringify({
@@ -197,16 +210,23 @@ export default function CheckoutPage() {
         })
       );
 
-      toast.success("Đặt hàng thành công!");
-      router.push("/order-success");
+      console.log("✅ localStorage saved!");
+      console.log("🚀 Redirecting to order-success...");
 
-      setTimeout(() => {
-        clearSelectedItems();
-      }, 100);
+      toast.success("Đặt hàng thành công!");
+      
+      console.log("🔄 Using window.location.href for hard redirect...");
+      // Dùng window.location.href thay vì router.push để tránh useEffect redirect về cart
+      window.location.href = "/order-success";
+      
+      // Không cần clearSelectedItems ở đây - order-success page sẽ tự clear
     } catch (error: any) {
-      console.error("Checkout error:", error);
+      console.error("❌ Checkout error:", error);
+      console.error("❌ Error response:", error.response);
+      console.error("❌ Error message:", error.message);
       toast.error(error?.message || "Có lỗi xảy ra khi đặt hàng!");
     } finally {
+      console.log("🏁 Finally block - setting isProcessing to false");
       setIsProcessing(false);
     }
   };

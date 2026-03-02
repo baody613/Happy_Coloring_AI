@@ -47,7 +47,15 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Path to local images
-const IMAGES_PATH = path.join(__dirname, "..", "..", "frontend", "public", "images", "Products");
+const IMAGES_PATH = path.join(
+  __dirname,
+  "..",
+  "..",
+  "frontend",
+  "public",
+  "images",
+  "Products",
+);
 const IMAGE_URL_PREFIX = "/images/Products";
 
 /**
@@ -57,7 +65,7 @@ function generateProductName(filename) {
   let name = filename.replace(/\.(jpg|jpeg|png|webp|gif)$/i, "");
   name = name.replace(/^vn-\d+-\w+-/, "");
   name = name.replace(/[_-]/g, " ");
-  
+
   name = name
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -159,7 +167,10 @@ async function createProductFromImage(filename) {
 
     return { status: "created", file: filename, id: docRef.id };
   } catch (error) {
-    console.error(`   ❌ Error creating product from ${filename}:`, error.message);
+    console.error(
+      `   ❌ Error creating product from ${filename}:`,
+      error.message,
+    );
     return { status: "error", file: filename, error: error.message };
   }
 }
@@ -176,8 +187,10 @@ function listLocalImages() {
     const files = fs.readdirSync(IMAGES_PATH);
     const imageFiles = files.filter((file) => {
       const ext = path.extname(file).toLowerCase();
-      return [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) &&
-             !file.toLowerCase().includes("hướng dẫn");
+      return (
+        [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) &&
+        !file.toLowerCase().includes("hướng dẫn")
+      );
     });
 
     return imageFiles;
