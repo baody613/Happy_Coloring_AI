@@ -1,5 +1,6 @@
 import express from "express";
 import { authenticateUser, optionalAuth } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/adminAuth.js";
 import {
   getAllProducts,
   getProductById,
@@ -42,7 +43,7 @@ router.get("/", optionalAuth, async (req, res) => {
     const result = await getAllProducts(
       parseInt(page),
       parseInt(limit),
-      filters
+      filters,
     );
 
     sendSuccess(res, result);
@@ -105,7 +106,7 @@ router.post(
       console.error("Create product error:", error);
       sendError(res, error.message);
     }
-  }
+  },
 );
 
 // Update product (admin only)
@@ -129,7 +130,7 @@ router.put(
       console.error("Update product error:", error);
       sendError(res, error.message);
     }
-  }
+  },
 );
 
 // Delete product (admin only)
