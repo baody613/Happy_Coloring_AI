@@ -1,5 +1,6 @@
 import express from "express";
 import { authenticateUser } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/adminAuth.js";
 import {
   createOrder,
   getOrderById,
@@ -24,8 +25,6 @@ router.post(
   async (req, res) => {
     try {
       const userId = req.user.uid;
-      
-      console.log("📦 Order request body:", JSON.stringify(req.body, null, 2));
 
       const order = await createOrder(userId, req.body);
 
@@ -34,7 +33,7 @@ router.post(
       console.error("❌ Create order error:", error);
       sendError(res, error.message);
     }
-  }
+  },
 );
 
 // Get user's orders
@@ -52,7 +51,7 @@ router.get("/user/:userId", authenticateUser, async (req, res) => {
     const result = await getOrdersByUserId(
       userId,
       parseInt(page),
-      parseInt(limit)
+      parseInt(limit),
     );
 
     sendSuccess(res, result);
@@ -89,10 +88,10 @@ router.get("/:orderId", authenticateUser, async (req, res) => {
 router.put(
   "/:orderId/status",
   authenticateUser,
+  requireAdmin,
   validate(updateOrderStatusSchema),
   async (req, res) => {
     try {
-      // TODO: Add admin check middleware
       const { orderId } = req.params;
       const { status } = req.body;
 
@@ -107,7 +106,7 @@ router.put(
       console.error("Update order status error:", error);
       sendError(res, error.message);
     }
-  }
+  },
 );
 
 // Cancel order

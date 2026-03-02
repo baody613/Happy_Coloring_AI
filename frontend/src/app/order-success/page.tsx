@@ -29,7 +29,7 @@ export default function OrderSuccessPage() {
   useEffect(() => {
     // Clear selected items sau khi order success
     clearSelectedItems();
-    
+
     // Lấy thông tin đơn hàng từ localStorage
     const lastOrder = safeLocalStorage.getItem("lastOrder");
     if (lastOrder) {

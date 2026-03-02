@@ -148,7 +148,7 @@ router.post("/send-code", async (req, res) => {
       await sendEmailViaGmail(
         email,
         "Password Reset Code - Yu Ling Store",
-        htmlContent
+        htmlContent,
       );
 
       res.json({

@@ -41,7 +41,6 @@ export default function GalleryPage() {
     try {
       setLoading(true);
       const { data } = await api.get("/products?limit=100");
-      console.log("API Response:", data); // Debug log
       // API returns { success, message, data: { products, pagination } }
       setProducts(data.data?.products || data.products || []);
     } catch (error) {

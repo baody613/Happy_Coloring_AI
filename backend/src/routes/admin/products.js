@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
     const result = await getAllProducts(
       parseInt(page),
       parseInt(limit),
-      filters
+      filters,
     );
 
     sendSuccess(res, result);

@@ -31,11 +31,10 @@ export const createProductSchema = Joi.object({
     "number.min": "Giá phải lớn hơn hoặc bằng 0",
     "any.required": "Giá là bắt buộc",
   }),
-  imageUrl: Joi.string().uri().required().messages({
-    "string.uri": "URL hình ảnh không hợp lệ",
+  imageUrl: Joi.string().required().messages({
     "any.required": "Hình ảnh là bắt buộc",
   }),
-  thumbnailUrl: Joi.string().uri().allow(""),
+  thumbnailUrl: Joi.string().allow(""),
   difficulty: Joi.string().valid("easy", "medium", "hard").default("medium"),
   dimensions: Joi.object({
     width: Joi.number().required(),
@@ -50,8 +49,8 @@ export const updateProductSchema = Joi.object({
   description: Joi.string().allow(""),
   category: Joi.string().allow(""),
   price: Joi.number().min(0),
-  imageUrl: Joi.string().uri(),
-  thumbnailUrl: Joi.string().uri().allow(""),
+  imageUrl: Joi.string(),
+  thumbnailUrl: Joi.string().allow(""),
   difficulty: Joi.string().valid("easy", "medium", "hard"),
   status: Joi.string().valid("active", "inactive", "deleted"),
   dimensions: Joi.object({
@@ -73,7 +72,7 @@ export const createOrderSchema = Joi.object({
         price: Joi.number().min(0).required(),
         title: Joi.string().optional(), // Allow title for order history display
         imageUrl: Joi.string().optional(), // Allow both relative path and full URL
-      })
+      }),
     )
     .min(1)
     .required(),
@@ -164,7 +163,7 @@ export const validate = (schema) => {
         field: detail.path.join("."),
         message: detail.message,
       }));
-      
+
       console.error("❌ Validation failed:", JSON.stringify(errors, null, 2));
       console.error("📦 Request body:", JSON.stringify(req.body, null, 2));
 

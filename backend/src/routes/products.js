@@ -94,14 +94,10 @@ router.get("/:id", async (req, res) => {
 router.post(
   "/",
   authenticateUser,
+  requireAdmin,
   validate(createProductSchema),
   async (req, res) => {
     try {
-      // TODO: Add admin check middleware
-      // if (req.user.role !== 'admin') {
-      //   return sendError(res, 'Unauthorized', 403);
-      // }
-
       const product = await createProduct(req.body);
 
       sendSuccess(res, product, "Product created successfully", 201);
@@ -116,10 +112,10 @@ router.post(
 router.put(
   "/:id",
   authenticateUser,
+  requireAdmin,
   validate(updateProductSchema),
   async (req, res) => {
     try {
-      // TODO: Add admin check middleware
       const { id } = req.params;
 
       const product = await updateProduct(id, req.body);
@@ -137,9 +133,8 @@ router.put(
 );
 
 // Delete product (admin only)
-router.delete("/:id", authenticateUser, async (req, res) => {
+router.delete("/:id", authenticateUser, requireAdmin, async (req, res) => {
   try {
-    // TODO: Add admin check middleware
     const { id } = req.params;
 
     const product = await deleteProduct(id);
