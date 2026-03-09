@@ -129,4 +129,17 @@ router.put("/:orderId/payment-status", async (req, res) => {
   }
 });
 
+// Delete order
+router.delete("/:orderId", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { db } = await import("../../config/firebase.js");
+    await db.collection("orders").doc(orderId).delete();
+    sendSuccess(res, null, "Order deleted successfully");
+  } catch (error) {
+    console.error("Delete order error:", error);
+    sendError(res, error.message);
+  }
+});
+
 export default router;

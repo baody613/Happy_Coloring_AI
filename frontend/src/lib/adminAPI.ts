@@ -60,7 +60,7 @@ export const adminOrderAPI = {
     orderId: string,
     status: "pending" | "processing" | "shipping" | "delivered" | "cancelled",
   ) => {
-    const response = await api.put(`/admin/orders/${orderId}`, { status });
+    const response = await api.put(`/admin/orders/${orderId}/status`, { status });
     return response.data;
   },
 
