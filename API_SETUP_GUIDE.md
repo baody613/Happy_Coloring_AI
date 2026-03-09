@@ -16,6 +16,7 @@
 ## 1. 🤖 HUGGING FACE API - AI TẠO TRANH
 
 ### Giới thiệu
+
 Hugging Face là nền tảng AI cung cấp các model machine learning miễn phí. Project sử dụng model **Stable Diffusion 2.1** để tạo ảnh paint-by-numbers từ text prompt.
 
 ### Bước 1: Đăng ký tài khoản Hugging Face
@@ -64,6 +65,7 @@ const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN;
 ### Bước 5: Test API
 
 1. **Restart backend**:
+
 ```bash
 cd backend
 npm start
@@ -80,14 +82,17 @@ npm start
 ### Troubleshooting
 
 **Lỗi: "Model is loading"**
+
 - Model đang khởi động (free tier)
 - Đợi 1-2 phút và thử lại
 
 **Lỗi: "Authorization failed"**
+
 - Token sai hoặc hết hạn
 - Tạo token mới và cập nhật .env
 
 **Lỗi: "Timeout"**
+
 - Free tier có giới hạn request
 - Đợi vài phút và thử lại
 - Hoặc nâng cấp lên Hugging Face Pro ($9/month)
@@ -112,6 +117,7 @@ License: CreativeML Open RAIL++-M License (Free for commercial use)
 Nếu cần tốc độ nhanh hơn:
 
 **Hugging Face Pro**: $9/month
+
 - Inference nhanh hơn (5-10s)
 - Priority access
 - More API calls
@@ -123,7 +129,9 @@ Nếu cần tốc độ nhanh hơn:
 ## 2. 💳 VNPAY PAYMENT GATEWAY
 
 ### Giới thiệu
+
 VNPay là cổng thanh toán trực tuyến phổ biến tại Việt Nam, hỗ trợ:
+
 - Thẻ ATM nội địa
 - Thẻ Visa/Mastercard
 - Ví điện tử
@@ -156,6 +164,7 @@ Cho môn học demo, bạn có thể dùng **Sandbox**:
    - `Hash Secret`: Key bảo mật
 
 **Test Cards** (Sandbox):
+
 ```
 Thẻ: 9704 0000 0000 0018
 Tên: NGUYEN VAN A
@@ -200,7 +209,9 @@ VNPAY_RETURN_URL=http://localhost:3000/payment/vnpay/callback
 ## 3. 💰 MOMO PAYMENT GATEWAY
 
 ### Giới thiệu
+
 MoMo là ví điện tử phổ biến tại Việt Nam, cho phép thanh toán qua:
+
 - Ví MoMo
 - Thẻ ngân hàng liên kết
 - QR Code
@@ -232,6 +243,7 @@ MoMo là ví điện tử phổ biến tại Việt Nam, cho phép thanh toán q
    - `Secret Key`: Key bảo mật
 
 **Test Account** (Sandbox):
+
 ```
 SĐT: 0963181714
 OTP: Tự động approve
@@ -331,11 +343,13 @@ curl -X POST http://localhost:3001/api/generate/paint-by-numbers \
 ```
 
 **2. Test VNPay** (nếu đã setup):
+
 - Vào `/checkout`
 - Chọn "VNPay"
 - Xem có redirect đến VNPay không
 
 **3. Test MoMo** (nếu đã setup):
+
 - Vào `/checkout`
 - Chọn "MoMo"
 - Xem có redirect đến MoMo không
@@ -359,17 +373,20 @@ npm start
 ## 📚 TÀI LIỆU THAM KHẢO
 
 ### Hugging Face
+
 - **Documentation**: https://huggingface.co/docs/api-inference
 - **Models**: https://huggingface.co/models
 - **Pricing**: https://huggingface.co/pricing
 
 ### VNPay
+
 - **Website**: https://vnpay.vn/
 - **API Docs**: https://sandbox.vnpayment.vn/apis/
 - **Sandbox**: https://sandbox.vnpayment.vn/
 - **Support**: hotro@vnpay.vn | 1900 55 55 77
 
 ### MoMo
+
 - **Business**: https://business.momo.vn/
 - **Developer**: https://developers.momo.vn/
 - **API Docs**: https://developers.momo.vn/v3/docs
@@ -382,18 +399,22 @@ npm start
 ### Tình huống 1: Chỉ cần demo AI tạo tranh
 
 ✅ **Cài đặt**:
+
 - Hugging Face API (MIỄN PHÍ)
 
 ⏭️ **Bỏ qua**:
+
 - VNPay/MoMo (chưa cần)
 
 ### Tình huống 2: Demo đầy đủ tính năng thanh toán
 
 ✅ **Cài đặt**:
+
 - Hugging Face API
 - VNPay Sandbox hoặc MoMo Sandbox
 
-💡 **Lưu ý**: 
+💡 **Lưu ý**:
+
 - Dùng Sandbox cho demo
 - Giải thích cho giáo viên đây là môi trường test
 - Production cần đăng ký doanh nghiệp
@@ -401,6 +422,7 @@ npm start
 ### Tình huống 3: Chỉ demo mua hàng COD
 
 ✅ **Đã có**:
+
 - COD (Cash On Delivery) đã hoạt động
 
 ⏭️ **Không cần cài thêm gì**
@@ -410,27 +432,32 @@ npm start
 ## ❓ FAQ - CÂU HỎI THƯỜNG GẶP
 
 **Q1: Hugging Face API có miễn phí không?**
+
 - ✅ Có, free tier cho 1,000 requests/tháng
 - Đủ cho demo môn học
 - Có thể chậm hơn paid tier
 
 **Q2: Không đăng ký được VNPay/MoMo vì không có doanh nghiệp?**
+
 - Dùng **Sandbox** cho demo
 - Giải thích với giáo viên
 - Hoặc chỉ demo COD payment
 
 **Q3: AI tạo ảnh chậm quá?**
+
 - Free tier của Hugging Face có thể chậm (30-60s)
 - Model cần "warm up" lần đầu (1-2 phút)
 - Nâng cấp Pro nếu cần ($9/month)
 
 **Q4: Có thể dùng API khác thay Hugging Face không?**
+
 - Có thể dùng:
   - OpenAI DALL-E (trả phí, $0.020/image)
   - Replicate Stable Diffusion (trả phí)
   - Local Stable Diffusion (cần GPU mạnh)
 
 **Q5: Firebase Storage có giới hạn không?**
+
 - Free tier: 5GB storage
 - 1GB upload/day
 - 50,000 reads/day
@@ -441,11 +468,13 @@ npm start
 ## 🚨 LƯU Ý QUAN TRỌNG
 
 ### Bảo mật
+
 - ⚠️ **KHÔNG commit** .env file lên GitHub
 - ⚠️ **KHÔNG share** API keys công khai
 - ✅ Dùng `.gitignore` để exclude .env
 
 ### Production
+
 - Khi deploy lên production:
   - Đổi VNPay/MoMo từ sandbox → production URL
   - Dùng credentials chính thức
@@ -453,6 +482,7 @@ npm start
   - Configure domain cho callback URLs
 
 ### Demo môn học
+
 - ✅ Hugging Face free tier là đủ
 - ✅ Sandbox VNPay/MoMo cho demo thanh toán
 - ✅ COD luôn hoạt động, không cần setup
@@ -463,6 +493,7 @@ npm start
 ## ✅ CHECKLIST TRƯỚC KHI DEMO
 
 **Bắt buộc**:
+
 - [ ] Hugging Face token đã thêm vào .env
 - [ ] Backend restart sau khi config
 - [ ] Test tạo ảnh AI thành công (1 lần)
@@ -470,6 +501,7 @@ npm start
 - [ ] COD checkout hoạt động
 
 **Tùy chọn** (nếu demo payment):
+
 - [ ] VNPay sandbox credentials
 - [ ] MoMo sandbox credentials
 - [ ] Test redirect đến payment page

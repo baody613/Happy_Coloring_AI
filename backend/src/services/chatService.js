@@ -1,53 +1,57 @@
 import { db } from "../config/firebase.js";
 
-// Intent detection - phân loại ý định của người dùng
+// ─── Intent detection ─────────────────────────────────────────────────────────
 const detectIntent = (message) => {
   const msg = message.toLowerCase();
 
-  // Chào hỏi
-  if (/(xin chào|chào|hello|hi|hey)/i.test(msg)) {
-    return "greeting";
-  }
+  if (/(xin chào|chào|hello|hi\b|hey|alo)/i.test(msg)) return "greeting";
 
-  // Tìm sản phẩm theo giá
-  if (/(giá|price|bao nhiêu|rẻ|đắt|tiền)/i.test(msg)) {
+  if (/(đổi trả|hoàn tiền|bảo hành|khiếu nại|return|refund)/i.test(msg))
+    return "return_policy";
+
+  if (/(khuyến mãi|giảm giá|sale|voucher|coupon|ưu đãi|mã giảm)/i.test(msg))
+    return "promotion";
+
+  if (/(hướng dẫn|cách tô|tô như thế nào|tutorial|bắt đầu)/i.test(msg))
+    return "tutorial";
+
+  if (
+    /(giá|price|bao nhiêu|rẻ|đắt|tiền|bảng giá|50k|100k|200k|dưới|trên|từ.*k|\d+k)/i.test(
+      msg,
+    )
+  )
     return "price_inquiry";
-  }
 
-  // Tìm theo danh mục
-  if (/(loại|thể loại|category|danh mục|chủ đề)/i.test(msg)) {
+  if (/(loại|thể loại|category|danh mục|chủ đề|có những gì|bán gì)/i.test(msg))
     return "category_inquiry";
-  }
 
-  // Hỏi về AI/tính năng
-  if (/(ai|tạo|generate|custom|vẽ)/i.test(msg)) {
+  if (/(ai\b|tạo tranh|generate|tự tạo|custom|thiết kế riêng)/i.test(msg))
     return "ai_feature";
-  }
 
-  // Hỏi về vận chuyển
-  if (/(ship|giao hàng|vận chuyển|delivery)/i.test(msg)) {
+  if (/(ship|giao hàng|vận chuyển|delivery|bao lâu|thời gian giao)/i.test(msg))
     return "shipping";
-  }
 
-  // Hỏi về thanh toán
-  if (/(thanh toán|payment|pay|momo|visa)/i.test(msg)) {
+  if (/(thanh toán|payment|pay|momo|visa|chuyển khoản|cod)/i.test(msg))
     return "payment";
-  }
 
-  // Tìm sản phẩm cụ thể (có từ khóa)
-  if (/(tìm|search|có|muốn|recommend|gợi ý)/i.test(msg)) {
+  if (/(về|giới thiệu|store|shop|thương hiệu|yu ling|yuling)/i.test(msg))
+    return "about";
+
+  if (
+    /(tìm|search|có.*tranh|muốn|recommend|gợi ý|động vật|phong cảnh|hoa|anime|mandala|người|trẻ em|mèo|chó|hươu|sư tử|hổ|báo)/i.test(
+      msg,
+    )
+  )
     return "product_search";
-  }
 
   return "general";
 };
 
-// Extract keywords từ message
+// ─── Extract keywords ─────────────────────────────────────────────────────────
 const extractKeywords = (message) => {
   const keywords = [];
   const msg = message.toLowerCase();
 
-  // Danh mục phổ biến
   const categories = [
     "động vật",
     "phong cảnh",
@@ -60,165 +64,91 @@ const extractKeywords = (message) => {
     "landscape",
     "flower",
     "portrait",
+    "mèo",
+    "chó",
+    "hươu",
+    "sư tử",
+    "hổ",
+    "báo",
+    "thỏ",
+    "gấu",
+    "biển",
+    "núi",
+    "rừng",
+    "thác",
+    "làng quê",
   ];
 
   categories.forEach((cat) => {
-    if (msg.includes(cat)) {
-      keywords.push(cat);
-    }
+    if (msg.includes(cat)) keywords.push(cat);
   });
 
-  // Extract giá
+  // Extract số tiền
   const priceMatch = msg.match(/(\d+)\s*(k|nghìn|ngàn)/i);
-  if (priceMatch) {
-    keywords.push(`price:${parseInt(priceMatch[1]) * 1000}`);
-  }
+  if (priceMatch) keywords.push(`price:${parseInt(priceMatch[1]) * 1000}`);
+
+  // Extract từ khoá tự do (danh từ >= 3 ký tự, không phải stopword)
+  const stopWords = new Set([
+    "tôi",
+    "bạn",
+    "có",
+    "không",
+    "và",
+    "hoặc",
+    "với",
+    "cho",
+    "của",
+    "này",
+    "kia",
+    "mình",
+    "muốn",
+    "tìm",
+  ]);
+  const words = msg
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !stopWords.has(w));
+  words.forEach((w) => {
+    if (!keywords.includes(w)) keywords.push(w);
+  });
 
   return keywords;
 };
 
-// Generate response dựa trên intent
-const generateResponse = async (intent, message, keywords) => {
-  switch (intent) {
-    case "greeting":
-      return {
-        text:
-          "Xin chào! 👋 Tôi là trợ lý của Yu Ling Store. Tôi có thể giúp bạn:\n\n" +
-          "🎨 Tìm tranh tô màu theo chủ đề\n" +
-          "💰 Tư vấn sản phẩm theo giá\n" +
-          "✨ Giải thích về dịch vụ tạo tranh AI\n" +
-          "🚚 Thông tin vận chuyển & thanh toán\n\n" +
-          "Bạn cần tôi giúp gì?",
-        suggestions: [
-          "Tìm tranh giá rẻ",
-          "Tạo tranh AI là gì?",
-          "Có tranh động vật không?",
-        ],
-      };
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const formatPrice = (price) =>
+  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+    price,
+  );
 
-    case "price_inquiry":
-      const products = await searchProducts({ sortBy: "price" });
-      const priceRanges = getPriceRanges(products);
-
-      return {
-        text:
-          `💰 **Bảng giá tranh tô màu:**\n\n` +
-          `${priceRanges}\n\n` +
-          `Bạn muốn xem tranh ở mức giá nào?`,
-        suggestions: ["Dưới 50k", "Từ 50k - 100k", "Trên 100k"],
-        products: products.slice(0, 3),
-      };
-
-    case "category_inquiry":
-      const categories = await getCategories();
-      return {
-        text:
-          `📂 **Các danh mục tranh hiện có:**\n\n` +
-          categories.map((cat) => `• ${cat.name}`).join("\n") +
-          `\n\nBạn thích chủ đề nào?`,
-        suggestions: categories.slice(0, 3).map((c) => c.name),
-      };
-
-    case "ai_feature":
-      return {
-        text:
-          "✨ **Tạo Tranh AI - Độc Đáo Riêng Của Bạn**\n\n" +
-          '🎯 Bạn chỉ cần mô tả ý tưởng (VD: "con mèo ngồi dưới trăng")\n' +
-          "🤖 AI sẽ tạo tranh tô màu theo yêu cầu của bạn\n" +
-          "🎨 Tranh được chia thành các vùng số để tô màu\n" +
-          "📦 Giao file PDF + hướng dẫn tô\n\n" +
-          "Giá: 50.000đ - 150.000đ tùy độ phức tạp\n" +
-          "Thời gian: 1-2 ngày\n\n" +
-          "Bạn muốn thử tạo tranh AI không?",
-        suggestions: [
-          "Tạo tranh AI ngay",
-          "Xem mẫu tranh AI",
-          "Giá tạo tranh AI",
-        ],
-      };
-
-    case "shipping":
-      return {
-        text:
-          "🚚 **Thông tin vận chuyển:**\n\n" +
-          "📍 Giao hàng toàn quốc qua:\n" +
-          "  • Giao Hàng Nhanh (2-3 ngày)\n" +
-          "  • J&T Express (3-5 ngày)\n\n" +
-          "💰 Phí ship: 15.000đ - 30.000đ\n" +
-          "🎁 Miễn phí ship đơn từ 200.000đ\n\n" +
-          "📦 Sản phẩm được đóng gói cẩn thận, kèm hướng dẫn tô màu!",
-        suggestions: ["Xem sản phẩm", "Chính sách đổi trả"],
-      };
-
-    case "payment":
-      return {
-        text:
-          "💳 **Phương thức thanh toán:**\n\n" +
-          "✅ Chuyển khoản ngân hàng\n" +
-          "✅ Ví điện tử (MoMo, ZaloPay)\n" +
-          "✅ Thẻ Visa/Mastercard\n" +
-          "✅ COD (Thanh toán khi nhận hàng)\n\n" +
-          "🔒 Thanh toán an toàn, bảo mật 100%",
-        suggestions: ["Xem sản phẩm", "Hướng dẫn đặt hàng"],
-      };
-
-    case "product_search":
-      const searchResults = await searchProducts({ keywords });
-      if (searchResults.length === 0) {
-        return {
-          text:
-            "😅 Xin lỗi, tôi không tìm thấy sản phẩm phù hợp.\n\n" +
-            "Bạn có thể:\n" +
-            "• Thử từ khóa khác\n" +
-            "• Xem tất cả sản phẩm\n" +
-            "• Tạo tranh AI theo ý bạn",
-          suggestions: ["Xem tất cả sản phẩm", "Tạo tranh AI"],
-        };
-      }
-
-      return {
-        text:
-          `🎨 Tôi tìm được ${searchResults.length} sản phẩm phù hợp với "${message}":\n\n` +
-          `Dưới đây là những sản phẩm tốt nhất:`,
-        products: searchResults.slice(0, 5),
-        suggestions: ["Xem thêm", "Lọc theo giá"],
-      };
-
-    default:
-      return {
-        text:
-          "🤔 Tôi chưa hiểu rõ câu hỏi của bạn.\n\n" +
-          "Bạn có thể hỏi tôi về:\n" +
-          "• Tìm tranh tô màu\n" +
-          "• Giá cả sản phẩm\n" +
-          "• Tạo tranh AI\n" +
-          "• Vận chuyển & thanh toán",
-        suggestions: ["Tìm tranh", "Tạo tranh AI", "Bảng giá"],
-      };
-  }
+const getPriceRanges = (products) => {
+  if (!products.length) return "Chưa có sản phẩm trong kho.";
+  const prices = products.map((p) => p.price).filter(Boolean);
+  if (!prices.length) return "Chưa có thông tin giá.";
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const under50 = products.filter((p) => p.price < 50000).length;
+  const mid = products.filter(
+    (p) => p.price >= 50000 && p.price <= 100000,
+  ).length;
+  const over100 = products.filter((p) => p.price > 100000).length;
+  return (
+    `• Dưới 50k: **${under50} sản phẩm**\n` +
+    `• Từ 50k - 100k: **${mid} sản phẩm**\n` +
+    `• Trên 100k: **${over100} sản phẩm**\n` +
+    `• Giá thấp nhất: **${formatPrice(min)}**\n` +
+    `• Giá cao nhất: **${formatPrice(max)}**`
+  );
 };
 
-// Search products helper
+// ─── Search products ──────────────────────────────────────────────────────────
 const searchProducts = async (filters = {}) => {
   try {
-    let query = db.collection("products");
-
-    // Apply filters
-    if (filters.category) {
+    let query = db.collection("products").limit(100);
+    if (filters.category)
       query = query.where("category", "==", filters.category);
-    }
-
-    if (filters.sortBy === "price") {
-      query = query.orderBy("price", "asc");
-    } else {
-      query = query.orderBy("createdAt", "desc");
-    }
-
-    query = query.limit(10);
 
     const snapshot = await query.get();
     const products = [];
-
     snapshot.forEach((doc) => {
       const data = doc.data();
       products.push({
@@ -228,18 +158,25 @@ const searchProducts = async (filters = {}) => {
         imageUrl: data.imageUrl || "",
         category: data.category || "",
         description: data.description || "",
+        difficulty: data.difficulty || "",
       });
     });
 
-    // Filter by keywords if provided
+    if (filters.sortBy === "price") products.sort((a, b) => a.price - b.price);
+
     if (filters.keywords && filters.keywords.length > 0) {
-      return products.filter((p) => {
+      const scored = products.map((p) => {
         const searchText =
           `${p.title} ${p.description} ${p.category}`.toLowerCase();
-        return filters.keywords.some((kw) =>
-          searchText.includes(kw.toLowerCase())
-        );
+        const score = filters.keywords.filter(
+          (kw) =>
+            !kw.startsWith("price:") && searchText.includes(kw.toLowerCase()),
+        ).length;
+        return { ...p, _score: score };
       });
+      return scored
+        .filter((p) => p._score > 0)
+        .sort((a, b) => b._score - a._score);
     }
 
     return products;
@@ -249,64 +186,235 @@ const searchProducts = async (filters = {}) => {
   }
 };
 
-// Get categories helper
+// ─── Get categories (fallback từ products nếu collection rỗng) ────────────────
 const getCategories = async () => {
   try {
-    const snapshot = await db.collection("categories").limit(10).get();
-    const categories = [];
-
-    snapshot.forEach((doc) => {
-      categories.push({ id: doc.id, ...doc.data() });
+    const snapshot = await db.collection("categories").limit(20).get();
+    if (!snapshot.empty) {
+      const cats = [];
+      snapshot.forEach((doc) => cats.push({ id: doc.id, ...doc.data() }));
+      return cats;
+    }
+    // Fallback: derive from products
+    const productsSnap = await db.collection("products").limit(100).get();
+    const catSet = new Set();
+    productsSnap.forEach((doc) => {
+      const cat = doc.data().category;
+      if (cat) catSet.add(cat);
     });
-
-    return categories;
+    return Array.from(catSet).map((name) => ({ name }));
   } catch (error) {
     console.error("Get categories error:", error);
     return [];
   }
 };
 
-// Get price ranges
-const getPriceRanges = (products) => {
-  if (products.length === 0) return "Chưa có sản phẩm";
+// ─── Generate response ────────────────────────────────────────────────────────
+const generateResponse = async (intent, message, keywords) => {
+  const msg = message.toLowerCase();
 
-  const prices = products.map((p) => p.price).filter((p) => p);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
+  switch (intent) {
+    case "greeting":
+      return {
+        text:
+          "Xin chào! 👋 Tôi là **Yu Ling Assistant** - trợ lý mua sắm của Yu Ling Store.\n\n" +
+          "Tôi có thể giúp bạn:\n" +
+          "🎨 Tìm tranh tô màu theo chủ đề & giá\n" +
+          "💰 Tư vấn sản phẩm phù hợp túi tiền\n" +
+          "✨ Giải thích tính năng tạo tranh AI\n" +
+          "🚚 Thông tin vận chuyển & thanh toán\n\n" +
+          "Bạn cần tôi giúp gì nào?",
+        suggestions: ["Tìm tranh giá rẻ", "Bảng giá", "Tạo tranh AI là gì?"],
+      };
 
-  return (
-    `• Giá thấp nhất: ${formatPrice(min)}\n` +
-    `• Giá cao nhất: ${formatPrice(max)}\n` +
-    `• Giá phổ biến: 50.000đ - 100.000đ`
-  );
+    case "price_inquiry": {
+      const allProducts = await searchProducts({ sortBy: "price" });
+      let filteredProducts = allProducts;
+      let rangeLabel = "";
+
+      if (/(dưới|under|<)\s*50/.test(msg) || /50[._]?000/.test(msg)) {
+        filteredProducts = allProducts.filter((p) => p.price < 50000);
+        rangeLabel = "dưới 50.000đ";
+      } else if (/(50k?\s*[-–]\s*100k?|từ\s*50|50.*đến.*100)/i.test(msg)) {
+        filteredProducts = allProducts.filter(
+          (p) => p.price >= 50000 && p.price <= 100000,
+        );
+        rangeLabel = "từ 50k - 100k";
+      } else if (/(trên|over|>)\s*100/.test(msg)) {
+        filteredProducts = allProducts.filter((p) => p.price > 100000);
+        rangeLabel = "trên 100.000đ";
+      }
+
+      if (rangeLabel) {
+        if (filteredProducts.length === 0) {
+          return {
+            text: `😅 Hiện chưa có sản phẩm **${rangeLabel}**. Bạn thử khoảng giá khác nhé!`,
+            suggestions: ["Dưới 50k", "Từ 50k - 100k", "Trên 100k"],
+          };
+        }
+        return {
+          text: `🎨 Có **${filteredProducts.length} sản phẩm ${rangeLabel}**, đây là một số gợi ý:`,
+          suggestions: ["Dưới 50k", "Từ 50k - 100k", "Trên 100k"],
+          products: filteredProducts.slice(0, 5),
+        };
+      }
+
+      return {
+        text: `💰 **Bảng giá tranh tô màu Yu Ling Store:**\n\n${getPriceRanges(allProducts)}\n\nBạn muốn xem mức giá nào?`,
+        suggestions: ["Dưới 50k", "Từ 50k - 100k", "Trên 100k"],
+        products: allProducts.slice(0, 3),
+      };
+    }
+
+    case "category_inquiry": {
+      const cats = await getCategories();
+      if (!cats.length) {
+        return {
+          text: "😅 Hiện chưa có thông tin danh mục. Bạn thử xem tất cả sản phẩm nhé!",
+          suggestions: ["Xem tất cả sản phẩm", "Tạo tranh AI"],
+        };
+      }
+      return {
+        text:
+          `📂 **Các danh mục tranh hiện có (${cats.length} loại):**\n\n` +
+          cats.map((c) => `• ${c.name || c.id}`).join("\n") +
+          `\n\nBạn thích chủ đề nào?`,
+        suggestions: cats.slice(0, 3).map((c) => `Tìm tranh ${c.name || c.id}`),
+      };
+    }
+
+    case "ai_feature":
+      return {
+        text:
+          "✨ **Tạo Tranh AI - Độc Đáo Riêng Của Bạn**\n\n" +
+          "🎯 Chỉ cần mô tả ý tưởng bằng tiếng Việt\n" +
+          '   VD: _"con mèo đội mũ phù thủy ngồi uống cà phê"_\n\n' +
+          "🤖 AI (FLUX.1) sẽ tạo ảnh theo mô tả của bạn\n" +
+          "🎨 Tranh phong cách paint-by-numbers, đường viền rõ ràng\n" +
+          "⚡ Thời gian tạo: chỉ ~5-10 giây\n\n" +
+          "👉 Truy cập **Tạo Tranh** trên menu để thử ngay!",
+        suggestions: ["Tạo tranh AI ngay", "Bảng giá", "Xem tranh mẫu"],
+      };
+
+    case "shipping":
+      return {
+        text:
+          "🚚 **Thông tin vận chuyển:**\n\n" +
+          "📍 Giao hàng toàn quốc qua:\n" +
+          "  • Giao Hàng Nhanh: 2-3 ngày\n" +
+          "  • J&T Express: 3-5 ngày\n\n" +
+          "💰 Phí ship: 15.000đ - 30.000đ\n" +
+          "🎁 **Miễn phí ship** đơn từ 200.000đ\n\n" +
+          "📦 Đóng gói cẩn thận, kèm hướng dẫn tô màu!",
+        suggestions: ["Bảng giá", "Thanh toán thế nào?", "Chính sách đổi trả"],
+      };
+
+    case "payment":
+      return {
+        text:
+          "💳 **Phương thức thanh toán:**\n\n" +
+          "✅ Chuyển khoản ngân hàng\n" +
+          "✅ Ví điện tử (MoMo, ZaloPay)\n" +
+          "✅ Thẻ Visa/Mastercard\n" +
+          "✅ COD - thanh toán khi nhận hàng\n\n" +
+          "🔒 Thanh toán qua Stripe, bảo mật 100%",
+        suggestions: ["Xem sản phẩm", "Phí vận chuyển?"],
+      };
+
+    case "return_policy":
+      return {
+        text:
+          "🔄 **Chính sách đổi trả:**\n\n" +
+          "✅ Đổi trả trong vòng **7 ngày** kể từ ngày nhận hàng\n" +
+          "✅ Sản phẩm còn nguyên vẹn, chưa mở hộp\n" +
+          "✅ Hoàn tiền 100% nếu sản phẩm bị lỗi do nhà sản xuất\n\n" +
+          "📞 Liên hệ hỗ trợ qua email hoặc chat để được xử lý nhanh!",
+        suggestions: ["Liên hệ hỗ trợ", "Xem sản phẩm"],
+      };
+
+    case "promotion":
+      return {
+        text:
+          "🎉 **Mã giảm giá hiện có:**\n\n" +
+          "🏷️ `YULING10` — Giảm **10%** toàn bộ đơn hàng\n" +
+          "🏷️ `YULING20` — Giảm **20%** cho đơn từ 200k\n" +
+          "🏷️ `GIAMGIA15` — Giảm **15%** cho khách mới\n\n" +
+          "💡 Nhập mã ở trang Giỏ Hàng khi thanh toán!",
+        suggestions: ["Xem sản phẩm", "Bảng giá"],
+      };
+
+    case "tutorial":
+      return {
+        text:
+          "🖌️ **Hướng dẫn tô màu tranh số hóa:**\n\n" +
+          "1️⃣ Mở hộp, trải canvas lên bàn phẳng\n" +
+          "2️⃣ Tìm số trên canvas tương ứng với số trên lọ màu\n" +
+          "3️⃣ Tô từ vùng nhỏ → lớn, từ trên xuống dưới\n" +
+          "4️⃣ Chờ màu khô trước khi tô vùng kế bên\n" +
+          "5️⃣ Tô 2-3 lớp để màu đều và đẹp\n\n" +
+          "🎨 Mẹo: Bắt đầu từ màu sáng nhất, tô cuối màu tối!",
+        suggestions: ["Xem sản phẩm", "Tạo tranh AI"],
+      };
+
+    case "about":
+      return {
+        text:
+          "🏪 **Về Yu Ling Store:**\n\n" +
+          "🎨 Chuyên cung cấp tranh tô màu số hóa chất lượng cao\n" +
+          "🤖 Tích hợp AI để tạo tranh theo ý muốn của bạn\n" +
+          "🌟 Hơn 1000+ mẫu tranh đa dạng chủ đề\n" +
+          "🚚 Giao hàng toàn quốc, đóng gói cẩn thận\n\n" +
+          "💌 Sứ mệnh: Mang niềm vui tô màu đến mọi nhà!",
+        suggestions: ["Xem sản phẩm", "Tạo tranh AI", "Bảng giá"],
+      };
+
+    case "product_search": {
+      const results = await searchProducts({ keywords });
+      if (!results.length) {
+        return {
+          text:
+            `😅 Không tìm thấy sản phẩm phù hợp với "_${message}_".\n\n` +
+            "Bạn có thể:\n" +
+            "• Thử từ khóa khác (VD: hoa, động vật, phong cảnh)\n" +
+            "• Hoặc tạo tranh AI theo ý bạn!",
+          suggestions: ["Xem tất cả sản phẩm", "Tạo tranh AI", "Bảng giá"],
+        };
+      }
+      return {
+        text: `🎨 Tìm được **${results.length} sản phẩm** phù hợp:`,
+        products: results.slice(0, 5),
+        suggestions: ["Xem thêm", "Lọc theo giá", "Tìm chủ đề khác"],
+      };
+    }
+
+    default:
+      return {
+        text:
+          "🤔 Tôi chưa hiểu rõ câu hỏi của bạn.\n\n" +
+          "Bạn có thể hỏi tôi về:\n" +
+          "• 🎨 Tìm tranh tô màu\n" +
+          "• 💰 Giá cả & khuyến mãi\n" +
+          "• ✨ Tạo tranh AI\n" +
+          "• 🚚 Vận chuyển & thanh toán\n" +
+          "• 🔄 Chính sách đổi trả",
+        suggestions: ["Tìm tranh", "Bảng giá", "Tạo tranh AI"],
+      };
+  }
 };
 
-// Format price
-const formatPrice = (price) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(price);
-};
-
-// Main chat handler
+// ─── Main chat handler ────────────────────────────────────────────────────────
 export const handleChatMessage = async (message) => {
   try {
     const intent = detectIntent(message);
     const keywords = extractKeywords(message);
-
     const response = await generateResponse(intent, message, keywords);
-
-    return {
-      success: true,
-      response,
-    };
+    return { success: true, response };
   } catch (error) {
     console.error("Chat service error:", error);
     return {
       success: false,
       response: {
-        text: "😅 Xin lỗi, tôi gặp lỗi. Vui lòng thử lại sau.",
+        text: "😅 Xin lỗi, tôi gặp lỗi kỹ thuật. Vui lòng thử lại sau!",
         suggestions: ["Thử lại", "Xem sản phẩm"],
       },
     };

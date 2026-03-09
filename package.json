@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fal-ai/client": "^1.9.4",
     "@sendgrid/mail": "^8.1.6"
   }
 }

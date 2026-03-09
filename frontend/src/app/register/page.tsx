@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuthStore } from '@/store/authStore';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuthStore } from "@/store/authStore";
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -19,21 +22,23 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validation
     if (!agreeToTerms) {
-      setError('Bạn phải đồng ý với Điều khoản dịch vụ và Chính sách bảo mật để đăng ký!');
+      setError(
+        "Bạn phải đồng ý với Điều khoản dịch vụ và Chính sách bảo mật để đăng ký!",
+      );
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp!');
+      setError("Mật khẩu xác nhận không khớp!");
       return;
     }
 
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự!');
+      setError("Mật khẩu phải có ít nhất 6 ký tự!");
       return;
     }
 
@@ -45,10 +50,10 @@ export default function RegisterPage() {
 
       // Chuyển về trang chủ sau 1.5 giây
       setTimeout(() => {
-        router.push('/');
+        router.push("/");
       }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+      setError(err.message || "Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -86,7 +91,10 @@ export default function RegisterPage() {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="displayName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Họ và tên
               </label>
               <input
@@ -102,7 +110,10 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email
               </label>
               <input
@@ -119,20 +130,37 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Mật khẩu
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="w-5 h-5" />
+                  ) : (
+                    <FaEye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
               <p className="mt-1 text-xs text-gray-500">Tối thiểu 6 ký tự</p>
             </div>
 
@@ -143,17 +171,33 @@ export default function RegisterPage() {
               >
                 Xác nhận mật khẩu
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  aria-label={
+                    showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <FaEyeSlash className="w-5 h-5" />
+                  ) : (
+                    <FaEye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -166,8 +210,11 @@ export default function RegisterPage() {
               onChange={(e) => setAgreeToTerms(e.target.checked)}
               className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded cursor-pointer"
             />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900 cursor-pointer">
-              Tôi đồng ý với{' '}
+            <label
+              htmlFor="terms"
+              className="ml-2 block text-sm text-gray-900 cursor-pointer"
+            >
+              Tôi đồng ý với{" "}
               <a
                 href="/terms"
                 target="_blank"
@@ -175,8 +222,8 @@ export default function RegisterPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 Điều khoản dịch vụ
-              </a>{' '}
-              và{' '}
+              </a>{" "}
+              và{" "}
               <a
                 href="/privacy"
                 target="_blank"
@@ -194,7 +241,7 @@ export default function RegisterPage() {
               disabled={loading || !agreeToTerms}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Đang đăng ký...' : 'Đăng ký'}
+              {loading ? "Đang đăng ký..." : "Đăng ký"}
             </button>
             {!agreeToTerms && (
               <p className="mt-2 text-xs text-red-600 text-center">
@@ -205,8 +252,11 @@ export default function RegisterPage() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Đã có tài khoản?{' '}
-              <Link href="/login" className="font-medium text-purple-600 hover:text-purple-500">
+              Đã có tài khoản?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-purple-600 hover:text-purple-500"
+              >
                 Đăng nhập ngay
               </Link>
             </p>

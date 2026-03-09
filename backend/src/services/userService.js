@@ -1,4 +1,4 @@
-import { db } from "../config/firebase.js";
+import { db, auth } from "../config/firebase.js";
 import { formatDate } from "../utils/helpers.js";
 
 /**
@@ -60,41 +60,67 @@ export const deleteUser = async (uid) => {
   return true;
 };
 
-// Get all users with pagination
+// Get all users with pagination — source of truth: Firebase Auth
 export const getAllUsers = async (page = 1, limit = 10, filters = {}) => {
-  let query = db.collection("users");
+  // Fetch all Auth users (listUsers supports up to 1000 per call)
+  let allAuthUsers = [];
+  let nextPageToken;
+  do {
+    const result = await auth.listUsers(1000, nextPageToken);
+    allAuthUsers = allAuthUsers.concat(result.users);
+    nextPageToken = result.pageToken;
+  } while (nextPageToken);
+
+  // Fetch Firestore profiles for extra fields (phone, address, role, createdAt)
+  const firestoreSnap = await db.collection("users").get();
+  const firestoreMap = {};
+  firestoreSnap.forEach((doc) => {
+    firestoreMap[doc.id] = doc.data();
+  });
+
+  // Merge Auth + Firestore
+  let users = allAuthUsers.map((authUser) => {
+    const profile = firestoreMap[authUser.uid] || {};
+    return {
+      id: authUser.uid,
+      email: authUser.email || "",
+      displayName: authUser.displayName || profile.displayName || "",
+      phoneNumber: authUser.phoneNumber || profile.phoneNumber || "",
+      address: profile.address || "",
+      disabled: authUser.disabled || false,
+      role: profile.role || "user",
+      createdAt: authUser.metadata.creationTime || profile.createdAt || "",
+      updatedAt: profile.updatedAt || "",
+    };
+  });
 
   // Apply filters
-  if (filters.role) {
-    query = query.where("role", "==", filters.role);
-  }
-
   if (filters.search) {
-    // Note: Firestore doesn't support full-text search
-    // This is a simple implementation - consider using Algolia or similar for production
-    query = query
-      .where("email", ">=", filters.search)
-      .where("email", "<=", filters.search + "\uf8ff");
+    const q = filters.search.toLowerCase();
+    users = users.filter(
+      (u) =>
+        u.email.toLowerCase().includes(q) ||
+        (u.displayName && u.displayName.toLowerCase().includes(q)),
+    );
+  }
+  if (filters.role) {
+    users = users.filter((u) => u.role === filters.role);
   }
 
-  // Get total count
-  const totalSnapshot = await query.get();
-  const total = totalSnapshot.size;
+  // Sort newest first
+  users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  // Apply pagination
+  const total = users.length;
   const skip = (page - 1) * limit;
-  query = query.orderBy("createdAt", "desc").offset(skip).limit(limit);
-
-  const snapshot = await query.get();
-  const users = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const paged = users.slice(skip, skip + limit);
 
   return {
-    users,
+    users: paged,
     pagination: {
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limit) || 1,
     },
   };
 };
@@ -106,12 +132,35 @@ export const updateUserRole = async (uid, role) => {
 
 // Get user stats
 export const getUserStats = async () => {
-  const usersSnapshot = await db.collection("users").get();
-  const users = usersSnapshot.docs.map((doc) => doc.data());
+  let allAuthUsers = [];
+  let nextPageToken;
+  do {
+    const result = await auth.listUsers(1000, nextPageToken);
+    allAuthUsers = allAuthUsers.concat(result.users);
+    nextPageToken = result.pageToken;
+  } while (nextPageToken);
+
+  const firestoreSnap = await db.collection("users").get();
+  const firestoreMap = {};
+  firestoreSnap.forEach((doc) => {
+    firestoreMap[doc.id] = doc.data();
+  });
+
+  const adminEmails = (
+    process.env.ADMIN_EMAILS || "admin@yulingstore.com,baody613@gmail.com"
+  )
+    .split(",")
+    .map((e) => e.trim().toLowerCase());
+
+  const admins = allAuthUsers.filter(
+    (u) =>
+      adminEmails.includes((u.email || "").toLowerCase()) ||
+      (firestoreMap[u.uid] && firestoreMap[u.uid].role === "admin"),
+  ).length;
 
   return {
-    total: users.length,
-    admins: users.filter((u) => u.role === "admin").length,
-    users: users.filter((u) => u.role === "user").length,
+    total: allAuthUsers.length,
+    admins,
+    users: allAuthUsers.length - admins,
   };
 };

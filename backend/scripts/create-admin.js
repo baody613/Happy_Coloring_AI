@@ -3,10 +3,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize Firebase Admin
+// Initialize Firebase Admin (same logic as config/firebase.js)
+const privateKey = (() => {
+  const raw = process.env.FIREBASE_PRIVATE_KEY;
+  const base64 = process.env.FIREBASE_PRIVATE_KEY_BASE64;
+  if (base64) return Buffer.from(base64, "base64").toString("utf8");
+  if (raw) return raw.replace(/\\n/g, "\n");
+  return undefined;
+})();
+
 const serviceAccount = {
   projectId: process.env.FIREBASE_PROJECT_ID,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  privateKey,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
 };
 

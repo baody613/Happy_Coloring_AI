@@ -30,6 +30,7 @@
 ## 💻 CÔNG NGHỆ SỬ DỤNG
 
 ### Frontend
+
 - **Next.js 14** (App Router, Server Components)
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
@@ -37,6 +38,7 @@
 - **Zustand** - State management
 
 ### Backend
+
 - **Node.js + Express**
 - **Firebase Admin SDK**
   - Authentication
@@ -46,10 +48,12 @@
 - **Joi** - Validation
 
 ### AI Integration
+
 - **Hugging Face API** - Image generation
 - Model: stabilityai/stable-diffusion-2-1
 
 ### Deployment Ready
+
 - Firebase Hosting
 - Render / Railway (Backend)
 - Vercel (Frontend)
@@ -59,12 +63,14 @@
 ## ✨ TÍNH NĂNG CHÍNH
 
 ### 1. 🔐 Xác thực người dùng
+
 - Đăng ký / Đăng nhập
 - Firebase Authentication
 - Quên mật khẩu với OTP qua email
 - Show/hide password toggle
 
 ### 2. 🛍️ Mua sắm
+
 - **Gallery hiển thị sản phẩm**
   - Lọc theo danh mục, giá, độ khó
   - Sắp xếp theo giá, tên, độ phổ biến
@@ -83,12 +89,14 @@
   - Xác nhận đơn hàng
 
 ### 3. 🤖 AI Generation
+
 - Nhập text prompt
 - Tạo ảnh paint-by-numbers bằng AI
 - Tự động upload lên Firebase Storage
 - Lưu vào gallery cá nhân
 
 ### 4. 👨‍💼 Quản trị Admin
+
 - **Đăng nhập admin**: `admin@paintbynumbers.com` / `admin123`
 - **Quản lý sản phẩm**
   - Thêm / Sửa / Xóa sản phẩm
@@ -100,11 +108,13 @@
   - Xem chi tiết đơn hàng
 
 ### 5. 💬 Chatbot AI
+
 - Hỗ trợ khách hàng
 - Trả lời câu hỏi về sản phẩm
 - Hướng dẫn mua hàng
 
 ### 6. 📧 Email Service
+
 - Gửi OTP quên mật khẩu
 - Nodemailer + Gmail SMTP
 - HTML email template
@@ -114,11 +124,13 @@
 ## 🚀 HƯỚNG DẪN KHỞI ĐỘNG
 
 ### Yêu cầu hệ thống
+
 - Node.js 18+
 - npm hoặc yarn
 - Firebase project (đã setup sẵn)
 
 ### Bước 1: Clone project
+
 ```bash
 git clone https://github.com/baody613/Happy_Coloring_AI.git
 cd paint-by-numbers-ai
@@ -127,12 +139,14 @@ cd paint-by-numbers-ai
 ### Bước 2: Cài đặt dependencies
 
 **Backend**:
+
 ```bash
 cd backend
 npm install
 ```
 
 **Frontend**:
+
 ```bash
 cd frontend
 npm install
@@ -141,6 +155,7 @@ npm install
 ### Bước 3: Kiểm tra .env files
 
 **Backend** `.env`:
+
 ```env
 PORT=3001
 NODE_ENV=development
@@ -160,6 +175,7 @@ HF_TOKEN=hf_...
 ```
 
 **Frontend** `.env.local`:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
@@ -173,20 +189,25 @@ NEXT_PUBLIC_FIREBASE_APP_ID=1:479...
 ### Bước 4: Khởi động server
 
 **Terminal 1 - Backend**:
+
 ```bash
 cd backend
 npm start
 ```
+
 ✅ Backend chạy tại: `http://localhost:3001`
 
 **Terminal 2 - Frontend**:
+
 ```bash
 cd frontend
 npm run dev
 ```
+
 ✅ Frontend chạy tại: `http://localhost:3000`
 
 ### Bước 5: Mở trình duyệt
+
 Truy cập: `http://localhost:3000`
 
 ---
@@ -299,6 +320,7 @@ Truy cập: `http://localhost:3000`
 ## 🌟 CÁC ĐIỂM NỔI BẬT
 
 ### 1. Architecture Design
+
 - **Frontend**: Server Components + Client Components (Next.js 14 App Router)
 - **Backend**: RESTful API với Express
 - **Database**: Firestore NoSQL
@@ -306,6 +328,7 @@ Truy cập: `http://localhost:3000`
 - **Authentication**: Firebase Auth với JWT tokens
 
 ### 2. Security
+
 - ✅ Bearer token authentication
 - ✅ Admin role-based access control
 - ✅ Input validation với Joi schemas
@@ -313,6 +336,7 @@ Truy cập: `http://localhost:3000`
 - ✅ Environment variables cho sensitive data
 
 ### 3. User Experience
+
 - ✅ Loading states trong tất cả API calls
 - ✅ Toast notifications cho feedback
 - ✅ Framer Motion animations
@@ -321,6 +345,7 @@ Truy cập: `http://localhost:3000`
 - ✅ Fullscreen image viewer
 
 ### 4. Performance
+
 - ✅ Next.js Image optimization
 - ✅ Lazy loading components
 - ✅ Pagination cho products/orders
@@ -328,6 +353,7 @@ Truy cập: `http://localhost:3000`
 - ✅ Firebase Cloud Storage CDN
 
 ### 5. Code Quality
+
 - ✅ TypeScript cho type safety
 - ✅ ESLint + Prettier
 - ✅ Component reusability
@@ -335,6 +361,7 @@ Truy cập: `http://localhost:3000`
 - ✅ Comprehensive error handling
 
 ### 6. Developer Experience
+
 - ✅ Hot reload (development)
 - ✅ Clear error messages
 - ✅ Console logs đã remove (production-ready)
@@ -348,6 +375,7 @@ Truy cập: `http://localhost:3000`
 ### Collections
 
 #### `users`
+
 ```javascript
 {
   uid: string,
@@ -359,6 +387,7 @@ Truy cập: `http://localhost:3000`
 ```
 
 #### `products`
+
 ```javascript
 {
   id: string,
@@ -379,6 +408,7 @@ Truy cập: `http://localhost:3000`
 ```
 
 #### `orders`
+
 ```javascript
 {
   id: string,
@@ -413,6 +443,7 @@ Truy cập: `http://localhost:3000`
 ```
 
 #### `generations`
+
 ```javascript
 {
   id: string,
@@ -429,6 +460,7 @@ Truy cập: `http://localhost:3000`
 ## 🔧 TROUBLESHOOTING
 
 ### Backend không khởi động
+
 ```bash
 # Kiểm tra port 3001 có bị chiếm không
 netstat -ano | findstr :3001
@@ -442,16 +474,19 @@ npm start
 ```
 
 ### Frontend không kết nối backend
+
 - Kiểm tra `NEXT_PUBLIC_API_URL` trong `.env.local`
 - Phải là `http://localhost:3001/api`
 - Restart frontend sau khi sửa .env
 
 ### Email OTP không gửi
+
 - Kiểm tra `EMAIL_USER` và `EMAIL_PASSWORD` trong backend `.env`
 - Gmail App Password phải đúng (16 ký tự)
 - Bật "Less secure app access" trong Gmail (nếu cần)
 
 ### Firebase errors
+
 - Kiểm tra Firebase credentials trong .env
 - Ensure `FIREBASE_PRIVATE_KEY` có đầy đủ `-----BEGIN PRIVATE KEY-----` và `-----END PRIVATE KEY-----`
 - Replace `\n` bằng newlines thật trong private key
@@ -493,11 +528,12 @@ Dự án **Paint by Numbers AI** thể hiện:
 **Thời gian hoàn thành**: 3 tháng  
 **Số dòng code**: ~15,000 lines  
 **Số features**: 20+ features  
-**Tech stack**: 10+ technologies  
+**Tech stack**: 10+ technologies
 
 ---
 
 **💡 TIP CHO DEMO**:
+
 - Chuẩn bị trước các account (user + admin)
 - Có sản phẩm mẫu trong database
 - Test flow trước khi demo

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaMagic,
   FaSpinner,
@@ -10,53 +10,53 @@ import {
   FaRedo,
   FaShoppingCart,
   FaLightbulb,
-} from 'react-icons/fa';
-import api from '@/lib/api';
-import { useAuthStore } from '@/store/authStore';
-import toast from 'react-hot-toast';
+} from "react-icons/fa";
+import api from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
+import toast from "react-hot-toast";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function GeneratePage() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [prompt, setPrompt] = useState('');
-  const [style, setStyle] = useState('realistic');
-  const [complexity, setComplexity] = useState('medium');
+  const [prompt, setPrompt] = useState("");
+  const [style, setStyle] = useState("realistic");
+  const [complexity, setComplexity] = useState("medium");
   const [generating, setGenerating] = useState(false);
-  const [generationId, setGenerationId] = useState('');
-  const [generatedImage, setGeneratedImage] = useState('');
+  const [generationId, setGenerationId] = useState("");
+  const [generatedImage, setGeneratedImage] = useState("");
 
   const handleGenerate = async () => {
     if (!user) {
-      toast.error('Vui lòng đăng nhập để sử dụng tính năng này');
-      router.push('/login');
+      toast.error("Vui lòng đăng nhập để sử dụng tính năng này");
+      router.push("/login");
       return;
     }
 
     if (!prompt.trim()) {
-      toast.error('Vui lòng nhập mô tả tranh');
+      toast.error("Vui lòng nhập mô tả tranh");
       return;
     }
 
     try {
       setGenerating(true);
-      setGeneratedImage('');
+      setGeneratedImage("");
 
-      const { data } = await api.post('/api/generate/paint-by-numbers', {
+      const { data } = await api.post("/generate/paint-by-numbers", {
         prompt,
         style,
         complexity,
       });
 
       setGenerationId(data.generationId);
-      toast.success('Đang tạo tranh... Vui lòng đợi');
+      toast.success("Đang tạo tranh... Vui lòng đợi");
 
       // Poll for status
       pollGenerationStatus(data.generationId);
     } catch (error: any) {
-      console.error('Generation error:', error);
-      toast.error(error.response?.data?.error || 'Có lỗi xảy ra');
+      console.error("Generation error:", error);
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra");
       setGenerating(false);
     }
   };
@@ -67,36 +67,36 @@ export default function GeneratePage() {
 
     const interval = setInterval(async () => {
       try {
-        const { data } = await api.get(`/api/generate/status/${id}`);
+        const { data } = await api.get(`/generate/status/${id}`);
 
-        if (data.status === 'completed') {
+        if (data.status === "completed") {
           setGeneratedImage(data.imageUrl);
           setGenerating(false);
           clearInterval(interval);
-          toast.success('Tạo tranh thành công!');
-        } else if (data.status === 'failed') {
+          toast.success("Tạo tranh thành công!");
+        } else if (data.status === "failed") {
           setGenerating(false);
           clearInterval(interval);
-          toast.error('Tạo tranh thất bại: ' + (data.error || 'Unknown error'));
+          toast.error("Tạo tranh thất bại: " + (data.error || "Unknown error"));
         }
 
         attempts++;
         if (attempts >= maxAttempts) {
           clearInterval(interval);
           setGenerating(false);
-          toast.error('Timeout: Quá trình tạo tranh mất quá lâu');
+          toast.error("Timeout: Quá trình tạo tranh mất quá lâu");
         }
       } catch (error) {
-        console.error('Polling error:', error);
+        console.error("Polling error:", error);
       }
     }, 5000);
   };
 
   const handleReset = () => {
-    setPrompt('');
-    setGeneratedImage('');
-    setStyle('realistic');
-    setComplexity('medium');
+    setPrompt("");
+    setGeneratedImage("");
+    setStyle("realistic");
+    setComplexity("medium");
   };
 
   return (
@@ -127,7 +127,9 @@ export default function GeneratePage() {
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="flex items-center gap-3 mb-4">
                 <FaLightbulb className="text-yellow-500 text-2xl" />
-                <h2 className="text-2xl font-bold text-gray-900">Mô Tả Ý Tưởng</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Mô Tả Ý Tưởng
+                </h2>
               </div>
               <textarea
                 value={prompt}
@@ -143,7 +145,9 @@ export default function GeneratePage() {
 
             {/* Style Selection */}
             <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">🎨 Chọn Phong Cách</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                🎨 Chọn Phong Cách
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 {styles.map((s) => (
                   <motion.button
@@ -153,13 +157,15 @@ export default function GeneratePage() {
                     whileTap={{ scale: 0.95 }}
                     className={`p-6 rounded-xl border-2 transition-all ${
                       style === s.value
-                        ? 'border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg'
-                        : 'border-gray-200 hover:border-purple-300 bg-white'
+                        ? "border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg"
+                        : "border-gray-200 hover:border-purple-300 bg-white"
                     }`}
                   >
                     <div className="text-4xl mb-3">{s.icon}</div>
                     <div className="font-bold text-lg">{s.label}</div>
-                    <div className="text-sm text-purple-400 mt-1">{s.description}</div>
+                    <div className="text-sm text-purple-400 mt-1">
+                      {s.description}
+                    </div>
                   </motion.button>
                 ))}
               </div>
@@ -167,7 +173,9 @@ export default function GeneratePage() {
 
             {/* Complexity Selection */}
             <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">⚙️ Độ Phức Tạp</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                ⚙️ Độ Phức Tạp
+              </h2>
               <div className="space-y-3">
                 {complexities.map((c) => (
                   <motion.button
@@ -177,18 +185,23 @@ export default function GeneratePage() {
                     whileTap={{ scale: 0.98 }}
                     className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
                       complexity === c.value
-                        ? 'border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 shadow-md'
-                        : 'border-gray-200 hover:border-purple-300 bg-white'
+                        ? "border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 shadow-md"
+                        : "border-gray-200 hover:border-purple-300 bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-bold text-lg flex items-center gap-2">
-                          {c.icon} <span className="text-pink-600">{c.label}</span>
+                          {c.icon}{" "}
+                          <span className="text-pink-600">{c.label}</span>
                         </div>
-                        <div className="text-sm text-purple-400 mt-1">{c.description}</div>
+                        <div className="text-sm text-purple-400 mt-1">
+                          {c.description}
+                        </div>
                       </div>
-                      {complexity === c.value && <div className="text-purple-600 text-2xl">✓</div>}
+                      {complexity === c.value && (
+                        <div className="text-purple-600 text-2xl">✓</div>
+                      )}
                     </div>
                   </motion.button>
                 ))}
@@ -202,11 +215,11 @@ export default function GeneratePage() {
               whileHover={{
                 scale: generating ? 1 : 1.05,
                 rotate: generating ? 0 : [0, -1, 1, -1, 0],
-                boxShadow: '0 20px 60px -15px rgba(168, 85, 247, 0.4)',
+                boxShadow: "0 20px 60px -15px rgba(168, 85, 247, 0.4)",
               }}
               whileTap={{ scale: generating ? 1 : 0.95 }}
               transition={{
-                type: 'spring',
+                type: "spring",
                 stiffness: 400,
                 damping: 17,
               }}
@@ -215,12 +228,12 @@ export default function GeneratePage() {
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
                 animate={{
-                  x: ['-100%', '100%'],
+                  x: ["-100%", "100%"],
                 }}
                 transition={{
                   repeat: Infinity,
                   duration: 2,
-                  ease: 'linear',
+                  ease: "linear",
                 }}
               />
               {generating ? (
@@ -237,7 +250,7 @@ export default function GeneratePage() {
                     transition={{
                       repeat: Infinity,
                       duration: 2,
-                      ease: 'easeInOut',
+                      ease: "easeInOut",
                     }}
                   >
                     <FaMagic className="text-2xl" />
@@ -255,7 +268,9 @@ export default function GeneratePage() {
             className="lg:sticky lg:top-8 h-fit"
           >
             <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">🖼️ Kết Quả</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                🖼️ Kết Quả
+              </h2>
 
               <AnimatePresence mode="wait">
                 {generating ? (
@@ -267,8 +282,12 @@ export default function GeneratePage() {
                     className="aspect-square bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex flex-col items-center justify-center"
                   >
                     <FaSpinner className="text-6xl text-purple-600 animate-spin mb-4" />
-                    <p className="text-lg font-semibold text-gray-900">Đang tạo tranh...</p>
-                    <p className="text-sm text-purple-300 mt-2">Vui lòng chờ trong giây lát</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      Đang tạo tranh...
+                    </p>
+                    <p className="text-sm text-purple-300 mt-2">
+                      Vui lòng chờ trong giây lát
+                    </p>
                   </motion.div>
                 ) : generatedImage ? (
                   <motion.div
@@ -343,21 +362,56 @@ export default function GeneratePage() {
 }
 
 const styles = [
-  { value: 'realistic', label: 'Chân Thực', icon: '🖼️', description: 'Sống động, chi tiết' },
-  { value: 'anime', label: 'Anime', icon: '🎌', description: 'Phong cách Nhật Bản' },
-  { value: 'cartoon', label: 'Hoạt Hình', icon: '🎨', description: 'Vui nhộn, đáng yêu' },
-  { value: 'abstract', label: 'Trừu Tượng', icon: '🌈', description: 'Nghệ thuật hiện đại' },
+  {
+    value: "realistic",
+    label: "Chân Thực",
+    icon: "🖼️",
+    description: "Sống động, chi tiết",
+  },
+  {
+    value: "anime",
+    label: "Anime",
+    icon: "🎌",
+    description: "Phong cách Nhật Bản",
+  },
+  {
+    value: "cartoon",
+    label: "Hoạt Hình",
+    icon: "🎨",
+    description: "Vui nhộn, đáng yêu",
+  },
+  {
+    value: "abstract",
+    label: "Trừu Tượng",
+    icon: "🌈",
+    description: "Nghệ thuật hiện đại",
+  },
 ];
 
 const complexities = [
-  { value: 'easy', label: 'Dễ', icon: '⭐', description: '12-20 màu - Phù hợp người mới' },
-  { value: 'medium', label: 'Trung Bình', icon: '⭐⭐', description: '20-36 màu - Cân bằng' },
-  { value: 'hard', label: 'Khó', icon: '⭐⭐⭐', description: '36+ màu - Chi tiết cao' },
+  {
+    value: "easy",
+    label: "Dễ",
+    icon: "⭐",
+    description: "12-20 màu - Phù hợp người mới",
+  },
+  {
+    value: "medium",
+    label: "Trung Bình",
+    icon: "⭐⭐",
+    description: "20-36 màu - Cân bằng",
+  },
+  {
+    value: "hard",
+    label: "Khó",
+    icon: "⭐⭐⭐",
+    description: "36+ màu - Chi tiết cao",
+  },
 ];
 
 const examplePrompts = [
-  'Con mèo dễ thương ngồi bên cửa sổ nhìn ra khu vườn',
-  'Phong cảnh biển hoàng hôn với những con sóng vỗ vào bờ',
-  'Cô gái anime với mái tóc dài cầm bó hoa',
-  'Rừng cây mùa thu với lá vàng rơi',
+  "Con mèo dễ thương ngồi bên cửa sổ nhìn ra khu vườn",
+  "Phong cảnh biển hoàng hôn với những con sóng vỗ vào bờ",
+  "Cô gái anime với mái tóc dài cầm bó hoa",
+  "Rừng cây mùa thu với lá vàng rơi",
 ];

@@ -91,6 +91,11 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng!");
+      router.push("/login");
+      return;
+    }
     if (!product) return;
     addItem(product, quantity);
     toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);

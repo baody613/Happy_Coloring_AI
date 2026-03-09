@@ -1,15 +1,14 @@
 import express from "express";
-import axios from "axios";
-import FormData from "form-data";
-import { db, storage } from "../config/firebase.js";
+import { fal } from "@fal-ai/client";
+import { db } from "../config/firebase.js";
 import { authenticateUser } from "../middleware/auth.js";
-import sharp from "sharp";
 
 const router = express.Router();
 
-// Hugging Face configuration (Free API)
-const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || "hf_demo"; // Works without key for free tier
-const HF_MODEL = "stabilityai/stable-diffusion-2-1"; // Free model
+// Fal.ai configuration
+fal.config({ credentials: process.env.FAL_KEY });
+// Model: FLUX.1 schnell - nhanh, chất lượng cao
+const FAL_MODEL = "fal-ai/flux/schnell";
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
@@ -83,7 +82,7 @@ async function generatePaintByNumbers(
   prompt,
   style,
   complexity,
-  userId
+  userId,
 ) {
   try {
     // Enhanced prompt for paint-by-numbers style
@@ -91,49 +90,20 @@ async function generatePaintByNumbers(
 
     let imageUrl;
 
-    // Use Hugging Face Inference API (Free)
+    // Use Fal.ai for generation
     try {
-      console.log("Generating with Hugging Face:", HF_MODEL);
-      imageUrl = await generateWithHuggingFace(enhancedPrompt);
-      console.log("Hugging Face success! Image URL:", imageUrl);
+      console.log("Generating with Fal.ai:", FAL_MODEL);
+      imageUrl = await generateWithFal(enhancedPrompt);
+      console.log("Fal.ai success! Image URL:", imageUrl);
     } catch (error) {
-      console.error("Hugging Face error:", error.message);
+      console.error("Fal.ai error:", error.message);
       throw error;
     }
 
-    // Download and process image
-    const response = await fetch(imageUrl);
-    const buffer = await response.arrayBuffer();
-
-    // Convert to paint-by-numbers style (simplified colors + outlines)
-    const processedBuffer = await sharp(Buffer.from(buffer))
-      .resize(1024, 1024)
-      .normalize()
-      .modulate({ saturation: 1.2 })
-      .toBuffer();
-
-    // Upload to Firebase Storage
-    const bucketName =
-      process.env.FIREBASE_STORAGE_BUCKET ||
-      "paint-by-numbers-ai-607c4.firebasestorage.app";
-    const bucket = storage.bucket(bucketName);
-    const filename = `generations/${userId}/${generationId}.png`;
-    const file = bucket.file(filename);
-
-    await file.save(processedBuffer, {
-      metadata: {
-        contentType: "image/png",
-      },
-    });
-
-    // Make file public and get URL
-    await file.makePublic();
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
-
-    // Update generation record
+    // Update generation record with Fal.ai URL directly
     await db.collection("generations").doc(generationId).update({
       status: "completed",
-      imageUrl: publicUrl,
+      imageUrl,
       completedAt: new Date().toISOString(),
     });
 
@@ -150,39 +120,35 @@ async function generatePaintByNumbers(
   }
 }
 
-// Generate with Hugging Face Inference API (Free)
-async function generateWithHuggingFace(prompt) {
-  console.log("Calling Hugging Face API...");
+// Generate with Fal.ai (FLUX.1 schnell)
+async function generateWithFal(prompt) {
+  console.log("Calling Fal.ai API...");
 
-  const response = await axios.post(
-    `https://api-inference.huggingface.co/models/${HF_MODEL}`,
-    { inputs: prompt },
-    {
-      headers: {
-        Authorization: `Bearer ${HF_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      responseType: "arraybuffer",
-      timeout: 120000, // 2 minutes timeout
-    }
-  );
-
-  // Upload to Firebase Storage and return URL
-  const buffer = Buffer.from(response.data);
-  const tempFilename = `temp/${Date.now()}.png`;
-  const bucketName =
-    process.env.FIREBASE_STORAGE_BUCKET ||
-    "paint-by-numbers-ai-607c4.firebasestorage.app";
-  const bucket = storage.bucket(bucketName);
-  const file = bucket.file(tempFilename);
-
-  await file.save(buffer, {
-    metadata: { contentType: "image/png" },
+  const result = await fal.subscribe(FAL_MODEL, {
+    input: {
+      prompt,
+      image_size: "square_hd", // 1024x1024
+      num_inference_steps: 4, // schnell chỉ cần 4 steps
+      num_images: 1,
+      enable_safety_checker: true,
+    },
+    logs: true,
+    onQueueUpdate: (update) => {
+      if (update.status === "IN_PROGRESS") {
+        console.log(
+          "Fal.ai progress:",
+          update.logs?.map((l) => l.message).join(", "),
+        );
+      }
+    },
   });
 
-  await file.makePublic();
-  const imageUrl = `https://storage.googleapis.com/${bucketName}/${tempFilename}`;
-  console.log("Image uploaded to:", imageUrl);
+  const imageUrl = result.data?.images?.[0]?.url;
+  if (!imageUrl) {
+    throw new Error("Fal.ai did not return an image URL");
+  }
+
+  console.log("Fal.ai image URL:", imageUrl);
   return imageUrl;
 }
 

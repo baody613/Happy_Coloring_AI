@@ -2,11 +2,13 @@ import express from "express";
 import { requireAdmin } from "../../middleware/auth.js";
 import {
   getAllUsers,
+  updateUser,
   updateUserRole,
   deleteUser,
   getUserStats,
 } from "../../services/index.js";
 import { sendSuccess, sendError } from "../../utils/helpers.js";
+import admin from "../../config/firebase.js";
 
 const router = express.Router();
 
@@ -38,6 +40,34 @@ router.get("/stats", async (req, res) => {
     sendSuccess(res, stats);
   } catch (error) {
     console.error("Get user stats error:", error);
+    sendError(res, error.message);
+  }
+});
+
+// Update user (disable/enable, displayName, etc.)
+router.put("/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { disabled, displayName, role } = req.body;
+
+    // Update Firebase Auth disabled status
+    if (typeof disabled === "boolean") {
+      await admin.auth().updateUser(userId, { disabled });
+    }
+
+    // Update Firestore fields
+    const firestoreUpdates = {};
+    if (displayName !== undefined) firestoreUpdates.displayName = displayName;
+    if (role !== undefined) firestoreUpdates.role = role;
+    if (typeof disabled === "boolean") firestoreUpdates.disabled = disabled;
+
+    if (Object.keys(firestoreUpdates).length > 0) {
+      await updateUser(userId, firestoreUpdates);
+    }
+
+    sendSuccess(res, { userId, ...req.body }, "User updated successfully");
+  } catch (error) {
+    console.error("Update user error:", error);
     sendError(res, error.message);
   }
 });

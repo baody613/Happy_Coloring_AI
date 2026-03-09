@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,7 +18,9 @@ import api from "@/lib/api";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
+import { useAuthStore } from "@/store/authStore";
 import { useHydration } from "@/hooks/useHydration";
+import { isAdmin } from "@/lib/adminConfig";
 import toast from "react-hot-toast";
 
 export default function GalleryPage() {
@@ -31,7 +34,15 @@ export default function GalleryPage() {
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
+  const { user } = useAuthStore();
+  const router = useRouter();
   const hydrated = useHydration();
+
+  useEffect(() => {
+    if (hydrated && user && isAdmin(user.email)) {
+      router.replace("/admin");
+    }
+  }, [hydrated, user, router]);
 
   useEffect(() => {
     fetchProducts();
@@ -89,6 +100,11 @@ export default function GalleryPage() {
   }, [products, filter, sortBy, priceRange, difficulty]);
 
   const handleAddToCart = (product: Product) => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để thêm vào giỏ hàng!");
+      router.push("/login");
+      return;
+    }
     addItem(product);
     toast.success("Đã thêm vào giỏ hàng!");
   };

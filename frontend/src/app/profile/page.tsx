@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useAuthStore } from '@/store/authStore';
-import { useFavoriteStore } from '@/store/favoriteStore';
-import { useCartStore } from '@/store/cartStore';
-import { useHydration } from '@/hooks';
-import { isAdmin } from '@/lib/adminConfig';
-import { FaHeart, FaShoppingCart, FaTrash } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useAuthStore } from "@/store/authStore";
+import { useFavoriteStore } from "@/store/favoriteStore";
+import { useCartStore } from "@/store/cartStore";
+import { useHydration } from "@/hooks";
+import { isAdmin } from "@/lib/adminConfig";
+import { FaHeart, FaShoppingCart, FaTrash } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const { user, signOut } = useAuthStore();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState("info");
   const hydrated = useHydration();
   const { favorites, removeFavorite } = useFavoriteStore();
   const { addItem } = useCartStore();
 
   useEffect(() => {
     if (!user) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     // Nếu là admin, redirect sang trang quản trị
     if (isAdmin(user.email)) {
-      router.push('/admin');
+      router.push("/admin");
     }
   }, [user, router]);
 
@@ -35,32 +35,47 @@ export default function ProfilePage() {
 
   const orderHistory = [
     {
-      id: 'DH001',
-      date: '2024-11-15',
-      product: 'Tranh Phong Cảnh Núi Non',
+      id: "DH001",
+      date: "2024-11-15",
+      product: "Tranh Phong Cảnh Núi Non",
       price: 299000,
-      status: 'Đã giao',
+      status: "Đã giao",
     },
     {
-      id: 'DH002',
-      date: '2024-11-10',
-      product: 'Tranh Hoa Anh Đào',
+      id: "DH002",
+      date: "2024-11-10",
+      product: "Tranh Hoa Anh Đào",
       price: 199000,
-      status: 'Đang giao',
+      status: "Đang giao",
     },
     {
-      id: 'DH003',
-      date: '2024-11-05',
-      product: 'Tranh Biển Hoàng Hôn',
+      id: "DH003",
+      date: "2024-11-05",
+      product: "Tranh Biển Hoàng Hôn",
       price: 349000,
-      status: 'Đã giao',
+      status: "Đã giao",
     },
   ];
 
   const vouchers = [
-    { code: 'WINTER2024', discount: '20%', expiry: '31/12/2024', status: 'Còn hạn' },
-    { code: 'NEWYEAR', discount: '100K', expiry: '15/01/2025', status: 'Còn hạn' },
-    { code: 'FLASH50', discount: '50K', expiry: '20/11/2024', status: 'Hết hạn' },
+    {
+      code: "WINTER2024",
+      discount: "20%",
+      expiry: "31/12/2024",
+      status: "Còn hạn",
+    },
+    {
+      code: "NEWYEAR",
+      discount: "100K",
+      expiry: "15/01/2025",
+      status: "Còn hạn",
+    },
+    {
+      code: "FLASH50",
+      discount: "50K",
+      expiry: "20/11/2024",
+      status: "Hết hạn",
+    },
   ];
 
   return (
@@ -70,11 +85,12 @@ export default function ProfilePage() {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="flex items-center space-x-4">
             <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-              {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+              {user.displayName?.charAt(0).toUpperCase() ||
+                user.email?.charAt(0).toUpperCase()}
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {user.displayName || 'Khách hàng'}
+                {user.displayName || "Khách hàng"}
               </h1>
               <p className="text-gray-600">{user.email}</p>
             </div>
@@ -85,41 +101,41 @@ export default function ProfilePage() {
         <div className="bg-white rounded-xl shadow-lg mb-6">
           <div className="flex border-b overflow-x-auto">
             <button
-              onClick={() => setActiveTab('info')}
+              onClick={() => setActiveTab("info")}
               className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
-                activeTab === 'info'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600'
+                activeTab === "info"
+                  ? "border-b-2 border-purple-600 text-purple-600"
+                  : "text-gray-600"
               }`}
             >
               📋 Thông Tin Cá Nhân
             </button>
             <button
-              onClick={() => setActiveTab('orders')}
+              onClick={() => setActiveTab("orders")}
               className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
-                activeTab === 'orders'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600'
+                activeTab === "orders"
+                  ? "border-b-2 border-purple-600 text-purple-600"
+                  : "text-gray-600"
               }`}
             >
               📦 Đơn Hàng & Lịch Sử
             </button>
             <button
-              onClick={() => setActiveTab('favorites')}
+              onClick={() => setActiveTab("favorites")}
               className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
-                activeTab === 'favorites'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600'
+                activeTab === "favorites"
+                  ? "border-b-2 border-purple-600 text-purple-600"
+                  : "text-gray-600"
               }`}
             >
               ❤️ Yêu Thích {hydrated && `(${favorites.length})`}
             </button>
             <button
-              onClick={() => setActiveTab('utilities')}
+              onClick={() => setActiveTab("utilities")}
               className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
-                activeTab === 'utilities'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600'
+                activeTab === "utilities"
+                  ? "border-b-2 border-purple-600 text-purple-600"
+                  : "text-gray-600"
               }`}
             >
               🎁 Tiện Ích
@@ -130,26 +146,32 @@ export default function ProfilePage() {
         {/* Tab Content */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           {/* Thông Tin Cá Nhân */}
-          {activeTab === 'info' && (
+          {activeTab === "info" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông Tin Cá Nhân</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Thông Tin Cá Nhân
+              </h2>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Họ và Tên</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Họ và Tên
+                  </label>
                   <input
                     type="text"
-                    value={user.displayName || ''}
+                    value={user.displayName || ""}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     readOnly
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
                   <input
                     type="email"
-                    value={user.email || ''}
+                    value={user.email || ""}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
                     readOnly
                   />
@@ -167,7 +189,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Ngày Sinh</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ngày Sinh
+                  </label>
                   <input
                     type="date"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -175,7 +199,9 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Địa Chỉ</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Địa Chỉ
+                  </label>
                   <textarea
                     rows={3}
                     placeholder="Nhập địa chỉ giao hàng..."
@@ -193,9 +219,11 @@ export default function ProfilePage() {
           )}
 
           {/* Đơn Hàng & Lịch Sử */}
-          {activeTab === 'orders' && (
+          {activeTab === "orders" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Đơn Hàng & Lịch Sử Mua Hàng</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Đơn Hàng & Lịch Sử Mua Hàng
+              </h2>
 
               {orderHistory.map((order) => (
                 <div
@@ -204,19 +232,25 @@ export default function ProfilePage() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="font-bold text-lg text-gray-900">{order.product}</h3>
-                      <p className="text-sm text-gray-600">Mã đơn hàng: {order.id}</p>
-                      <p className="text-sm text-gray-600">Ngày đặt: {order.date}</p>
+                      <h3 className="font-bold text-lg text-gray-900">
+                        {order.product}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Mã đơn hàng: {order.id}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Ngày đặt: {order.date}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-bold text-purple-600">
-                        {order.price.toLocaleString('vi-VN')}₫
+                        {order.price.toLocaleString("vi-VN")}₫
                       </p>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                          order.status === 'Đã giao'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-blue-100 text-blue-700'
+                          order.status === "Đã giao"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
                         }`}
                       >
                         {order.status}
@@ -228,7 +262,7 @@ export default function ProfilePage() {
                     <button className="px-4 py-2 border border-purple-600 text-purple-600 rounded-lg font-semibold">
                       Xem Chi Tiết
                     </button>
-                    {order.status === 'Đã giao' && (
+                    {order.status === "Đã giao" && (
                       <button className="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold">
                         Mua Lại
                       </button>
@@ -239,7 +273,9 @@ export default function ProfilePage() {
 
               {orderHistory.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">Bạn chưa có đơn hàng nào</p>
+                  <p className="text-gray-500 text-lg">
+                    Bạn chưa có đơn hàng nào
+                  </p>
                   <button className="mt-4 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold">
                     Khám Phá Sản Phẩm
                   </button>
@@ -249,7 +285,7 @@ export default function ProfilePage() {
           )}
 
           {/* Yêu Thích */}
-          {activeTab === 'favorites' && (
+          {activeTab === "favorites" && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 ❤️ Sản Phẩm Yêu Thích {hydrated && `(${favorites.length})`}
@@ -290,15 +326,22 @@ export default function ProfilePage() {
 
                         {/* Price */}
                         <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                          {product.price.toLocaleString('vi-VN')}₫
+                          {product.price.toLocaleString("vi-VN")}₫
                         </p>
 
                         {/* Actions */}
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
+                              if (!user) {
+                                toast.error(
+                                  "Vui lòng đăng nhập để thêm vào giỏ hàng!",
+                                );
+                                router.push("/login");
+                                return;
+                              }
                               addItem(product);
-                              toast.success('Đã thêm vào giỏ hàng!');
+                              toast.success("Đã thêm vào giỏ hàng!");
                             }}
                             className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                           >
@@ -307,7 +350,7 @@ export default function ProfilePage() {
                           <button
                             onClick={() => {
                               removeFavorite(product.id);
-                              toast.success('Đã xóa khỏi yêu thích!');
+                              toast.success("Đã xóa khỏi yêu thích!");
                             }}
                             className="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition-all"
                           >
@@ -328,7 +371,7 @@ export default function ProfilePage() {
                     Hãy thêm những sản phẩm bạn thích vào danh sách này
                   </p>
                   <button
-                    onClick={() => router.push('/gallery')}
+                    onClick={() => router.push("/gallery")}
                     className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
                   >
                     Khám Phá Gallery
@@ -339,9 +382,11 @@ export default function ProfilePage() {
           )}
 
           {/* Tiện Ích */}
-          {activeTab === 'utilities' && (
+          {activeTab === "utilities" && (
             <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Tiện Ích Khách Hàng</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Tiện Ích Khách Hàng
+              </h2>
 
               {/* Ví Trả Sau */}
               <div className="border border-gray-200 rounded-lg p-6">
@@ -349,13 +394,19 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <span className="text-3xl">💳</span>
                     <div>
-                      <h3 className="font-bold text-lg text-gray-900">Ví Trả Sau</h3>
-                      <p className="text-sm text-gray-600">Mua trước, trả sau - Không lãi suất</p>
+                      <h3 className="font-bold text-lg text-gray-900">
+                        Ví Trả Sau
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Mua trước, trả sau - Không lãi suất
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">Hạn mức khả dụng</p>
-                    <p className="text-2xl font-bold text-purple-600">5.000.000₫</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      5.000.000₫
+                    </p>
                   </div>
                 </div>
                 <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold">
@@ -368,8 +419,12 @@ export default function ProfilePage() {
                 <div className="flex items-center space-x-3 mb-6">
                   <span className="text-3xl">🎟️</span>
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900">Kho Voucher</h3>
-                    <p className="text-sm text-gray-600">Các mã giảm giá của bạn</p>
+                    <h3 className="font-bold text-lg text-gray-900">
+                      Kho Voucher
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Các mã giảm giá của bạn
+                    </p>
                   </div>
                 </div>
 
@@ -378,26 +433,28 @@ export default function ProfilePage() {
                     <div
                       key={index}
                       className={`flex justify-between items-center p-4 rounded-lg border-2 ${
-                        voucher.status === 'Còn hạn'
-                          ? 'border-purple-300 bg-purple-50'
-                          : 'border-gray-200 bg-gray-50'
+                        voucher.status === "Còn hạn"
+                          ? "border-purple-300 bg-purple-50"
+                          : "border-gray-200 bg-gray-50"
                       }`}
                     >
                       <div>
-                        <p className="font-bold text-lg text-gray-900">{voucher.code}</p>
+                        <p className="font-bold text-lg text-gray-900">
+                          {voucher.code}
+                        </p>
                         <p className="text-sm text-gray-600">
                           Giảm {voucher.discount} - HSD: {voucher.expiry}
                         </p>
                       </div>
                       <button
-                        disabled={voucher.status === 'Hết hạn'}
+                        disabled={voucher.status === "Hết hạn"}
                         className={`px-4 py-2 rounded-lg font-semibold ${
-                          voucher.status === 'Còn hạn'
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          voucher.status === "Còn hạn"
+                            ? "bg-purple-600 text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                       >
-                        {voucher.status === 'Còn hạn' ? 'Sử Dụng' : 'Hết hạn'}
+                        {voucher.status === "Còn hạn" ? "Sử Dụng" : "Hết hạn"}
                       </button>
                     </div>
                   ))}
@@ -410,19 +467,28 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <span className="text-3xl">⭐</span>
                     <div>
-                      <h3 className="font-bold text-lg text-gray-900">Điểm Tích Lũy</h3>
+                      <h3 className="font-bold text-lg text-gray-900">
+                        Điểm Tích Lũy
+                      </h3>
                       <p className="text-sm text-gray-600">Tích điểm đổi quà</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">Điểm hiện tại</p>
-                    <p className="text-2xl font-bold text-purple-600">1,250 điểm</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      1,250 điểm
+                    </p>
                   </div>
                 </div>
                 <div className="bg-gray-100 rounded-lg p-4">
-                  <p className="text-sm text-gray-700 mb-2">Cần thêm 250 điểm để lên hạng Bạc</p>
+                  <p className="text-sm text-gray-700 mb-2">
+                    Cần thêm 250 điểm để lên hạng Bạc
+                  </p>
                   <div className="w-full bg-gray-300 rounded-full h-3">
-                    <div className="bg-purple-600 h-3 rounded-full" style={{ width: '83%' }}></div>
+                    <div
+                      className="bg-purple-600 h-3 rounded-full"
+                      style={{ width: "83%" }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -433,8 +499,12 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <span className="text-3xl">📍</span>
                     <div>
-                      <h3 className="font-bold text-lg text-gray-900">Địa Chỉ Giao Hàng</h3>
-                      <p className="text-sm text-gray-600">Quản lý địa chỉ nhận hàng</p>
+                      <h3 className="font-bold text-lg text-gray-900">
+                        Địa Chỉ Giao Hàng
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Quản lý địa chỉ nhận hàng
+                      </p>
                     </div>
                   </div>
                   <button className="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold">
@@ -451,8 +521,12 @@ export default function ProfilePage() {
                 <div className="flex items-center space-x-3 mb-6">
                   <span className="text-3xl">💬</span>
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900">Hỗ Trợ Khách Hàng</h3>
-                    <p className="text-sm text-gray-600">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+                    <h3 className="font-bold text-lg text-gray-900">
+                      Hỗ Trợ Khách Hàng
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Chúng tôi luôn sẵn sàng hỗ trợ bạn
+                    </p>
                   </div>
                 </div>
 
@@ -461,7 +535,9 @@ export default function ProfilePage() {
                   <div className="border border-purple-200 rounded-lg p-6 hover:shadow-md transition">
                     <div className="text-center">
                       <span className="text-5xl mb-4 block">📚</span>
-                      <h4 className="font-bold text-lg text-gray-900 mb-2">Trung Tâm Trợ Giúp</h4>
+                      <h4 className="font-bold text-lg text-gray-900 mb-2">
+                        Trung Tâm Trợ Giúp
+                      </h4>
                       <p className="text-sm text-gray-600 mb-4">
                         Tìm câu trả lời cho các câu hỏi thường gặp
                       </p>
@@ -475,7 +551,9 @@ export default function ProfilePage() {
                   <div className="border border-purple-200 rounded-lg p-6 hover:shadow-md transition bg-purple-50">
                     <div className="text-center">
                       <span className="text-5xl mb-4 block">👨‍💼</span>
-                      <h4 className="font-bold text-lg text-gray-900 mb-2">Trò Chuyện với Admin</h4>
+                      <h4 className="font-bold text-lg text-gray-900 mb-2">
+                        Trò Chuyện với Admin
+                      </h4>
                       <p className="text-sm text-gray-600 mb-4">
                         Chat trực tiếp với đội ngũ hỗ trợ
                       </p>
@@ -495,11 +573,17 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600 mb-1">📧 Email</p>
-                      <p className="font-bold text-purple-600">support@paintbynumbers.com</p>
+                      <p className="font-bold text-purple-600">
+                        support@paintbynumbers.com
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">⏰ Giờ làm việc</p>
-                      <p className="font-bold text-purple-600">8:00 - 22:00 (T2-CN)</p>
+                      <p className="text-sm text-gray-600 mb-1">
+                        ⏰ Giờ làm việc
+                      </p>
+                      <p className="font-bold text-purple-600">
+                        8:00 - 22:00 (T2-CN)
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
 
@@ -11,10 +10,8 @@ const AuthProvider = dynamic(() => import("@/components/AuthProvider"), {
 const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
 const Toaster = dynamic(
   () => import("react-hot-toast").then((mod) => mod.Toaster),
-  { ssr: false }
+  { ssr: false },
 );
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Yu Ling Store - Tranh Tô Màu Số Hóa",
@@ -30,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" className="dark" suppressHydrationWarning>
       <head>
         <meta
           name="viewport"
@@ -43,11 +40,18 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Pacifico&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
           rel="stylesheet"
         />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body
+        className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased"
+        suppressHydrationWarning
+      >
         <AuthProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />

@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCartStore } from '@/store/cartStore';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
+import { useHydration } from "@/hooks";
+import { isAdmin } from "@/lib/adminConfig";
 import {
   FaTrash,
   FaMinus,
@@ -14,11 +17,19 @@ import {
   FaTicketAlt,
   FaTimes,
   FaCheck,
-} from 'react-icons/fa';
-import toast from 'react-hot-toast';
+} from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
+  const hydrated = useHydration();
+
+  useEffect(() => {
+    if (hydrated && user && isAdmin(user.email)) {
+      router.replace("/admin");
+    }
+  }, [hydrated, user, router]);
   const {
     items,
     savedForLater,
@@ -41,41 +52,36 @@ export default function CartPage() {
     getDiscountedTotal,
   } = useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [voucherInput, setVoucherInput] = useState('');
+  const [voucherInput, setVoucherInput] = useState("");
   const [showVoucherInput, setShowVoucherInput] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handleCheckout = () => {
     if (selectedItems.length === 0) {
-      toast.error('Vui lòng chọn sản phẩm để thanh toán!');
+      toast.error("Vui lòng chọn sản phẩm để thanh toán!");
       return;
     }
-    router.push('/checkout');
+    router.push("/checkout");
   };
 
   const handleClearCart = () => {
-    if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
+    if (confirm("Bạn có chắc muốn xóa toàn bộ giỏ hàng?")) {
       clearCart();
-      toast.success('Đã xóa toàn bộ giỏ hàng!');
+      toast.success("Đã xóa toàn bộ giỏ hàng!");
     }
   };
 
   const handleApplyVoucher = () => {
     if (!voucherInput.trim()) {
-      toast.error('Vui lòng nhập mã voucher!');
+      toast.error("Vui lòng nhập mã voucher!");
       return;
     }
 
     if (applyVoucher(voucherInput)) {
       toast.success(`Áp dụng voucher thành công! Giảm ${voucherDiscount}%`);
-      setVoucherInput('');
+      setVoucherInput("");
       setShowVoucherInput(false);
     } else {
-      toast.error('Mã voucher không hợp lệ!');
+      toast.error("Mã voucher không hợp lệ!");
     }
   };
 
@@ -88,10 +94,54 @@ export default function CartPage() {
   };
 
   // Prevent hydration mismatch
-  if (!isMounted) {
+  if (!hydrated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 flex items-center justify-center">
         <div className="text-2xl text-purple-600">Đang tải...</div>
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div
+            className="rounded-2xl shadow-xl p-12 text-center"
+            style={{ backgroundColor: "#FEF3E8" }}
+          >
+            <div className="flex justify-center mb-6">
+              <Image
+                src="/images/mascot-login.jpg"
+                alt="Mascot"
+                width={180}
+                height={180}
+                className="object-contain"
+              />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              Giỏ Hàng Trống
+            </h2>
+            <p className="text-gray-600 mb-8 text-lg">
+              Hãy đăng nhập/đăng ký trước khi vào lựa sản phẩm nha 😊
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => router.push("/login")}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all"
+              >
+                🔑 Đăng Nhập
+              </button>
+              <button
+                onClick={() => router.push("/register")}
+                className="bg-white border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-purple-50 transform hover:scale-105 transition-all"
+              >
+                📝 Đăng Ký
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -102,8 +152,12 @@ export default function CartPage() {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
             <div className="text-8xl mb-6">🛒</div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Giỏ Hàng Trống</h2>
-            <p className="text-gray-600 mb-8">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
+              Giỏ Hàng Trống
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Bạn chưa có sản phẩm nào trong giỏ hàng
+            </p>
             <Link
               href="/gallery"
               className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all"
@@ -124,14 +178,18 @@ export default function CartPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
               🛒 Giỏ Hàng Của Bạn
-              <span className="text-lg text-purple-600">({items.length} sản phẩm)</span>
+              <span className="text-lg text-purple-600">
+                ({items.length} sản phẩm)
+              </span>
             </h1>
             <div className="flex gap-3">
               <button
                 onClick={handleSelectAll}
                 className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold transition"
               >
-                {selectedItems.length === items.length ? '❌ Bỏ Chọn Tất Cả' : '✅ Chọn Tất Cả'}
+                {selectedItems.length === items.length
+                  ? "❌ Bỏ Chọn Tất Cả"
+                  : "✅ Chọn Tất Cả"}
               </button>
               <button
                 onClick={handleClearCart}
@@ -150,7 +208,9 @@ export default function CartPage() {
               <div
                 key={item.product.id}
                 className={`bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all ${
-                  selectedItems.includes(item.product.id) ? 'ring-2 ring-purple-500' : ''
+                  selectedItems.includes(item.product.id)
+                    ? "ring-2 ring-purple-500"
+                    : ""
                 }`}
               >
                 <div className="flex gap-6">
@@ -176,13 +236,17 @@ export default function CartPage() {
 
                   {/* Product Info */}
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{item.product.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      {item.product.title}
+                    </h3>
                     <p className="text-gray-600 mb-2">
-                      Độ khó:{' '}
-                      <span className="font-semibold">{item.product.difficulty || 'Medium'}</span>
+                      Độ khó:{" "}
+                      <span className="font-semibold">
+                        {item.product.difficulty || "Medium"}
+                      </span>
                     </p>
                     <p className="text-2xl font-bold text-purple-600 mb-3">
-                      {(item.product.price || 0).toLocaleString('vi-VN')} VNĐ
+                      {(item.product.price || 0).toLocaleString("vi-VN")} VNĐ
                     </p>
 
                     {/* Action Buttons */}
@@ -190,7 +254,7 @@ export default function CartPage() {
                       <button
                         onClick={() => {
                           moveToSavedForLater(item.product.id);
-                          toast.success('Đã chuyển vào Mua Sau!');
+                          toast.success("Đã chuyển vào Mua Sau!");
                         }}
                         className="text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-lg hover:bg-blue-200 transition flex items-center gap-1"
                       >
@@ -200,7 +264,7 @@ export default function CartPage() {
                       <button
                         onClick={() => {
                           removeItem(item.product.id);
-                          toast.success('Đã xóa khỏi giỏ hàng!');
+                          toast.success("Đã xóa khỏi giỏ hàng!");
                         }}
                         className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200 transition flex items-center gap-1"
                       >
@@ -215,7 +279,10 @@ export default function CartPage() {
                     <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-2">
                       <button
                         onClick={() =>
-                          updateQuantity(item.product.id, Math.max(1, item.quantity - 1))
+                          updateQuantity(
+                            item.product.id,
+                            Math.max(1, item.quantity - 1),
+                          )
                         }
                         className="w-8 h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
                       >
@@ -225,7 +292,9 @@ export default function CartPage() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.product.id, item.quantity + 1)
+                        }
                         className="w-8 h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
                       >
                         <FaPlus className="text-purple-600" />
@@ -233,7 +302,10 @@ export default function CartPage() {
                     </div>
 
                     <p className="text-lg font-bold text-gray-800">
-                      Tổng: {((item.product.price || 0) * item.quantity).toLocaleString('vi-VN')}{' '}
+                      Tổng:{" "}
+                      {(
+                        (item.product.price || 0) * item.quantity
+                      ).toLocaleString("vi-VN")}{" "}
                       VNĐ
                     </p>
                   </div>
@@ -268,14 +340,15 @@ export default function CartPage() {
                             {item.product.title}
                           </h3>
                           <p className="text-xl font-bold text-purple-600">
-                            {(item.product.price || 0).toLocaleString('vi-VN')} VNĐ
+                            {(item.product.price || 0).toLocaleString("vi-VN")}{" "}
+                            VNĐ
                           </p>
                         </div>
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={() => {
                               moveToCart(item.product.id);
-                              toast.success('Đã thêm lại vào giỏ hàng!');
+                              toast.success("Đã thêm lại vào giỏ hàng!");
                             }}
                             className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold transition text-sm"
                           >
@@ -284,7 +357,7 @@ export default function CartPage() {
                           <button
                             onClick={() => {
                               removeSavedItem(item.product.id);
-                              toast.success('Đã xóa!');
+                              toast.success("Đã xóa!");
                             }}
                             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition text-sm"
                           >
@@ -302,7 +375,9 @@ export default function CartPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-xl p-6 sticky top-24">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Tóm Tắt Đơn Hàng</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                Tóm Tắt Đơn Hàng
+              </h2>
 
               {/* Voucher Section */}
               <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
@@ -311,14 +386,18 @@ export default function CartPage() {
                     <div className="flex items-center gap-2">
                       <FaTicketAlt className="text-purple-600" />
                       <div>
-                        <p className="text-sm font-semibold text-gray-700">Mã: {voucherCode}</p>
-                        <p className="text-xs text-green-600">Giảm {voucherDiscount}%</p>
+                        <p className="text-sm font-semibold text-gray-700">
+                          Mã: {voucherCode}
+                        </p>
+                        <p className="text-xs text-green-600">
+                          Giảm {voucherDiscount}%
+                        </p>
                       </div>
                     </div>
                     <button
                       onClick={() => {
                         removeVoucher();
-                        toast.success('Đã xóa voucher!');
+                        toast.success("Đã xóa voucher!");
                       }}
                       className="text-red-500 hover:text-red-700"
                     >
@@ -332,7 +411,7 @@ export default function CartPage() {
                       className="w-full flex items-center justify-center gap-2 text-purple-600 font-semibold hover:text-purple-700 transition"
                     >
                       <FaTicketAlt />
-                      {showVoucherInput ? 'Ẩn' : 'Nhập Mã Giảm Giá'}
+                      {showVoucherInput ? "Ẩn" : "Nhập Mã Giảm Giá"}
                     </button>
 
                     {showVoucherInput && (
@@ -340,10 +419,14 @@ export default function CartPage() {
                         <input
                           type="text"
                           value={voucherInput}
-                          onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
+                          onChange={(e) =>
+                            setVoucherInput(e.target.value.toUpperCase())
+                          }
                           placeholder="Nhập mã..."
                           className="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
-                          onKeyPress={(e) => e.key === 'Enter' && handleApplyVoucher()}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleApplyVoucher()
+                          }
                         />
                         <button
                           onClick={handleApplyVoucher}
@@ -368,14 +451,19 @@ export default function CartPage() {
                 <div className="flex justify-between text-gray-600">
                   <span>Đã chọn ({selectedItems.length} sản phẩm):</span>
                   <span className="font-semibold">
-                    {getSelectedTotal().toLocaleString('vi-VN')} VNĐ
+                    {getSelectedTotal().toLocaleString("vi-VN")} VNĐ
                   </span>
                 </div>
                 {voucherDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Giảm giá ({voucherDiscount}%):</span>
                     <span className="font-semibold">
-                      -{((getSelectedTotal() * voucherDiscount) / 100).toLocaleString('vi-VN')} VNĐ
+                      -
+                      {(
+                        (getSelectedTotal() * voucherDiscount) /
+                        100
+                      ).toLocaleString("vi-VN")}{" "}
+                      VNĐ
                     </span>
                   </div>
                 )}
@@ -387,7 +475,7 @@ export default function CartPage() {
                   <div className="flex justify-between text-xl font-bold text-gray-800">
                     <span>Tổng cộng:</span>
                     <span className="text-purple-600">
-                      {getDiscountedTotal().toLocaleString('vi-VN')} VNĐ
+                      {getDiscountedTotal().toLocaleString("vi-VN")} VNĐ
                     </span>
                   </div>
                 </div>
