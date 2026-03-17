@@ -1,6 +1,45 @@
 import { db } from "../config/firebase.js";
 import { formatDate } from "../utils/helpers.js";
 
+const getSortableValue = (value) => {
+  if (value === undefined || value === null) return 0;
+
+  if (typeof value === "number") return value;
+
+  if (typeof value === "string") {
+    const dateTimestamp = new Date(value).getTime();
+    if (!Number.isNaN(dateTimestamp)) return dateTimestamp;
+
+    const numericValue = Number(value);
+    return Number.isNaN(numericValue) ? 0 : numericValue;
+  }
+
+  if (typeof value?.toDate === "function") {
+    const timestamp = value.toDate().getTime();
+    return Number.isNaN(timestamp) ? 0 : timestamp;
+  }
+
+  if (typeof value?._seconds === "number") {
+    return value._seconds * 1000;
+  }
+
+  return 0;
+};
+
+const sortProducts = (products, sortBy, sortOrder = "desc") => {
+  if (!sortBy) return products;
+
+  const direction = sortOrder === "asc" ? 1 : -1;
+  return [...products].sort((a, b) => {
+    const aValue = getSortableValue(a?.[sortBy]);
+    const bValue = getSortableValue(b?.[sortBy]);
+
+    if (aValue < bValue) return -1 * direction;
+    if (aValue > bValue) return 1 * direction;
+    return 0;
+  });
+};
+
 /**
  * Product Service - handles all product-related database operations
  */
@@ -132,8 +171,14 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     }
 
-    return {
+    const sortedProducts = sortProducts(
       products,
+      filters.sortBy,
+      filters.sortOrder,
+    );
+
+    return {
+      products: sortedProducts,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

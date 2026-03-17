@@ -6,6 +6,7 @@ export interface User {
   displayName?: string;
   phoneNumber?: string;
   address?: string;
+  birthDate?: string;
   orders?: string[];
   favorites?: string[];
   role?: "user" | "admin";

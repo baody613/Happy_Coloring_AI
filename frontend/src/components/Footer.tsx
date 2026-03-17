@@ -21,7 +21,8 @@ export default function Footer() {
             className="text-xl font-bold bg-clip-text text-transparent pb-1"
             style={{
               fontFamily: "'Pacifico', cursive",
-              backgroundImage: "linear-gradient(to right, #9400D3, #E6007A, #8A2BE2)",
+              backgroundImage:
+                "linear-gradient(to right, #9400D3, #E6007A, #8A2BE2)",
             }}
           >
             Yu Ling Store

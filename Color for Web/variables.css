@@ -1,0 +1,91 @@
+/**
+ * Yu Ling (Happy Coloring AI) — CSS Variables
+ * Paste vào :root trong file CSS của bất kỳ project nào
+ */
+
+:root {
+  /* ── Brand Tokens ─────────────────────────────── */
+  --color-primary: #d988b9; /* Hồng tím chủ đạo */
+  --color-accent: #9c30e8; /* Tím nhấn */
+  --color-bg-light: #fdfbfc; /* Nền sáng */
+  --color-bg-dark: #161218; /* Nền tối */
+  --color-surface-light: #ffffff; /* Card sáng */
+  --color-surface-dark: #1f1922; /* Card tối */
+
+  /* ── Magenta / Pink ───────────────────────────── */
+  --color-magenta: #e6007a;
+  --color-deep-pink: #ff1493;
+  --color-hot-pink: #ff69b4;
+
+  /* ── Violet / Purple ──────────────────────────── */
+  --color-violet-blue: #8a2be2;
+  --color-violet-dark: #9400d3;
+  --color-orchid-dark: #9932cc;
+  --color-orchid-medium: #ba55d3;
+  --color-purple-base: #800080;
+
+  /* ── Gradient stops (Tailwind purple-600 / pink-600) ── */
+  --gradient-from-main: #9333ea;
+  --gradient-to-main: #db2777;
+
+  /* ── Text ─────────────────────────────────────── */
+  --color-text-heading: #1f2937;
+  --color-text-body: #4b5563;
+  --color-text-muted: #9ca3af;
+  --color-text-accent: #9333ea;
+
+  /* ── Surfaces ─────────────────────────────────── */
+  --color-page-bg:  ;
+  --color-page-bg-purple: #faf5ff;
+  --color-border: #f3f4f6;
+}
+
+/* ── Utility Classes ─────────────────────────────────────────────────────── */
+
+.btn-primary {
+  background: linear-gradient(
+    to right,
+    var(--gradient-from-main),
+    var(--gradient-to-main)
+  );
+  color: #fff;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.btn-primary:hover {
+  box-shadow: 0 10px 25px rgba(147, 51, 234, 0.35);
+  transform: scale(1.03);
+}
+
+.card {
+  background: var(--color-surface-light);
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+}
+
+.heading-gradient {
+  background: linear-gradient(
+    to right,
+    var(--gradient-from-main),
+    var(--gradient-to-main)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.icon-box {
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+}

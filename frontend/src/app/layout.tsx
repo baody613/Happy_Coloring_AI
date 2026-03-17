@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className="dark" suppressHydrationWarning>
+    <html lang="vi" className="dark scroll-smooth" suppressHydrationWarning>
       <head>
         <meta
           name="viewport"

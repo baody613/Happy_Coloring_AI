@@ -47,19 +47,31 @@ export const getAllOrders = async (page = 1, limit = 10, filters = {}) => {
     query = query.where("createdAt", "<=", filters.endDate);
   }
 
+  // Only apply Firestore orderBy when NOT filtering by userId to avoid
+  // requiring a composite index. For userId queries we sort in JS below.
+  if (!filters.userId) {
+    query = query.orderBy("createdAt", "desc");
+  }
+
   // Get total count
   const totalSnapshot = await query.get();
   const total = totalSnapshot.size;
-
-  // Apply sorting
-  query = query.orderBy("createdAt", "desc");
 
   // Apply pagination
   const skip = (page - 1) * limit;
   query = query.offset(skip).limit(limit);
 
   const snapshot = await query.get();
-  const orders = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  let orders = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  // Sort in JS when composite index is not guaranteed (userId filter case)
+  if (filters.userId) {
+    orders = orders.sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  }
 
   return {
     orders,

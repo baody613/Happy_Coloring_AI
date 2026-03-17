@@ -31,9 +31,14 @@ export default function LoginPage() {
         router.push("/");
       }, 1500);
     } catch (err: any) {
-      setError(
-        err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
-      );
+      const rawMessage = String(err?.message || "");
+      if (rawMessage.includes("auth/invalid-credential")) {
+        setError("Tài Khoản không hợp lệ! Vui lòng thử lại.");
+      } else {
+        setError(
+          rawMessage || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+        );
+      }
     } finally {
       setLoading(false);
     }

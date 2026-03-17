@@ -8,6 +8,8 @@ export const adminProductAPI = {
     status?: string;
     limit?: number;
     page?: number;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
   }) => {
     const response = await api.get("/admin/products", { params });
     return response.data;
@@ -60,7 +62,9 @@ export const adminOrderAPI = {
     orderId: string,
     status: "pending" | "processing" | "shipping" | "delivered" | "cancelled",
   ) => {
-    const response = await api.put(`/admin/orders/${orderId}/status`, { status });
+    const response = await api.put(`/admin/orders/${orderId}/status`, {
+      status,
+    });
     return response.data;
   },
 

@@ -141,7 +141,7 @@ export default function AdminPage() {
             </h2>
             <div className="space-y-3">
               <button
-                onClick={() => router.push("/admin/products")}
+                onClick={() => router.push("/admin/add-products")}
                 className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg transition"
               >
                 ➕ Thêm Sản Phẩm Mới

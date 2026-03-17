@@ -12,7 +12,7 @@ import { useHydration } from "@/hooks";
 const navLinks = [
   { href: "/gallery", label: "Gallery" },
   { href: "/generate", label: "Tạo Tranh" },
-  { href: "/about", label: "Về Chúng Tôi" },
+  { href: "/#about", label: "Về Chúng Tôi" },
 ];
 
 const adminNavLinks = [{ href: "/admin", label: "Dashboard" }];
@@ -113,7 +113,7 @@ export default function Navbar() {
                 Xin chào, {user.displayName || user.email}!
               </span>
               {/* Profile / Admin avatar */}
-              {/* <Link
+              <Link
                 href={isAdmin(user.email) ? "/admin" : "/profile"}
                 className="flex items-center justify-center w-9 h-9 rounded-full font-bold text-base text-white shadow transition-transform hover:scale-105"
                 style={{
@@ -121,8 +121,8 @@ export default function Navbar() {
                     "linear-gradient(135deg, #E6007A 0%, #9932CC 50%, #8A2BE2 100%)",
                 }}
               >
-                {isAdmin(user.email) ? "⚙️" : "👤"}
-              </Link> */}
+                {isAdmin(user.email) ? "" : "👤"}
+              </Link>
               {/* Sign out */}
               <button
                 onClick={handleSignOut}

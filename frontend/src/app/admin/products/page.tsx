@@ -1,601 +1,470 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { isAdmin } from "@/lib/adminConfig";
 import { adminAPI } from "@/lib/adminAPI";
-import { uploadProductImage, validateImageFile } from "@/lib/uploadHelpers";
+import toast from "react-hot-toast";
 
 interface Product {
   id: string;
   title: string;
+  category?: string;
   price: number;
   imageUrl: string;
   status: string;
   sales: number;
   difficulty: string;
+  description?: string;
   createdAt: string;
 }
+
+type ViewMode = "table";
+
+const DIFFICULTY_CONFIG = {
+  easy: {
+    label: "Dễ",
+    emoji: "🟢",
+    badge: "bg-green-100 text-green-700 border-green-200",
+  },
+  medium: {
+    label: "Trung Bình",
+    emoji: "🟡",
+    badge: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  },
+  hard: {
+    label: "Khó",
+    emoji: "🔴",
+    badge: "bg-red-100 text-red-700 border-red-200",
+  },
+};
+
+const CATEGORY_OPTIONS = [
+  { value: "paint-by-numbers", label: "🖌️ Tô Màu" },
+  { value: "animals", label: "🐾 Động Vật" },
+  { value: "landscape", label: "🌄 Phong Cảnh" },
+  { value: "flowers", label: "🌸 Hoa Lá" },
+  { value: "architecture", label: "🏛️ Kiến Trúc" },
+  { value: "abstract", label: "🎨 Trừu Tượng" },
+  { value: "portrait", label: "🖼️ Chân Dung" },
+  { value: "fantasy", label: "🌌 Huyền Bí" },
+  { value: "ocean", label: "🌊 Đại Dương" },
+  { value: "city", label: "🏙️ Thành Phố" },
+];
+
+const CATEGORY_LABEL_MAP = CATEGORY_OPTIONS.reduce(
+  (acc, item) => ({ ...acc, [item.value]: item.label }),
+  {} as Record<string, string>,
+);
+
+const NEW_PRODUCT_DAYS = 3;
 
 export default function AdminProductsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [priceDisplay, setPriceDisplay] = useState("");
-  const [newProductIds, setNewProductIds] = useState<Set<string>>(new Set());
-  const [formData, setFormData] = useState<{
-    title: string;
-    description: string;
-    category: string;
-    price: number;
-    imageUrl: string;
-    thumbnailUrl: string;
-    difficulty: "easy" | "medium" | "hard";
-    colors: number;
-  }>({
-    title: "",
-    description: "",
-    category: "paint-by-numbers",
-    price: 0,
-    imageUrl: "",
-    thumbnailUrl: "",
-    difficulty: "medium",
-    colors: 24,
-  });
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
 
   useEffect(() => {
-    // Đợi auth loading hoàn tất
-    if (authLoading) {
-      return;
-    }
-
+    if (authLoading) return;
     if (!user) {
       router.push("/login");
       return;
     }
-
     if (!isAdmin(user.email)) {
       router.push("/");
       return;
     }
-
     loadProducts();
     setLoading(false);
   }, [user, router, authLoading]);
 
+  const getCreatedTime = (product: Product) => {
+    const createdAt = (product as any)?.createdAt;
+    if (!createdAt) return 0;
+
+    if (typeof createdAt === "string" || typeof createdAt === "number") {
+      const timestamp = new Date(createdAt).getTime();
+      return Number.isNaN(timestamp) ? 0 : timestamp;
+    }
+
+    if (typeof createdAt?.toDate === "function") {
+      const timestamp = createdAt.toDate().getTime();
+      return Number.isNaN(timestamp) ? 0 : timestamp;
+    }
+
+    if (typeof createdAt?._seconds === "number") {
+      return createdAt._seconds * 1000;
+    }
+
+    return 0;
+  };
+
+  const formatCreatedAtParts = (product: Product) => {
+    const timestamp = getCreatedTime(product);
+    if (!timestamp) {
+      return { time: "--:--", date: "Chưa có" };
+    }
+
+    const date = new Date(timestamp);
+
+    return {
+      time: date.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      date: date.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+    };
+  };
+
+  const isNewProduct = (product: Product) => {
+    const createdTime = getCreatedTime(product);
+    if (!createdTime) return false;
+    const daysSinceCreated = (Date.now() - createdTime) / (1000 * 60 * 60 * 24);
+    return daysSinceCreated <= NEW_PRODUCT_DAYS;
+  };
+
   const loadProducts = async () => {
     try {
-      const data = await adminAPI.products.getAll({ limit: 100 });
-      console.log("Admin Products Response:", data);
-      // Backend trả về { success, message, data: { products, pagination } }
-      const productsList = data?.data?.products || data?.products || [];
-      console.log("Products List:", productsList);
-      setProducts(productsList);
-    } catch (error) {
-      console.error("Error loading products:", error);
-    }
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file
-    const validation = validateImageFile(file);
-    if (!validation.valid) {
-      alert(validation.error);
-      return;
-    }
-
-    try {
-      setUploadingImage(true);
-      setUploadProgress(0);
-
-      // Upload to Firebase Storage
-      const imageUrl = await uploadProductImage(
-        file,
-        editingProduct?.id, // Use product ID if editing
-        (progress) => {
-          setUploadProgress(Math.round(progress));
-        },
-      );
-
-      setFormData((prev) => ({ ...prev, imageUrl, thumbnailUrl: imageUrl }));
-      alert("✅ Tải ảnh lên Firebase Storage thành công!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("❌ Có lỗi khi tải ảnh lên! " + (error as Error).message);
-    } finally {
-      setUploadingImage(false);
-      setUploadProgress(0);
-    }
-  };
-
-  const formatPrice = (value: string) => {
-    // Remove non-digit characters
-    const numbers = value.replace(/\D/g, "");
-    if (!numbers) return "";
-
-    // Convert to number and format with thousands separator
-    const num = parseInt(numbers);
-    return num.toLocaleString("vi-VN");
-  };
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numbers = value.replace(/\D/g, "");
-    const numValue = numbers ? parseInt(numbers) * 1000 : 0;
-
-    setFormData({ ...formData, price: numValue });
-    setPriceDisplay(formatPrice(numbers));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validation
-    if (!formData.title.trim()) {
-      alert("Vui lòng nhập tên sản phẩm!");
-      return;
-    }
-    if (formData.price <= 0) {
-      alert("Vui lòng nhập giá sản phẩm hợp lệ!");
-      return;
-    }
-    if (!formData.imageUrl) {
-      alert("Vui lòng tải lên hình ảnh sản phẩm!");
-      return;
-    }
-
-    try {
-      let isCreating = !editingProduct;
-      let newProductId = null;
-
-      if (editingProduct) {
-        await adminAPI.products.update(editingProduct.id, formData);
-      } else {
-        const response = await adminAPI.products.create(formData);
-        console.log("Create Product Response:", response);
-        // Backend trả về { success, message, data: { id, title, ... } }
-        newProductId = response?.data?.id || response?.id;
-        console.log("New Product ID:", newProductId);
-      }
-
-      // Close form and reset immediately
-      setShowAddForm(false);
-      setEditingProduct(null);
-      setPriceDisplay("");
-      setFormData({
-        title: "",
-        description: "",
-        category: "paint-by-numbers",
-        price: 0,
-        imageUrl: "",
-        thumbnailUrl: "",
-        difficulty: "medium",
-        colors: 24,
+      const data = await adminAPI.products.getAll({
+        limit: 200,
+        sortBy: "createdAt",
+        sortOrder: "desc",
       });
-
-      // Add new product ID to the set for "New" tag
-      if (isCreating && newProductId) {
-        console.log("Adding new product ID to set:", newProductId);
-        setNewProductIds((prev) => new Set(prev).add(newProductId));
-      }
-
-      // Reload products and show success message
-      await loadProducts();
-      alert(
-        isCreating
-          ? "✅ Thêm sản phẩm thành công!"
-          : "✅ Cập nhật sản phẩm thành công!",
+      const list = data?.data?.products || data?.products || [];
+      const sortedList = [...list].sort(
+        (a, b) => getCreatedTime(b) - getCreatedTime(a),
       );
-    } catch (error) {
-      console.error("Error saving product:", error);
-      alert(
-        "❌ Có lỗi xảy ra: " + (error as any)?.response?.data?.message ||
-          (error as Error).message,
-      );
+      setProducts(sortedList);
+    } catch {
+      toast.error("Không thể tải danh sách sản phẩm!");
     }
   };
 
-  const handleDelete = async (productId: string) => {
-    if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
+  const stats = useMemo(
+    () => ({
+      total: products.length,
+      active: products.filter((p) => p.status === "active").length,
+      inactive: products.filter((p) => p.status !== "active").length,
+      easy: products.filter((p) => p.difficulty === "easy").length,
+      medium: products.filter((p) => p.difficulty === "medium").length,
+      hard: products.filter((p) => p.difficulty === "hard").length,
+    }),
+    [products],
+  );
 
+  const filtered = useMemo(
+    () =>
+      products.filter((p) => {
+        const matchSearch =
+          !search.trim() ||
+          p.title.toLowerCase().includes(search.toLowerCase());
+        const matchCategory =
+          filterCategory === "all"
+            ? true
+            : filterCategory === "new"
+              ? isNewProduct(p)
+              : p.category === filterCategory;
+        return matchSearch && matchCategory;
+      }),
+    [products, search, filterCategory],
+  );
+
+  const newProductCount = useMemo(
+    () => products.filter((p) => isNewProduct(p)).length,
+    [products],
+  );
+
+  const categoryCounts = useMemo(() => {
+    return CATEGORY_OPTIONS.map((cat) => ({
+      ...cat,
+      count: products.filter((p) => p.category === cat.value).length,
+    }));
+  }, [products]);
+
+  const handleDelete = async (productId: string, name: string) => {
+    if (!confirm(`Bạn có chắc muốn xoá sản phẩm "${name}"?`)) return;
+    const toastId = toast.loading("Đang xóa...");
     try {
       await adminAPI.products.delete(productId);
-      alert("Xóa sản phẩm thành công!");
+      toast.success("Đã xóa sản phẩm!", { id: toastId });
       loadProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Có lỗi xảy ra!");
+    } catch {
+      toast.error("Có lỗi xảy ra!", { id: toastId });
     }
   };
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    const displayPrice = Math.floor(product.price / 1000);
-    setPriceDisplay(displayPrice.toLocaleString("vi-VN"));
-    setFormData({
-      title: product.title,
-      description: "",
-      category: "paint-by-numbers",
-      price: product.price,
-      imageUrl: product.imageUrl,
-      thumbnailUrl: product.imageUrl,
-      difficulty: (product.difficulty || "medium") as
-        | "easy"
-        | "medium"
-        | "hard",
-      colors: 24,
-    });
-    setShowAddForm(true);
-  };
-
-  if (loading || authLoading) {
+  if (loading || authLoading)
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-2xl text-purple-600">Đang tải...</div>
       </div>
     );
-  }
+
+  const badgeImg =
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext fill="%239ca3af" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3ENo image%3C/text%3E%3C/svg%3E';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <Link
-              href="/admin"
-              className="text-purple-600 hover:text-purple-700 hover:underline mb-3 inline-flex items-center gap-2 font-medium transition-colors"
-            >
-              <span>←</span> Quay lại Dashboard
-            </Link>
+        <div className="mb-8">
+          <Link
+            href="/admin"
+            className="text-purple-600 hover:text-purple-700 hover:underline mb-3 inline-flex items-center gap-2 font-medium transition-colors"
+          >
+            <span>← Quay lại Dashboard</span>
+          </Link>
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl shadow-lg">
                 🎨
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Quản Lý Sản Phẩm
-              </h1>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Gallery Sản Phẩm
+                </h1>
+                <p className="text-gray-500 text-sm mt-0.5">
+                  Tổng cộng: {stats.total} sản phẩm
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push("/admin/add-products")}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-xl text-white px-6 py-2.5 rounded-xl font-semibold transition-all hover:scale-105"
+              >
+                ➕ Thêm Sản Phẩm
+              </button>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setShowAddForm(!showAddForm);
-              setEditingProduct(null);
-              setPriceDisplay("");
-              setFormData({
-                title: "",
-                description: "",
-                category: "paint-by-numbers",
-                price: 0,
-                imageUrl: "",
-                thumbnailUrl: "",
-                difficulty: "medium",
-                colors: 24,
-              });
-            }}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-xl text-white px-8 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
-          >
-            {showAddForm ? "❌ Đóng Form" : "➕ Thêm Sản Phẩm"}
-          </button>
         </div>
 
-        {/* Add/Edit Form */}
-        {showAddForm && (
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-8">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-              <span className="text-3xl">{editingProduct ? "✏️" : "➕"}</span>
-              {editingProduct ? "Chỉnh Sửa Sản Phẩm" : "Thêm Sản Phẩm Mới"}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Tên Sản Phẩm *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    placeholder="Nhập tên sản phẩm..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Giá *
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      required
-                      value={priceDisplay}
-                      onChange={handlePriceChange}
-                      placeholder="0"
-                      className="w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
-                      .000 VNĐ
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Ví dụ: Nhập "150" = 150.000 VNĐ
-                  </p>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Hình Ảnh Sản Phẩm *
-                    <span className="text-xs text-gray-500 ml-2">
-                      (JPG, PNG, WebP - Max 5MB)
-                    </span>
-                  </label>
-                  <div className="space-y-3">
-                    {/* Upload Button */}
-                    <div className="flex gap-3">
-                      <label className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FE979B] to-[#FEAE97] hover:shadow-lg text-white rounded-lg font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-                          <span>📁</span>
-                          <span>
-                            {uploadingImage
-                              ? `Đang tải... ${uploadProgress}%`
-                              : "🔥 Tải Ảnh Lên Firebase Storage"}
+        {/* Category-first Toolbar */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-gray-600">
+              Hiển thị{" "}
+              <span className="font-semibold text-purple-700">
+                {filtered.length}
+              </span>{" "}
+              / {products.length} sản phẩm
+            </p>
+            <p className="text-xs text-gray-500">
+              Chọn danh mục trước để xem đúng nhóm sản phẩm
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={() => setFilterCategory("all")}
+              className={`text-sm px-3 py-2 rounded-lg border whitespace-nowrap transition-colors ${
+                filterCategory === "all"
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-purple-300"
+              }`}
+            >
+              Tất cả danh mục ({products.length})
+            </button>
+            <button
+              onClick={() => setFilterCategory("new")}
+              className={`text-sm px-3 py-2 rounded-lg border whitespace-nowrap transition-colors ${
+                filterCategory === "new"
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-purple-300"
+              }`}
+            >
+              🆕 Mới thêm ({newProductCount})
+            </button>
+            {categoryCounts.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => setFilterCategory(cat.value)}
+                className={`text-sm px-3 py-2 rounded-lg border transition-colors ${
+                  filterCategory === cat.value
+                    ? "bg-purple-600 text-white border-purple-600"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-purple-300"
+                }`}
+              >
+                {cat.label} ({cat.count})
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="🔍 Tìm tên sản phẩm..."
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-56"
+            />
+            {(search || filterCategory !== "all") && (
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setFilterCategory("all");
+                }}
+                className="text-sm text-gray-500 hover:text-red-500 px-3 py-2 rounded-lg border border-gray-200 hover:border-red-200 transition-colors"
+              >
+                ✕ Xóa bộ lọc
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Table View */}
+        {viewMode === "table" && (
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                  <tr>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Hình Ảnh
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Danh Mục
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Tên Sản Phẩm
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Giá
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Độ Khó
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Trạng Thái
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Ngày Thêm
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Đã Bán
+                    </th>
+                    <th className="px-5 py-4 text-left font-semibold whitespace-nowrap">
+                      Thao Tác
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((product) => {
+                    const d =
+                      DIFFICULTY_CONFIG[
+                        product.difficulty as keyof typeof DIFFICULTY_CONFIG
+                      ] || DIFFICULTY_CONFIG.medium;
+                    const created = formatCreatedAtParts(product);
+                    return (
+                      <tr
+                        key={product.id}
+                        className="border-b border-gray-100 hover:bg-purple-50 transition-colors"
+                      >
+                        <td className="px-5 py-4">
+                          <div className="relative inline-block">
+                            <img
+                              src={product.imageUrl}
+                              alt={product.title}
+                              className="w-16 h-16 object-cover rounded-xl shadow-md border border-gray-200"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = badgeImg;
+                              }}
+                            />
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {CATEGORY_LABEL_MAP[product.category || ""] ||
+                            "📦 Chưa phân loại"}
+                        </td>
+                        <td className="px-5 py-4 font-semibold text-gray-900 max-w-[180px]">
+                          <div className="truncate">{product.title}</div>
+                        </td>
+                        <td className="px-5 py-4 font-bold text-purple-600 whitespace-nowrap">
+                          {(product.price >= 1000
+                            ? product.price
+                            : product.price * 1000
+                          ).toLocaleString("vi-VN")}{" "}
+                          VND
+                        </td>
+                        <td className="px-5 py-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${d.badge}`}
+                          >
+                            {d.emoji} {d.label}
                           </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                          className="hidden"
-                        />
-                      </label>
-                      <span className="flex items-center text-gray-400 font-semibold">
-                        HOẶC
-                      </span>
-                      <div className="flex-1"></div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    {uploadingImage && (
-                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-[#FE979B] to-[#FEAE97] h-full transition-all duration-300"
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                    )}
-
-                    {/* URL Input */}
-                    <input
-                      type="text"
-                      required
-                      value={formData.imageUrl}
-                      onChange={(e) =>
-                        setFormData({ ...formData, imageUrl: e.target.value })
-                      }
-                      placeholder="Hoặc nhập URL hình ảnh (https://...)"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE979B] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
-                      disabled={uploadingImage}
-                    />
-
-                    {/* Image Preview */}
-                    {formData.imageUrl && (
-                      <div className="mt-3 p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-                        <p className="text-sm font-semibold text-gray-700 mb-2">
-                          ✨ Xem trước:
-                        </p>
-                        <img
-                          src={formData.imageUrl}
-                          alt="Preview"
-                          className="w-48 h-48 object-cover rounded-lg shadow-md border border-gray-200"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3EKh%C3%B4ng t%E1%BA%A3i %C4%91%C6%B0%E1%BB%A3c%3C/text%3E%3C/svg%3E';
-                          }}
-                        />
-                        <p className="text-xs text-gray-500 mt-2 break-all">
-                          {formData.imageUrl.includes("firebasestorage")
-                            ? "🔥 Lưu trên Firebase Storage"
-                            : "🌐 URL bên ngoài"}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Độ Khó
-                  </label>
-                  <select
-                    value={formData.difficulty}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        difficulty: e.target.value as
-                          | "easy"
-                          | "medium"
-                          | "hard",
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 bg-white transition-all"
-                  >
-                    <option value="easy">Dễ</option>
-                    <option value="medium">Trung Bình</option>
-                    <option value="hard">Khó</option>
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Mô Tả
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Mô tả chi tiết về sản phẩm..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all resize-none"
-                    rows={4}
-                  />
-                </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${product.status === "active" ? "bg-green-100 text-green-700 border-green-200" : "bg-gray-100 text-gray-600 border-gray-200"}`}
+                          >
+                            {product.status === "active"
+                              ? "✅ Hoạt động"
+                              : "⏸️ Đang ẩn"}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <div className="leading-tight">
+                            <p className="font-semibold text-gray-800">
+                              {created.time}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {created.date}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-gray-700 font-semibold">
+                          {product.sales} đơn
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() =>
+                                router.push(
+                                  `/admin/add-products?id=${product.id}`,
+                                )
+                              }
+                              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:shadow-lg text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDelete(product.id, product.title)
+                              }
+                              className="bg-gradient-to-r from-red-500 to-pink-600 hover:shadow-lg text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {filtered.length === 0 && (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">🎨</div>
+                <p className="text-gray-500 text-lg">
+                  {search
+                    ? `Không tìm thấy "${search}"`
+                    : "Chưa có sản phẩm nào"}
+                </p>
               </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-xl text-white px-8 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
-                >
-                  {editingProduct ? "💾 Cập Nhật" : "➕ Thêm Mới"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setEditingProduct(null);
-                    setPriceDisplay("");
-                    setFormData({
-                      title: "",
-                      description: "",
-                      category: "paint-by-numbers",
-                      price: 0,
-                      imageUrl: "",
-                      thumbnailUrl: "",
-                      difficulty: "medium",
-                      colors: 24,
-                    });
-                  }}
-                  className="bg-gray-500 hover:bg-gray-600 hover:shadow-lg text-white px-8 py-3 rounded-xl font-semibold transition-all"
-                >
-                  Hủy
-                </button>
-              </div>
-            </form>
+            )}
           </div>
         )}
-
-        {/* Products Table */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Hình Ảnh
-                  </th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Tên Sản Phẩm
-                  </th>
-                  <th className="px-6 py-4 text-left font-semibold">Giá</th>
-                  <th className="px-6 py-4 text-left font-semibold">Độ Khó</th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Trạng Thái
-                  </th>
-                  <th className="px-6 py-4 text-left font-semibold">Đã Bán</th>
-                  <th className="px-6 py-4 text-left font-semibold">
-                    Thao Tác
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="border-b border-gray-100 hover:bg-purple-50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="relative">
-                        <img
-                          src={product.imageUrl}
-                          alt={product.title}
-                          className="w-20 h-20 object-cover rounded-xl shadow-md border border-gray-200"
-                        />
-                        {newProductIds.has(product.id) && (
-                          <span className="absolute -top-1 -left-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg animate-pulse">
-                            🆕 NEW
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">
-                      {product.title}
-                    </td>
-                    <td className="px-6 py-4 font-bold text-purple-600">
-                      {(product.price >= 1000
-                        ? product.price
-                        : product.price * 1000
-                      ).toLocaleString("vi-VN")}{" "}
-                      VNĐ
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${
-                          product.difficulty === "easy"
-                            ? "bg-green-100 text-green-700 border-green-200"
-                            : product.difficulty === "hard"
-                              ? "bg-red-100 text-red-700 border-red-200"
-                              : "bg-yellow-100 text-yellow-700 border-yellow-200"
-                        }`}
-                      >
-                        {product.difficulty === "easy"
-                          ? "🟢 Dễ"
-                          : product.difficulty === "hard"
-                            ? "🔴 Khó"
-                            : "🟡 Trung Bình"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${
-                          product.status === "active"
-                            ? "bg-green-100 text-green-700 border-green-200"
-                            : "bg-gray-100 text-gray-700 border-gray-200"
-                        }`}
-                      >
-                        {product.status === "active" ? "✅ Hoạt động" : "⏸️ Ẩn"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-700">
-                      {product.sales} đơn
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEdit(product)}
-                          className="bg-gradient-to-r from-blue-500 to-cyan-600 hover:shadow-lg text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all transform hover:scale-105"
-                        >
-                          ✏️ Sửa
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="bg-gradient-to-r from-red-500 to-pink-600 hover:shadow-lg text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all transform hover:scale-105"
-                        >
-                          🗑️ Xóa
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {products.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🎨</div>
-              <div className="text-gray-500 text-lg">Chưa có sản phẩm nào</div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

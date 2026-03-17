@@ -43,14 +43,14 @@ export const createUser = async (uid, userData) => {
   return { id: uid, ...newUser };
 };
 
-// Update user
+// Update user (uses set+merge so it works even if document doesn't exist yet)
 export const updateUser = async (uid, updateData) => {
   const updates = {
     ...updateData,
     updatedAt: formatDate(),
   };
 
-  await db.collection("users").doc(uid).update(updates);
+  await db.collection("users").doc(uid).set(updates, { merge: true });
   return getUserById(uid);
 };
 

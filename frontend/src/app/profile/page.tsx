@@ -8,54 +8,195 @@ import { useFavoriteStore } from "@/store/favoriteStore";
 import { useCartStore } from "@/store/cartStore";
 import { useHydration } from "@/hooks";
 import { isAdmin } from "@/lib/adminConfig";
-import { FaHeart, FaShoppingCart, FaTrash } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaTrash, FaSave } from "react-icons/fa";
 import toast from "react-hot-toast";
+import api from "@/lib/api";
 
 export default function ProfilePage() {
-  const { user, signOut } = useAuthStore();
+  const { user, setUser, signOut } = useAuthStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("info");
   const hydrated = useHydration();
   const { favorites, removeFavorite } = useFavoriteStore();
   const { addItem } = useCartStore();
 
+  // Controlled form state
+  const [displayName, setDisplayName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [address, setAddress] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "orders") {
+      fetchOrders();
+    }
+  }, [activeTab]);
+
   useEffect(() => {
     if (!user) {
       router.push("/login");
       return;
     }
-
-    // Nếu là admin, redirect sang trang quản trị
     if (isAdmin(user.email)) {
       router.push("/admin");
+      return;
     }
+    // Load user profile from API to get latest saved data
+    api
+      .get(`/users/${user.uid}`)
+      .then((res) => {
+        const data = res.data?.data || res.data;
+        setDisplayName(data.displayName || user.displayName || "");
+        setPhoneNumber(data.phoneNumber || user.phoneNumber || "");
+        setBirthDate(data.birthDate || "");
+        setAddress(data.address || user.address || "");
+      })
+      .catch(() => {
+        // fallback to store values
+        setDisplayName(user.displayName || "");
+        setPhoneNumber(user.phoneNumber || "");
+        setAddress(user.address || "");
+      });
   }, [user, router]);
+
+  const handleSaveInfo = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const res = await api.put(`/users/${user.uid}`, {
+        displayName: displayName.trim(),
+        phoneNumber: phoneNumber.trim(),
+        address: address.trim(),
+        birthDate,
+      });
+      const updated = res.data?.data || res.data;
+      // Sync auth store so Navbar / other components reflect the new name
+      setUser({
+        ...user,
+        displayName: updated.displayName,
+        phoneNumber: updated.phoneNumber,
+        address: updated.address,
+        birthDate: updated.birthDate,
+      });
+      toast.success("Đã lưu thông tin thành công!", { icon: "✅" });
+    } catch (err: any) {
+      toast.error(
+        "Lưu thất bại: " + (err?.response?.data?.message || err.message),
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const fetchOrders = async () => {
+    if (!user) return;
+    setOrdersLoading(true);
+    try {
+      const res = await api.get(`/orders/user/${user.uid}`);
+      const data = res.data?.data;
+      setOrders(data?.orders || []);
+    } catch (err) {
+      toast.error("Không thể tải đơn hàng!");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
 
   if (!user) return null;
 
-  const orderHistory = [
-    {
-      id: "DH001",
-      date: "2024-11-15",
-      product: "Tranh Phong Cảnh Núi Non",
-      price: 299000,
-      status: "Đã giao",
-    },
-    {
-      id: "DH002",
-      date: "2024-11-10",
-      product: "Tranh Hoa Anh Đào",
-      price: 199000,
-      status: "Đang giao",
-    },
-    {
-      id: "DH003",
-      date: "2024-11-05",
-      product: "Tranh Biển Hoàng Hôn",
-      price: 349000,
-      status: "Đã giao",
-    },
-  ];
+  {
+    activeTab === "orders" && (
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          📦 Đơn Hàng Của Tôi
+        </h2>
+
+        {ordersLoading ? (
+          <div className="text-center py-12 text-gray-500">Đang tải...</div>
+        ) : orders.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">Bạn chưa có đơn hàng nào</p>
+            <button
+              onClick={() => router.push("/gallery")}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg"
+            >
+              Khám Phá Sản Phẩm
+            </button>
+          </div>
+        ) : (
+          orders.map((order) => (
+            <div
+              key={order.id}
+              className="border border-gray-200 rounded-xl p-5"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="font-bold text-gray-800">
+                    #{order.orderNumber}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {order.createdAt
+                      ? (() => {
+                          const d = new Date(order.createdAt);
+                          return d.toLocaleString("vi-VN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          });
+                        })()
+                      : ""}
+                  </p>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    order.status === "delivered"
+                      ? "bg-green-100 text-green-700"
+                      : order.status === "cancelled"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-blue-100 text-blue-700"
+                  }`}
+                >
+                  {order.status}
+                </span>
+              </div>
+
+              {/* Danh sách sản phẩm */}
+              <div className="space-y-2 mb-3">
+                {order.items?.map((item: any, i: number) => (
+                  <div
+                    key={i}
+                    className="flex justify-between text-sm text-gray-600"
+                  >
+                    <span>
+                      {item.title} x{item.quantity}
+                    </span>
+                    <span>
+                      {(item.price * item.quantity).toLocaleString("vi-VN")}đ
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-between items-center border-t pt-3">
+                <span className="text-gray-500 text-sm">Tổng cộng</span>
+                <span className="font-bold text-purple-700 text-lg">
+                  {(order.totalAmount || order.total || 0).toLocaleString(
+                    "vi-VN",
+                  )}
+                  đ
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    );
+  }
 
   const vouchers = [
     {
@@ -159,9 +300,10 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="text"
-                    value={user.displayName || ""}
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Nhập họ và tên..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    readOnly
                   />
                 </div>
 
@@ -172,7 +314,7 @@ export default function ProfilePage() {
                   <input
                     type="email"
                     value={user.email || ""}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                     readOnly
                   />
                 </div>
@@ -183,6 +325,8 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="Chưa cập nhật"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
@@ -194,6 +338,8 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
@@ -204,6 +350,8 @@ export default function ProfilePage() {
                   </label>
                   <textarea
                     rows={3}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     placeholder="Nhập địa chỉ giao hàng..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
@@ -211,8 +359,13 @@ export default function ProfilePage() {
               </div>
 
               <div className="pt-4">
-                <button className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold">
-                  💾 Lưu Thay Đổi
+                <button
+                  onClick={handleSaveInfo}
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  <FaSave />
+                  {saving ? "Đang lưu..." : "Lưu Thông Tin"}
                 </button>
               </div>
             </div>
@@ -220,66 +373,95 @@ export default function ProfilePage() {
 
           {/* Đơn Hàng & Lịch Sử */}
           {activeTab === "orders" && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Đơn Hàng & Lịch Sử Mua Hàng
+                📦 Đơn Hàng Của Tôi
               </h2>
 
-              {orderHistory.map((order) => (
-                <div
-                  key={order.id}
-                  className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-900">
-                        {order.product}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Mã đơn hàng: {order.id}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Ngày đặt: {order.date}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-purple-600">
-                        {order.price.toLocaleString("vi-VN")}₫
-                      </p>
+              {ordersLoading ? (
+                <div className="text-center py-12 text-gray-500">
+                  Đang tải...
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-4">Bạn chưa có đơn hàng nào</p>
+                  <button
+                    onClick={() => router.push("/gallery")}
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg"
+                  >
+                    Khám Phá Sản Phẩm
+                  </button>
+                </div>
+              ) : (
+                orders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="border border-gray-200 rounded-xl p-5"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <p className="font-bold text-gray-800">
+                          #{order.orderNumber}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {order.createdAt
+                            ? (() => {
+                                const d = new Date(order.createdAt);
+                                return d.toLocaleString("vi-VN", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                });
+                              })()
+                            : ""}
+                        </p>
+                      </div>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                          order.status === "Đã giao"
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          order.status === "delivered"
                             ? "bg-green-100 text-green-700"
-                            : "bg-blue-100 text-blue-700"
+                            : order.status === "cancelled"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-blue-100 text-blue-700"
                         }`}
                       >
                         {order.status}
                       </span>
                     </div>
-                  </div>
 
-                  <div className="flex space-x-3">
-                    <button className="px-4 py-2 border border-purple-600 text-purple-600 rounded-lg font-semibold">
-                      Xem Chi Tiết
-                    </button>
-                    {order.status === "Đã giao" && (
-                      <button className="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold">
-                        Mua Lại
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    {/* Danh sách sản phẩm */}
+                    <div className="space-y-2 mb-3">
+                      {order.items?.map((item: any, i: number) => (
+                        <div
+                          key={i}
+                          className="flex justify-between text-sm text-gray-600"
+                        >
+                          <span>
+                            {item.title} x{item.quantity}
+                          </span>
+                          <span>
+                            {(item.price * item.quantity).toLocaleString(
+                              "vi-VN",
+                            )}
+                            đ
+                          </span>
+                        </div>
+                      ))}
+                    </div>
 
-              {orderHistory.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">
-                    Bạn chưa có đơn hàng nào
-                  </p>
-                  <button className="mt-4 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold">
-                    Khám Phá Sản Phẩm
-                  </button>
-                </div>
+                    <div className="flex justify-between items-center border-t pt-3">
+                      <span className="text-gray-500 text-sm">Tổng cộng</span>
+                      <span className="font-bold text-purple-700 text-lg">
+                        {(order.totalAmount || order.total || 0).toLocaleString(
+                          "vi-VN",
+                        )}
+                        đ
+                      </span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           )}

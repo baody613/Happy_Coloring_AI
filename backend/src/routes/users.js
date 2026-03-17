@@ -32,12 +32,13 @@ router.put("/:userId", authenticateUser, async (req, res) => {
       return sendError(res, "Unauthorized", 403);
     }
 
-    const { displayName, phoneNumber, address } = req.body;
+    const { displayName, phoneNumber, address, birthDate } = req.body;
 
     const updateData = {};
-    if (displayName) updateData.displayName = displayName;
-    if (phoneNumber) updateData.phoneNumber = phoneNumber;
-    if (address) updateData.address = address;
+    if (displayName !== undefined) updateData.displayName = displayName;
+    if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+    if (address !== undefined) updateData.address = address;
+    if (birthDate !== undefined) updateData.birthDate = birthDate;
 
     const updatedUser = await updateUser(userId, updateData);
 

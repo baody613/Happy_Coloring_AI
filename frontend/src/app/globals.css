@@ -41,6 +41,17 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+input,
+textarea,
+select {
+  color: #000000 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important;
+}
+
 /* Responsive container improvements */
 @media (max-width: 640px) {
   .container {
@@ -144,4 +155,12 @@ body {
   .ring-brand-orchid {
     --tw-ring-color: var(--orchid-medium);
   }
+}
+
+.opacity-80 {
+  opacity: 5.8;
+}
+.text-xs {
+  font-size: 0.89rem;
+  line-height: 1.5rem;
 }
