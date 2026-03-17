@@ -16,7 +16,7 @@
 - Order và OderDetail
 - Hỗ trợ khách hàng
 - chỉnh sửa lại chức năng cài đặt hệ thống
-- hãy tạo trang riêng cho các function nhỏ trong 4 chức năng của admin
+<!-- - hãy tạo trang riêng cho các function nhỏ trong 4 chức năng của admin -->
 
 <!-- - màu text từ trắng sang đen -->
 

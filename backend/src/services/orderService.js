@@ -150,10 +150,41 @@ export const getOrderStats = async () => {
   const ordersSnapshot = await db.collection("orders").get();
   const orders = ordersSnapshot.docs.map((doc) => doc.data());
 
+  const PAID_PAYMENT_STATUSES = new Set([
+    "paid",
+    "success",
+    "completed",
+    "done",
+  ]);
+  const PAID_ORDER_STATUSES = new Set([
+    "processing",
+    "shipping",
+    "delivered",
+    "confirmed",
+    "completed",
+  ]);
+
+  const getOrderAmount = (order) => {
+    const amount = order.totalAmount ?? order.total ?? 0;
+    return Number(amount) || 0;
+  };
+
+  const isPaidOrder = (order) => {
+    const paymentStatus = String(order.paymentStatus || "").toLowerCase();
+    const status = String(order.status || "").toLowerCase();
+    return (
+      PAID_PAYMENT_STATUSES.has(paymentStatus) || PAID_ORDER_STATUSES.has(status)
+    );
+  };
+
   const total = orders.length;
   const totalRevenue = orders
     .filter((o) => o.status !== "cancelled")
-    .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+    .reduce((sum, o) => sum + getOrderAmount(o), 0);
+  const paidOrders = orders.filter((o) => isPaidOrder(o)).length;
+  const paidRevenue = orders
+    .filter((o) => isPaidOrder(o))
+    .reduce((sum, o) => sum + getOrderAmount(o), 0);
 
   return {
     total,
@@ -163,6 +194,8 @@ export const getOrderStats = async () => {
     delivered: orders.filter((o) => o.status === "delivered").length,
     cancelled: orders.filter((o) => o.status === "cancelled").length,
     totalRevenue,
+    paidOrders,
+    paidRevenue,
     averageOrderValue: total > 0 ? totalRevenue / total : 0,
   };
 };

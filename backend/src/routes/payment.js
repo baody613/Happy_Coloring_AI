@@ -97,7 +97,7 @@ router.get("/vnpay/callback", async (req, res) => {
 
     if (result.success) {
       // Update order status
-      await updateOrderStatus(result.orderId, "confirmed");
+      await updateOrderStatus(result.orderId, "processing");
 
       // Update payment status in order
       const orderRef = db.collection("orders").doc(result.orderId);
@@ -141,7 +141,7 @@ router.get("/momo/callback", async (req, res) => {
 
     if (result.success) {
       // Update order status
-      await updateOrderStatus(result.orderId, "confirmed");
+      await updateOrderStatus(result.orderId, "processing");
 
       // Update payment status in order
       const orderRef = db.collection("orders").doc(result.orderId);
@@ -187,7 +187,7 @@ router.post("/momo/ipn", async (req, res) => {
 
     if (result.success) {
       // Update order status
-      await updateOrderStatus(result.orderId, "confirmed");
+      await updateOrderStatus(result.orderId, "processing");
 
       // Update payment status
       const orderRef = db.collection("orders").doc(result.orderId);

@@ -45,8 +45,20 @@ export default function AdminPage() {
 
   const loadStats = async () => {
     try {
-      const data = await adminAPI.stats.getDashboardStats();
-      setStats(data);
+      const response = await adminAPI.stats.getDashboardStats();
+      const payload = response?.data || response;
+
+      setStats((prev) => ({
+        ...prev,
+        totalOrders: payload?.totalOrders ?? 0,
+        totalProducts: payload?.totalProducts ?? 0,
+        totalUsers: payload?.totalUsers ?? 0,
+        totalRevenue: payload?.totalRevenue ?? 0,
+        pendingOrders: payload?.pendingOrders ?? 0,
+        processingOrders: payload?.processingOrders ?? 0,
+        shippingOrders: payload?.shippingOrders ?? 0,
+        deliveredOrders: payload?.deliveredOrders ?? 0,
+      }));
     } catch (error) {
       console.error("Error loading stats:", error);
     }
@@ -78,7 +90,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Tổng Đơn Hàng</p>
+                <p className="text-gray-600 text-sm">Đơn Đã Thanh Toán</p>
                 <h3 className="text-2xl font-bold text-gray-800">
                   {stats?.totalOrders || 0}
                 </h3>

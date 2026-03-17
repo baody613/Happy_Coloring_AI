@@ -17,7 +17,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("info");
   const hydrated = useHydration();
-  const { favorites, removeFavorite } = useFavoriteStore();
+  const { favorites, removeFavorite, setCurrentUser } = useFavoriteStore();
   const { addItem } = useCartStore();
 
   // Controlled form state
@@ -36,6 +36,8 @@ export default function ProfilePage() {
   }, [activeTab]);
 
   useEffect(() => {
+    setCurrentUser(user?.uid || null);
+
     if (!user) {
       router.push("/login");
       return;
@@ -60,7 +62,7 @@ export default function ProfilePage() {
         setPhoneNumber(user.phoneNumber || "");
         setAddress(user.address || "");
       });
-  }, [user, router]);
+  }, [user, router, setCurrentUser]);
 
   const handleSaveInfo = async () => {
     if (!user) return;

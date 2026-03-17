@@ -56,8 +56,35 @@ export const updateUser = async (uid, updateData) => {
 
 // Delete user
 export const deleteUser = async (uid) => {
+  let authDeleted = false;
+
+  try {
+    await auth.deleteUser(uid);
+    authDeleted = true;
+  } catch (error) {
+    if (error.code !== "auth/user-not-found") {
+      throw error;
+    }
+  }
+
   await db.collection("users").doc(uid).delete();
-  return true;
+
+  try {
+    const favoritesSnapshot = await db
+      .collection("favorites")
+      .where("userId", "==", uid)
+      .get();
+
+    if (!favoritesSnapshot.empty) {
+      const batch = db.batch();
+      favoritesSnapshot.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+    }
+  } catch (error) {
+    console.warn("Could not clean favorites for deleted user:", error.message);
+  }
+
+  return { uid, authDeleted };
 };
 
 // Get all users with pagination — source of truth: Firebase Auth

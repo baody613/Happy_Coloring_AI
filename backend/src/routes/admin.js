@@ -23,6 +23,19 @@ router.get("/stats", requireAdmin, async (req, res) => {
     ]);
 
     const stats = {
+      totalOrders: orderStats.paidOrders ?? orderStats.total ?? 0,
+      totalProducts:
+        (productStats.active || 0) +
+        (productStats.inactive || 0) +
+        (productStats.total && !productStats.active && !productStats.inactive
+          ? productStats.total
+          : 0),
+      totalUsers: userStats.total || 0,
+      totalRevenue: orderStats.paidRevenue ?? orderStats.totalRevenue ?? 0,
+      pendingOrders: orderStats.pending || 0,
+      processingOrders: orderStats.processing || 0,
+      shippingOrders: orderStats.shipping || 0,
+      deliveredOrders: orderStats.delivered || 0,
       products: productStats,
       orders: orderStats,
       users: userStats,

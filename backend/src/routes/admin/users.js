@@ -105,11 +105,25 @@ router.delete("/:userId", async (req, res) => {
       return sendError(res, "Cannot delete your own account", 400);
     }
 
-    await deleteUser(userId);
+    const targetUser = await admin.auth().getUser(userId);
+    const adminEmails = (
+      process.env.ADMIN_EMAILS || "admin@yulingstore.com,baody613@gmail.com"
+    )
+      .split(",")
+      .map((email) => email.trim().toLowerCase());
 
-    sendSuccess(res, { userId }, "User deleted successfully");
+    if (adminEmails.includes((targetUser.email || "").toLowerCase())) {
+      return sendError(res, "Cannot delete admin account", 403);
+    }
+
+    const result = await deleteUser(userId);
+
+    sendSuccess(res, { userId, ...result }, "User deleted successfully");
   } catch (error) {
     console.error("Delete user error:", error);
+    if (error.code === "auth/user-not-found") {
+      return sendError(res, "User not found", 404);
+    }
     sendError(res, error.message);
   }
 });

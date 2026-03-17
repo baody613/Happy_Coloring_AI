@@ -259,6 +259,8 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function GalleryPage() {
+  const { user } = useAuthStore();
+  const { setCurrentUser } = useFavoriteStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
@@ -270,6 +272,10 @@ export default function GalleryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    setCurrentUser(user?.uid || null);
+  }, [user?.uid, setCurrentUser]);
 
   useEffect(() => {
     api
