@@ -40,6 +40,51 @@ const sortProducts = (products, sortBy, sortOrder = "desc") => {
   });
 };
 
+const PAID_PAYMENT_STATUSES = new Set([
+  "paid",
+  "success",
+  "completed",
+  "done",
+]);
+
+const PAID_ORDER_STATUSES = new Set(["delivered", "completed"]);
+
+const isPaidOrder = (order) => {
+  const paymentStatus = String(order?.paymentStatus || "").toLowerCase();
+  const status = String(order?.status || "").toLowerCase();
+  return (
+    PAID_PAYMENT_STATUSES.has(paymentStatus) || PAID_ORDER_STATUSES.has(status)
+  );
+};
+
+const attachPaidSalesToProducts = async (products) => {
+  if (!Array.isArray(products) || products.length === 0) return products;
+
+  const productIds = new Set(products.map((p) => p.id));
+  const salesByProductId = {};
+
+  const ordersSnapshot = await db.collection("orders").get();
+  ordersSnapshot.forEach((doc) => {
+    const order = doc.data();
+    if (!isPaidOrder(order)) return;
+
+    const items = Array.isArray(order.items) ? order.items : [];
+    items.forEach((item) => {
+      const productId = item?.productId;
+      if (!productId || !productIds.has(productId)) return;
+
+      const quantity = Number(item?.quantity) || 1;
+      salesByProductId[productId] =
+        (salesByProductId[productId] || 0) + quantity;
+    });
+  });
+
+  return products.map((product) => ({
+    ...product,
+    sales: salesByProductId[product.id] || 0,
+  }));
+};
+
 /**
  * Product Service - handles all product-related database operations
  */
@@ -50,7 +95,10 @@ export const getProductById = async (productId) => {
   if (!productDoc.exists) {
     return null;
   }
-  return { id: productDoc.id, ...productDoc.data() };
+  const [productWithSales] = await attachPaidSalesToProducts([
+    { id: productDoc.id, ...productDoc.data() },
+  ]);
+  return productWithSales;
 };
 
 // Get all products with pagination and filters
@@ -177,8 +225,10 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       filters.sortOrder,
     );
 
+    const productsWithSales = await attachPaidSalesToProducts(sortedProducts);
+
     return {
-      products: sortedProducts,
+      products: productsWithSales,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

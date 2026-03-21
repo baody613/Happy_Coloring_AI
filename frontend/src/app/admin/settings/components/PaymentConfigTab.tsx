@@ -1,19 +1,26 @@
-import React from 'react';
-import { PaymentSettings } from '../types';
+import React from "react";
+import { PaymentSettings } from "../types";
 
 interface PaymentConfigTabProps {
   settings: PaymentSettings;
   onUpdate: (settings: PaymentSettings) => void;
 }
 
-export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({ settings, onUpdate }) => {
+export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({
+  settings,
+  onUpdate,
+}) => {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Cài Đặt Thanh Toán</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        Cài Đặt Thanh Toán
+      </h2>
 
       {/* Payment Methods */}
       <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-gray-800 mb-4">Phương Thức Thanh Toán</h3>
+        <h3 className="font-semibold text-gray-800 mb-4">
+          Phương Thức Thanh Toán
+        </h3>
         <div className="space-y-3">
           <PaymentMethodOption
             label="💵 Thanh toán khi nhận hàng (COD)"
@@ -51,7 +58,10 @@ export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({ settings, on
             onChange={(checked) =>
               onUpdate({
                 ...settings,
-                paymentMethods: { ...settings.paymentMethods, banking: checked },
+                paymentMethods: {
+                  ...settings.paymentMethods,
+                  banking: checked,
+                },
               })
             }
           />
@@ -145,7 +155,9 @@ export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({ settings, on
       {/* Banking Info */}
       {settings.paymentMethods.banking && (
         <div className="border border-gray-200 p-4 rounded-lg">
-          <h3 className="font-semibold text-gray-800 mb-4">Thông Tin Ngân Hàng</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">
+            Thông Tin Ngân Hàng
+          </h3>
           <div className="space-y-4">
             <InputField
               label="Tên Ngân Hàng"
@@ -165,7 +177,10 @@ export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({ settings, on
               onChange={(value) =>
                 onUpdate({
                   ...settings,
-                  bankingInfo: { ...settings.bankingInfo, accountNumber: value },
+                  bankingInfo: {
+                    ...settings.bankingInfo,
+                    accountNumber: value,
+                  },
                 })
               }
             />
@@ -180,6 +195,30 @@ export const PaymentConfigTab: React.FC<PaymentConfigTabProps> = ({ settings, on
                 })
               }
             />
+            <InputField
+              label="URL Ảnh Mã QR"
+              type="text"
+              value={settings.bankingInfo.qrImageUrl || ""}
+              onChange={(value) =>
+                onUpdate({
+                  ...settings,
+                  bankingInfo: { ...settings.bankingInfo, qrImageUrl: value },
+                })
+              }
+            />
+
+            {settings.bankingInfo.qrImageUrl && (
+              <div className="rounded-lg border border-gray-200 p-4 bg-gray-50">
+                <p className="text-sm text-gray-600 mb-2">
+                  Xem trước mã QR chuyển khoản
+                </p>
+                <img
+                  src={settings.bankingInfo.qrImageUrl}
+                  alt="QR chuyển khoản"
+                  className="w-56 h-56 object-contain rounded-lg border border-gray-200 bg-white"
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -194,7 +233,11 @@ interface PaymentMethodOptionProps {
   onChange: (checked: boolean) => void;
 }
 
-const PaymentMethodOption: React.FC<PaymentMethodOptionProps> = ({ label, checked, onChange }) => {
+const PaymentMethodOption: React.FC<PaymentMethodOptionProps> = ({
+  label,
+  checked,
+  onChange,
+}) => {
   return (
     <div className="flex items-center justify-between">
       <span className="text-gray-700">{label}</span>
@@ -215,10 +258,17 @@ interface InputFieldProps {
   onChange: (value: string) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, type, value, onChange }) => {
+const InputField: React.FC<InputFieldProps> = ({
+  label,
+  type,
+  value,
+  onChange,
+}) => {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label}
+      </label>
       <input
         type={type}
         value={value}

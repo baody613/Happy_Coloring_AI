@@ -14,6 +14,8 @@ interface OrderItem {
   price: number;
   quantity: number;
   imageUrl?: string;
+  category?: string;
+  isAIProduct?: boolean;
 }
 
 interface Order {
@@ -106,6 +108,14 @@ export default function AdminOrdersClient() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  const isAIItem = (item: OrderItem) =>
+    Boolean(item?.isAIProduct) ||
+    item?.category === "ai-products" ||
+    item?.category === "Sản Phẩm AI";
+
+  const isAIOrder = (order: Order) =>
+    Array.isArray(order.items) && order.items.some((item) => isAIItem(item));
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -144,9 +154,15 @@ export default function AdminOrdersClient() {
       try {
         setLoading(true);
         const params: any = { page, limit: 10 };
-        if (status !== "all") params.status = status;
+        if (status !== "all" && status !== "ai-products") {
+          params.status = status;
+        }
         const res = await adminAPI.orders.getAll(params);
         let list: Order[] = res.data?.orders || res.orders || [];
+
+        if (status === "ai-products") {
+          list = list.filter((order) => isAIOrder(order));
+        }
 
         // client-side search by order id / customer name / phone
         if (searchText.trim()) {
@@ -239,7 +255,7 @@ export default function AdminOrdersClient() {
                 📦
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-height">
                   Quản Lý Đơn Hàng
                 </h1>
                 <p className="text-gray-500 text-sm mt-0.5">
@@ -342,6 +358,7 @@ export default function AdminOrdersClient() {
           <div className="flex flex-wrap gap-2">
             {[
               ["all", "📊 Tất Cả", "from-purple-600 to-pink-600"],
+              ["ai-products", "🤖 Sản Phẩm AI", "from-fuchsia-600 to-violet-600"],
               ...Object.entries(STATUS_CONFIG).map(([k, v]) => [
                 k,
                 `${v.emoji} ${v.label}`,
@@ -427,7 +444,14 @@ export default function AdminOrdersClient() {
                       <td className="px-5 py-4">
                         <div className="text-sm text-gray-700">
                           {order.items?.length > 0 ? (
-                            <span>{order.items.length} sản phẩm</span>
+                            <div className="flex items-center gap-2">
+                              <span>{order.items.length} sản phẩm</span>
+                              {isAIOrder(order) && (
+                                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200">
+                                  Sản Phẩm AI
+                                </span>
+                              )}
+                            </div>
                           ) : (
                             <span className="text-gray-400 italic">—</span>
                           )}
@@ -681,6 +705,11 @@ export default function AdminOrdersClient() {
                           <div className="text-sm font-semibold text-gray-800 truncate">
                             {item.title || "Sản phẩm"}
                           </div>
+                          {isAIItem(item) && (
+                            <div className="text-[11px] inline-block mt-1 px-2 py-0.5 rounded-full font-semibold bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200">
+                              Sản Phẩm AI
+                            </div>
+                          )}
                           <div className="text-xs text-gray-500">
                             SL: {item.quantity} ×{" "}
                             {(item.price || 0).toLocaleString("vi-VN")}đ

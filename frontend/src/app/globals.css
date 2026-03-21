@@ -164,3 +164,11 @@ textarea::placeholder {
   font-size: 0.89rem;
   line-height: 1.5rem;
 }
+
+.text-height {
+  height: 44px;
+}
+
+.text2-height {
+  height: 73px;
+}

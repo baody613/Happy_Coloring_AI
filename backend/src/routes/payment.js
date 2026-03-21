@@ -9,9 +9,59 @@ import {
   getTransactionByOrderId,
 } from "../services/paymentService.js";
 import { getOrderById, updateOrderStatus } from "../services/orderService.js";
+import { getAllSettings } from "../services/index.js";
 import { sendSuccess, sendError } from "../utils/helpers.js";
 
 const router = express.Router();
+
+function normalizeQrImageUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== "string") {
+    return "/images/qrcode.png"; // Default QR code image
+  }
+
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return "/images/qrcode.png";
+
+  // Allow full external URLs from admin settings.
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Convert old incorrect prefixes to Next.js public path.
+  if (trimmed.startsWith("/frontend/public/")) {
+    return trimmed.replace("/frontend/public", "");
+  }
+
+  if (trimmed.startsWith("frontend/public/")) {
+    return `/${trimmed.replace("frontend/public/", "")}`;
+  }
+
+  // Ensure a leading slash for local public assets.
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+/**
+ * GET /api/payment/banking-info
+ * Public banking transfer info (safe fields only)
+ */
+router.get("/banking-info", async (req, res) => {
+  try {
+    const settings = await getAllSettings();
+    const payment = settings?.payment || {};
+    const bankingInfo = payment?.bankingInfo || {};
+
+    sendSuccess(res, {
+      enabled: Boolean(payment?.paymentMethods?.banking),
+      bankName: bankingInfo.bankName || "",
+      accountNumber: bankingInfo.accountNumber || "",
+      accountName: bankingInfo.accountName || "",
+      qrImageUrl: normalizeQrImageUrl(bankingInfo.qrImageUrl),
+    });
+  } catch (error) {
+    console.error("Get banking info error:", error);
+    sendError(res, "Failed to load banking info");
+  }
+});
 
 /**
  * POST /api/payment/create
@@ -122,7 +172,7 @@ router.get("/vnpay/callback", async (req, res) => {
     const redirectUrl = `${
       process.env.FRONTEND_URL
     }/order-success?status=error&message=${encodeURIComponent(
-      "Payment verification failed"
+      "Payment verification failed",
     )}`;
     res.redirect(redirectUrl);
   }
@@ -166,7 +216,7 @@ router.get("/momo/callback", async (req, res) => {
     const redirectUrl = `${
       process.env.FRONTEND_URL
     }/order-success?status=error&message=${encodeURIComponent(
-      "Payment verification failed"
+      "Payment verification failed",
     )}`;
     res.redirect(redirectUrl);
   }

@@ -173,7 +173,8 @@ export const getOrderStats = async () => {
     const paymentStatus = String(order.paymentStatus || "").toLowerCase();
     const status = String(order.status || "").toLowerCase();
     return (
-      PAID_PAYMENT_STATUSES.has(paymentStatus) || PAID_ORDER_STATUSES.has(status)
+      PAID_PAYMENT_STATUSES.has(paymentStatus) ||
+      PAID_ORDER_STATUSES.has(status)
     );
   };
 

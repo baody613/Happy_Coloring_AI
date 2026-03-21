@@ -72,6 +72,8 @@ export const createOrderSchema = Joi.object({
         price: Joi.number().min(0).required(),
         title: Joi.string().optional(), // Allow title for order history display
         imageUrl: Joi.string().optional(), // Allow both relative path and full URL
+        category: Joi.string().optional(),
+        isAIProduct: Joi.boolean().optional(),
       }),
     )
     .min(1)
@@ -135,6 +137,7 @@ export const paymentSettingsSchema = Joi.object({
     bankName: Joi.string().allow(""),
     accountNumber: Joi.string().allow(""),
     accountName: Joi.string().allow(""),
+    qrImageUrl: Joi.string().uri().allow(""),
   }),
 });
 

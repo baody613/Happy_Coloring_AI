@@ -235,7 +235,10 @@ export default function AdminUsersPage() {
                     </button>
                     <button
                       onClick={() =>
-                        handleToggleDisable(userItem.id, userItem.disabled || false)
+                        handleToggleDisable(
+                          userItem.id,
+                          userItem.disabled || false,
+                        )
                       }
                       className={`px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
                         userItem.disabled
@@ -333,16 +336,27 @@ export default function AdminUsersPage() {
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xl font-bold text-gray-800">👑 Tài Khoản Admin</h2>
-              <span className="text-sm text-gray-500">{adminUsers.length} tài khoản</span>
+              <h2 className="text-xl font-bold text-gray-800">
+                👑 Tài Khoản Admin
+              </h2>
+              <span className="text-sm text-gray-500">
+                {adminUsers.length} tài khoản
+              </span>
             </div>
-            {renderUserTable(adminUsers, "Không có tài khoản Admin trong trang này")}
+            {renderUserTable(
+              adminUsers,
+              "Không có tài khoản Admin trong trang này",
+            )}
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xl font-bold text-gray-800">👤 Tài Khoản Người Dùng</h2>
-              <span className="text-sm text-gray-500">{regularUsers.length} tài khoản</span>
+              <h2 className="text-xl font-bold text-gray-800">
+                👤 Tài Khoản Người Dùng
+              </h2>
+              <span className="text-sm text-gray-500">
+                {regularUsers.length} tài khoản
+              </span>
             </div>
             {renderUserTable(
               regularUsers,
@@ -356,7 +370,8 @@ export default function AdminUsersPage() {
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border border-gray-100 rounded-xl bg-white">
               <span className="text-sm text-gray-600">
-                Trang {pagination.page} / {pagination.totalPages} &nbsp;•&nbsp; {pagination.total} người dùng
+                Trang {pagination.page} / {pagination.totalPages} &nbsp;•&nbsp;{" "}
+                {pagination.total} người dùng
               </span>
               <div className="flex gap-2">
                 <button

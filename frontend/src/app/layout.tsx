@@ -59,7 +59,7 @@ export default function RootLayout({
             <Footer />
           </div>
           <Chatbot />
-          <Toaster position="top-right" />
+          <Toaster position="top-right" containerStyle={{ top: 88 }} />
         </AuthProvider>
       </body>
     </html>

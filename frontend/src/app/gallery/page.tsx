@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,8 +12,9 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaSortAmountDown,
+  FaTimes,
 } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
@@ -75,6 +75,76 @@ const ITEMS_PER_PAGE = 12;
 
 const NEW_PRODUCT_DAYS = 7;
 
+const quickViewContainerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.14,
+    },
+  },
+};
+
+const quickViewItemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+function getQuickViewDynamicMotion(seed: string) {
+  const hash = seed
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  const direction = hash % 2 === 0 ? 1 : -1;
+  const rotate = direction * (2 + (hash % 4));
+  const rotateX = direction * (8 + (hash % 5));
+  const startY = 68 + (hash % 42);
+  const overshootY = direction * (6 + (hash % 5));
+  const startScale = 0.84 + (hash % 6) * 0.01;
+  const duration = 0.8 + (hash % 3) * 0.1;
+  const hue = 250 + (hash % 38);
+
+  return {
+    panel: {
+      initial: {
+        opacity: 0,
+        scale: startScale,
+        y: startY,
+        rotate,
+        rotateX,
+        filter: "blur(10px)",
+      },
+      animate: {
+        opacity: 1,
+        scale: [startScale, 1.02, 1],
+        y: [startY, -overshootY, 0],
+        rotate: [rotate, -rotate * 0.15, 0],
+        rotateX: [rotateX, -rotateX * 0.15, 0],
+        filter: "blur(0px)",
+      },
+      exit: {
+        opacity: 0,
+        scale: 0.95,
+        y: 22,
+        rotate: direction * 1.5,
+        rotateX: direction * 6,
+        filter: "blur(4px)",
+      },
+      transition: {
+        duration,
+        ease: [0.16, 1, 0.3, 1],
+        times: [0, 0.72, 1],
+      },
+    },
+    glowColor: `hsla(${hue}, 95%, 78%, 0.30)`,
+  };
+}
+
 function isNewProduct(createdAt: string): boolean {
   if (!createdAt) return false;
   const created = new Date(createdAt).getTime();
@@ -116,7 +186,13 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({
+  product,
+  onViewDetail,
+}: {
+  product: Product;
+  onViewDetail: (product: Product) => void;
+}) {
   const hydrated = useHydration();
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
@@ -125,7 +201,7 @@ function ProductCard({ product }: { product: Product }) {
   const favorited = hydrated && isFavorite(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.stopPropagation();
     addItem(product, 1);
     toast.success(`Đã thêm "${product.title}" vào giỏ hàng!`, {
       icon: "🛒",
@@ -134,7 +210,7 @@ function ProductCard({ product }: { product: Product }) {
   };
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       toast.error("Vui lòng đăng nhập để lưu yêu thích!", { icon: "🔐" });
       return;
@@ -165,95 +241,247 @@ function ProductCard({ product }: { product: Product }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      className="group"
+      className="group cursor-pointer"
+      onClick={() => onViewDetail(product)}
     >
-      <Link href={`/products/${product.id}`}>
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-          {/* Image */}
-          <div className="relative aspect-square overflow-hidden bg-gray-50">
-            <Image
-              src={product.imageUrl || product.thumbnailUrl}
-              alt={product.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            />
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden bg-gray-50">
+          <Image
+            src={product.imageUrl || product.thumbnailUrl}
+            alt={product.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
 
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1">
-              {isNew && (
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-sm animate-pulse">
-                  ✨ Mới
-                </span>
-              )}
-              <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[product.difficulty]}`}
-              >
-                {DIFFICULTY_LABELS[product.difficulty]}
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1">
+            {isNew && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-sm animate-pulse">
+                ✨ Mới
               </span>
-              {discountPercent > 0 && (
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
-                  -{discountPercent}%
-                </span>
-              )}
-            </div>
-
-            {/* Favorite button */}
-            <button
-              onClick={handleToggleFavorite}
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
-                favorited
-                  ? "bg-red-500 text-white scale-110"
-                  : "bg-white/90 text-gray-400 hover:text-red-400 hover:bg-white"
-              }`}
+            )}
+            <span
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[product.difficulty]}`}
             >
-              <FaHeart className="text-sm" />
-            </button>
-
-            {/* Colors info */}
-            {product.colors > 0 && (
-              <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
-                {product.colors} màu
-              </div>
+              {DIFFICULTY_LABELS[product.difficulty]}
+            </span>
+            {discountPercent > 0 && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
+                -{discountPercent}%
+              </span>
             )}
           </div>
 
-          {/* Info */}
-          <div className="p-4">
-            <h3 className="font-semibold text-gray-800 line-clamp-2 text-sm leading-snug mb-1">
-              {product.title}
-            </h3>
+          {/* Favorite button */}
+          <button
+            onClick={handleToggleFavorite}
+            className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
+              favorited
+                ? "bg-red-500 text-white scale-110"
+                : "bg-white/90 text-gray-400 hover:text-red-400 hover:bg-white"
+            }`}
+          >
+            <FaHeart className="text-sm" />
+          </button>
 
-            {product.rating > 0 && (
-              <div className="mb-2">
-                <StarRating rating={product.rating} />
-              </div>
-            )}
-
-            <div className="flex items-center justify-between mt-2">
-              <div>
-                <span className="text-lg font-bold text-purple-700">
-                  {product.price.toLocaleString("vi-VN")}đ
-                </span>
-                {product.originalPrice &&
-                  product.originalPrice > product.price && (
-                    <span className="text-xs text-gray-400 line-through ml-1.5">
-                      {product.originalPrice.toLocaleString("vi-VN")}đ
-                    </span>
-                  )}
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                className="w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md hover:shadow-purple-300 hover:scale-110 transition-all duration-200"
-                title="Thêm vào giỏ hàng"
-              >
-                <FaShoppingCart className="text-sm" />
-              </button>
+          {/* Colors info */}
+          {product.colors > 0 && (
+            <div className="absolute bottom-3 left-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
+              {product.colors} màu
             </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="p-4">
+          <h3 className="font-semibold text-gray-800 line-clamp-2 text-sm leading-snug mb-1">
+            {product.title}
+          </h3>
+
+          {product.rating > 0 && (
+            <div className="mb-2">
+              <StarRating rating={product.rating} />
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-2">
+            <div>
+              <span className="text-lg font-bold text-purple-700">
+                {product.price.toLocaleString("vi-VN")}đ
+              </span>
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <span className="text-xs text-gray-400 line-through ml-1.5">
+                    {product.originalPrice.toLocaleString("vi-VN")}đ
+                  </span>
+                )}
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              className="w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md hover:shadow-purple-300 hover:scale-110 transition-all duration-200"
+              title="Thêm vào giỏ hàng"
+            >
+              <FaShoppingCart className="text-sm" />
+            </button>
           </div>
         </div>
-      </Link>
+      </div>
+    </motion.div>
+  );
+}
+
+function ProductQuickView({
+  product,
+  onClose,
+}: {
+  product: Product;
+  onClose: () => void;
+}) {
+  const hydrated = useHydration();
+  const { user } = useAuthStore();
+  const { addItem } = useCartStore();
+  const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
+  const favorited = hydrated && isFavorite(product.id);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  const handleAddToCart = () => {
+    addItem(product, 1);
+    toast.success(`Đã thêm "${product.title}" vào giỏ hàng!`, {
+      icon: "🛒",
+      duration: 2000,
+    });
+  };
+
+  const handleToggleFavorite = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để lưu yêu thích!", { icon: "🔐" });
+      return;
+    }
+
+    if (favorited) {
+      removeFavorite(product.id);
+      toast("Đã xóa khỏi yêu thích", { icon: "💔", duration: 1500 });
+    } else {
+      addFavorite(product);
+      toast.success("Đã thêm vào yêu thích!", { icon: "❤️", duration: 1500 });
+    }
+  };
+
+  const dynamicMotion = getQuickViewDynamicMotion(product.id || "default");
+
+  return (
+    <motion.div
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+      initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      animate={{ opacity: 1, backdropFilter: "blur(4px)" }}
+      exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+    >
+      <motion.div
+        className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden transform-gpu will-change-transform"
+        onClick={(e) => e.stopPropagation()}
+        initial={dynamicMotion.panel.initial}
+        animate={dynamicMotion.panel.animate}
+        exit={dynamicMotion.panel.exit}
+        transition={dynamicMotion.panel.transition}
+        style={{ transformPerspective: 1200 }}
+      >
+        <motion.div
+          className="pointer-events-none absolute -top-24 -right-24 h-52 w-52 rounded-full blur-3xl"
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ backgroundColor: dynamicMotion.glowColor }}
+        />
+
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-900">Chi tiết sản phẩm</h3>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full hover:bg-gray-100 text-gray-500 flex items-center justify-center"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6"
+          variants={quickViewContainerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          <motion.div
+            className="relative aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100"
+            variants={quickViewItemVariants}
+          >
+            <img
+              src={product.imageUrl || product.thumbnailUrl}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+
+          <motion.div variants={quickViewItemVariants}>
+            <motion.h2
+              className="text-2xl font-bold text-gray-900 mb-3"
+              variants={quickViewItemVariants}
+            >
+              {product.title}
+            </motion.h2>
+            <motion.p
+              className="text-2xl font-extrabold text-purple-700 mb-4"
+              variants={quickViewItemVariants}
+            >
+              {product.price.toLocaleString("vi-VN")}đ
+            </motion.p>
+            <motion.p
+              className="text-gray-600 mb-4 whitespace-pre-line"
+              variants={quickViewItemVariants}
+            >
+              {product.description ||
+                "Chưa có mô tả chi tiết cho sản phẩm này."}
+            </motion.p>
+            <motion.div
+              className="flex items-center gap-4 text-sm text-gray-600 mb-6"
+              variants={quickViewItemVariants}
+            >
+              <span>🎨 {product.colors || 0} màu</span>
+              <span>🛍️ Đã bán: {product.sales || 0}</span>
+            </motion.div>
+
+            <motion.div className="flex gap-3" variants={quickViewItemVariants}>
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl font-semibold inline-flex items-center justify-center gap-2"
+              >
+                <FaShoppingCart /> Thêm vào giỏ
+              </button>
+              <button
+                onClick={handleToggleFavorite}
+                className={`px-5 py-3 rounded-xl font-semibold border inline-flex items-center justify-center gap-2 ${
+                  favorited
+                    ? "bg-red-500 text-white border-red-500"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-red-300 hover:text-red-500"
+                }`}
+              >
+                <FaHeart />
+              </button>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -272,6 +500,7 @@ export default function GalleryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     setCurrentUser(user?.uid || null);
@@ -345,10 +574,12 @@ export default function GalleryPage() {
       )
     : products;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50/50 to-white">
-      <Toaster position="top-right" />
+  const uniqueCategories = Array.from(
+    new Set(categories.map((cat) => cat.trim()).filter(Boolean)),
+  );
 
+  return (
+    <div className="min-h-screen bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500">
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white py-14 px-4">
         <div className="max-w-6xl mx-auto text-center">
@@ -383,9 +614,9 @@ export default function GalleryPage() {
 
       {/* Category Tabs */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex gap-1 overflow-x-auto py-3 scrollbar-hide">
-            {["all", ...categories].map((cat) => {
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <div className="flex flex-wrap gap-2">
+            {["all", ...uniqueCategories].map((cat) => {
               const icon = CATEGORY_ICONS[cat] ?? "🖼️";
               const label =
                 CATEGORY_LABELS[cat] ??
@@ -395,10 +626,10 @@ export default function GalleryPage() {
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
                     active
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-200"
-                      : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
+                      ? "bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-200"
+                      : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-300"
                   }`}
                 >
                   <span>{icon}</span>
@@ -410,9 +641,9 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 border border-gray-100 max-w-6xl mx-auto px-4 py-8">
         {/* Filter Bar */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
+        <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
           <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
             {/* Search */}
             <div className="relative flex-1">
@@ -515,15 +746,29 @@ export default function GalleryPage() {
               className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5"
             >
               {displayedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onViewDetail={setSelectedProduct}
+                />
               ))}
             </motion.div>
           </AnimatePresence>
         )}
 
+        <AnimatePresence>
+          {selectedProduct && (
+            <ProductQuickView
+              key={selectedProduct.id}
+              product={selectedProduct}
+              onClose={() => setSelectedProduct(null)}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Pagination */}
         {!loading && totalPages > 1 && !search.trim() && (
-          <div className="flex items-center justify-center gap-2 mt-12">
+          <div className="from-blue-500 to-indigo-500 flex items-center justify-center gap-2 mt-12">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}

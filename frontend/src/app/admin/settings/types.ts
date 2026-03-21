@@ -30,6 +30,7 @@ export interface PaymentSettings {
     bankName: string;
     accountNumber: string;
     accountName: string;
+    qrImageUrl?: string;
   };
 }
 
@@ -48,9 +49,9 @@ export interface EmailSettings {
   };
 }
 
-export type SettingsTab = 'config' | 'payment' | 'email';
+export type SettingsTab = "config" | "payment" | "email";
 
 export interface Message {
-  type: 'success' | 'error';
+  type: "success" | "error";
   text: string;
 }

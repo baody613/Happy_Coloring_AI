@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { Product } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { Product } from "@/types";
 
 interface FavoriteState {
   currentUserId: string | null;
@@ -22,7 +22,7 @@ export const useFavoriteStore = create<FavoriteState>()(
 
       setCurrentUser: (userId) => {
         const favoritesByUser = get().favoritesByUser;
-        const favorites = userId ? (favoritesByUser[userId] || []) : [];
+        const favorites = userId ? favoritesByUser[userId] || [] : [];
         set({ currentUserId: userId, favorites });
       },
 
@@ -81,7 +81,7 @@ export const useFavoriteStore = create<FavoriteState>()(
       },
     }),
     {
-      name: 'favorite-storage',
+      name: "favorite-storage",
       version: 2,
       migrate: (persistedState: any, version) => {
         if (!persistedState || version >= 2) {
@@ -95,6 +95,6 @@ export const useFavoriteStore = create<FavoriteState>()(
           favorites: [],
         };
       },
-    }
-  )
+    },
+  ),
 );

@@ -170,6 +170,7 @@ export const adminSettingsAPI = {
       bankName?: string;
       accountNumber?: string;
       accountName?: string;
+      qrImageUrl?: string;
     };
   }) => {
     const response = await api.put("/admin/settings/payment", settings);

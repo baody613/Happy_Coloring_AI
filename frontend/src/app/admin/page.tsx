@@ -177,19 +177,7 @@ export default function AdminPage() {
                 onClick={() => router.push("/admin/orders?status=pending")}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition"
               >
-                📋 Đơn Hàng Mới
-              </button>
-              <button
-                onClick={() => router.push("/admin/orders?status=shipping")}
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                🚚 Đang Giao Hàng
-              </button>
-              <button
-                onClick={() => router.push("/admin/orders?status=delivered")}
-                className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                ✅ Đã Hoàn Thành
+                📋 Đơn Hàng
               </button>
             </div>
           </div>
@@ -206,18 +194,6 @@ export default function AdminPage() {
               >
                 📋 Danh Sách Users
               </button>
-              <button
-                onClick={() => router.push("/admin/users")}
-                className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                🔒 Phân Quyền
-              </button>
-              <button
-                onClick={() => router.push("/admin/users")}
-                className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                🚫 Chặn/Khóa User
-              </button>
             </div>
           </div>
 
@@ -228,19 +204,19 @@ export default function AdminPage() {
             </h2>
             <div className="space-y-3">
               <button
-                onClick={() => router.push("/admin/settings")}
+                onClick={() => router.push("/admin/settings?tab=config")}
                 className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition"
               >
                 🔧 Cấu Hình
               </button>
               <button
-                onClick={() => router.push("/admin/settings")}
+                onClick={() => router.push("/admin/settings?tab=payment")}
                 className="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 rounded-lg transition"
               >
                 💳 Thanh Toán
               </button>
               <button
-                onClick={() => router.push("/admin/settings")}
+                onClick={() => router.push("/admin/settings?tab=email")}
                 className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition"
               >
                 📧 Email & Thông Báo

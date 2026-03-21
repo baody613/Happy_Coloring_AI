@@ -12,6 +12,7 @@ import {
   FaCreditCard,
   FaMoneyBillWave,
   FaMobile,
+  FaUniversity,
 } from "react-icons/fa";
 import { SiVisa } from "react-icons/si";
 import { Product } from "@/types";
@@ -36,6 +37,14 @@ export default function CheckoutPage() {
     clearSelectedItems,
   } = useCartStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [bankingInfo, setBankingInfo] = useState<{
+    enabled: boolean;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    qrImageUrl: string;
+  } | null>(null);
+  const [showBankingQuickView, setShowBankingQuickView] = useState(false);
 
   // Filter only selected items
   const selectedCartItems = items.filter((item) =>
@@ -53,6 +62,21 @@ export default function CheckoutPage() {
     paymentMethod: "cod", // cod, bank_transfer, credit_card
   });
 
+  const normalizeQrImageUrl = (rawUrl?: string) => {
+    if (!rawUrl) return "";
+    const trimmed = rawUrl.trim();
+    if (!trimmed) return "";
+
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    if (trimmed.startsWith("/frontend/public/")) {
+      return trimmed.replace("/frontend/public", "");
+    }
+    if (trimmed.startsWith("frontend/public/")) {
+      return `/${trimmed.replace("frontend/public/", "")}`;
+    }
+    return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  };
+
   useEffect(() => {
     // Không redirect khi đang xử lý thanh toán
     if (isProcessing) return;
@@ -69,6 +93,24 @@ export default function CheckoutPage() {
     }
   }, [user, selectedCartItems.length, router, isProcessing]);
 
+  useEffect(() => {
+    api
+      .get("/payment/banking-info")
+      .then((res) => {
+        const data = res.data?.data || res.data;
+        setBankingInfo({
+          enabled: Boolean(data?.enabled),
+          bankName: data?.bankName || "",
+          accountNumber: data?.accountNumber || "",
+          accountName: data?.accountName || "",
+          qrImageUrl: normalizeQrImageUrl(data?.qrImageUrl),
+        });
+      })
+      .catch(() => {
+        setBankingInfo(null);
+      });
+  }, []);
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -76,6 +118,14 @@ export default function CheckoutPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "paymentMethod") {
+      if (value === "banking" && bankingInfo?.enabled) {
+        setShowBankingQuickView(true);
+      } else {
+        setShowBankingQuickView(false);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,6 +158,10 @@ export default function CheckoutPage() {
           price: item.product.price,
           quantity: item.quantity,
           imageUrl: item.product.imageUrl,
+          category: item.product.category,
+          isAIProduct:
+            item.product.category === "ai-products" ||
+            item.product.category === "Sản Phẩm AI",
         })),
         shippingAddress: {
           fullName: formData.fullName,
@@ -216,6 +270,66 @@ export default function CheckoutPage() {
 
   return (
     <>
+      {showBankingQuickView &&
+        formData.paymentMethod === "banking" &&
+        bankingInfo?.enabled &&
+        bankingInfo.qrImageUrl && (
+          <div
+            className="fixed inset-0 z-[70] bg-black/55 backdrop-blur-[2px] flex items-center justify-center p-4"
+            onClick={() => setShowBankingQuickView(false)}
+          >
+            <div
+              className="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-indigo-100"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-5 py-4 border-b border-indigo-100 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-indigo-900">
+                  QR Chuyển Khoản Nhanh
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowBankingQuickView(false)}
+                  className="w-9 h-9 rounded-full text-gray-500 hover:bg-gray-100"
+                  aria-label="Đóng xem nhanh QR"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-5">
+                <div className="space-y-1 text-sm text-gray-700 mb-4">
+                  <p>
+                    Ngân hàng:{" "}
+                    <span className="font-semibold">
+                      {bankingInfo.bankName || "-"}
+                    </span>
+                  </p>
+                  <p>
+                    Số tài khoản:{" "}
+                    <span className="font-semibold">
+                      {bankingInfo.accountNumber || "-"}
+                    </span>
+                  </p>
+                  <p>
+                    Chủ tài khoản:{" "}
+                    <span className="font-semibold">
+                      {bankingInfo.accountName || "-"}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="mx-auto w-full max-w-[360px] aspect-square rounded-2xl border border-indigo-200 bg-white overflow-hidden">
+                  <img
+                    src={bankingInfo.qrImageUrl}
+                    alt="QR chuyển khoản"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
@@ -420,6 +534,79 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                     </label>
+
+                    {bankingInfo?.enabled && (
+                      <label className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 transition">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="banking"
+                          checked={formData.paymentMethod === "banking"}
+                          onChange={handleInputChange}
+                          className="w-5 h-5 text-purple-600"
+                        />
+                        <FaUniversity className="text-indigo-600 text-2xl ml-3 mr-3" />
+                        <div>
+                          <div className="font-semibold text-gray-800">
+                            Chuyển khoản ngân hàng
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Quét mã QR để chuyển khoản nhanh
+                          </div>
+                        </div>
+                      </label>
+                    )}
+
+                    {formData.paymentMethod === "banking" &&
+                      bankingInfo?.enabled && (
+                        <div className="p-4 rounded-lg border border-indigo-200 bg-indigo-50">
+                          <h3 className="font-semibold text-indigo-800 mb-3">
+                            Thông tin chuyển khoản
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-start">
+                            <div className="space-y-1 text-sm text-gray-700">
+                              <p>
+                                Ngân hàng:{" "}
+                                <span className="font-semibold">
+                                  {bankingInfo.bankName || "-"}
+                                </span>
+                              </p>
+                              <p>
+                                Số tài khoản:{" "}
+                                <span className="font-semibold">
+                                  {bankingInfo.accountNumber || "-"}
+                                </span>
+                              </p>
+                              <p>
+                                Chủ tài khoản:{" "}
+                                <span className="font-semibold">
+                                  {bankingInfo.accountName || "-"}
+                                </span>
+                              </p>
+
+                              {bankingInfo.qrImageUrl && (
+                                <button
+                                  type="button"
+                                  onClick={() => setShowBankingQuickView(true)}
+                                  className="mt-3 inline-flex items-center px-3 py-2 text-sm font-semibold text-indigo-700 bg-white border border-indigo-300 rounded-lg hover:bg-indigo-50"
+                                >
+                                  Xem QR nhanh
+                                </button>
+                              )}
+                            </div>
+
+                            {bankingInfo.qrImageUrl && (
+                              <div className="w-full max-w-[280px] aspect-square rounded-xl border border-indigo-200 bg-white overflow-hidden">
+                                <img
+                                  src={bankingInfo.qrImageUrl}
+                                  alt="QR chuyển khoản"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>

@@ -13,15 +13,15 @@ export const requireAdmin = async (req, res, next) => {
 
     const user = await getUserById(req.user.uid);
 
-    if (!user) {
-      return sendError(res, "User not found", 404);
-    }
+    // Primary source: role in users collection.
+    // Fallback: authenticated admin email flag from auth middleware.
+    const hasAdminRole = user?.role === "admin" || req.user.isAdmin === true;
 
-    if (user.role !== "admin") {
+    if (!hasAdminRole) {
       return sendError(res, "Admin access required", 403);
     }
 
-    req.user.role = user.role;
+    req.user.role = "admin";
     next();
   } catch (error) {
     console.error("Admin check error:", error);
@@ -49,11 +49,11 @@ export const requireAdminOrOwner = (getUserIdFromRequest) => {
       // Otherwise check if user is admin
       const user = await getUserById(req.user.uid);
 
-      if (!user || user.role !== "admin") {
+      if ((!user || user.role !== "admin") && req.user.isAdmin !== true) {
         return sendError(res, "Access denied", 403);
       }
 
-      req.user.role = user.role;
+      req.user.role = "admin";
       next();
     } catch (error) {
       console.error("Authorization check error:", error);

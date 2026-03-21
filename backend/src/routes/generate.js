@@ -1,19 +1,26 @@
 import express from "express";
-import { fal } from "@fal-ai/client";
+import axios from "axios";
 import { db } from "../config/firebase.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { uploadToStorage } from "../utils/storageHelpers.js";
 
 const router = express.Router();
 
-// Fal.ai configuration
-fal.config({ credentials: process.env.FAL_KEY });
-// Model: FLUX.1 schnell - nhanh, chất lượng cao
-const FAL_MODEL = "fal-ai/flux/schnell";
+const GOOGLE_API_KEY = process.env.GOOGLE_AI_API_KEY;
+const GOOGLE_IMAGE_MODELS = [
+  "models/gemini-2.5-flash-image",
+  "models/gemini-2.0-flash-preview-image-generation",
+];
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
   try {
-    const { prompt, style = "realistic", complexity = "medium" } = req.body;
+    const {
+      prompt,
+      style = "realistic",
+      complexity = "medium",
+      includeColoredPreview = false,
+    } = req.body;
     const userId = req.user.uid;
 
     if (!prompt) {
@@ -30,12 +37,21 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       prompt,
       style,
       complexity,
+      includeColoredPreview: Boolean(includeColoredPreview),
       status: "processing",
+      imageUrl: "",
+      coloredImageUrl: "",
       createdAt: new Date().toISOString(),
     });
 
     // Start AI generation (async)
-    generatePaintByNumbers(generationId, prompt, style, complexity, userId);
+    generatePaintByNumbers(
+      generationId,
+      prompt,
+      style,
+      complexity,
+      Boolean(includeColoredPreview),
+    );
 
     res.status(202).json({
       message: "Generation started",
@@ -82,28 +98,41 @@ async function generatePaintByNumbers(
   prompt,
   style,
   complexity,
-  userId,
+  includeColoredPreview,
 ) {
   try {
-    // Enhanced prompt for paint-by-numbers style
-    const enhancedPrompt = `${prompt}, paint by numbers style, clear outlines, numbered sections, coloring book, ${style} art style, ${complexity} detail level`;
+    // Prompt 1: line-art paint-by-numbers output
+    const lineArtPrompt = `${prompt}, paint by numbers style, black and white clean line art, clear outlines, numbered sections, coloring book page, ${style} art style, ${complexity} detail level`;
 
-    let imageUrl;
+    console.log("Generating with Google AI Studio image model...");
+    const imageBuffer = await generateWithGoogleImage(lineArtPrompt);
 
-    // Use Fal.ai for generation
-    try {
-      console.log("Generating with Fal.ai:", FAL_MODEL);
-      imageUrl = await generateWithFal(enhancedPrompt);
-      console.log("Fal.ai success! Image URL:", imageUrl);
-    } catch (error) {
-      console.error("Fal.ai error:", error.message);
-      throw error;
+    const fileName = `generation-${generationId}-lineart.png`;
+    const imageUrl = await uploadToStorage(
+      imageBuffer,
+      fileName,
+      "generations",
+    );
+
+    let coloredImageUrl = "";
+
+    if (includeColoredPreview) {
+      // Prompt 2: fully colored reference image so users can preview final look
+      const coloredPrompt = `${prompt}, full color illustration, vivid colors, no numbering, no text, polished finish, ${style} art style, ${complexity} detail level`;
+      const coloredImageBuffer = await generateWithGoogleImage(coloredPrompt);
+      const coloredFileName = `generation-${generationId}-colored.png`;
+      coloredImageUrl = await uploadToStorage(
+        coloredImageBuffer,
+        coloredFileName,
+        "generations",
+      );
     }
 
-    // Update generation record with Fal.ai URL directly
+    // Update generation record with uploaded generated image URL
     await db.collection("generations").doc(generationId).update({
       status: "completed",
       imageUrl,
+      coloredImageUrl,
       completedAt: new Date().toISOString(),
     });
 
@@ -120,36 +149,56 @@ async function generatePaintByNumbers(
   }
 }
 
-// Generate with Fal.ai (FLUX.1 schnell)
-async function generateWithFal(prompt) {
-  console.log("Calling Fal.ai API...");
-
-  const result = await fal.subscribe(FAL_MODEL, {
-    input: {
-      prompt,
-      image_size: "square_hd", // 1024x1024
-      num_inference_steps: 4, // schnell chỉ cần 4 steps
-      num_images: 1,
-      enable_safety_checker: true,
-    },
-    logs: true,
-    onQueueUpdate: (update) => {
-      if (update.status === "IN_PROGRESS") {
-        console.log(
-          "Fal.ai progress:",
-          update.logs?.map((l) => l.message).join(", "),
-        );
-      }
-    },
-  });
-
-  const imageUrl = result.data?.images?.[0]?.url;
-  if (!imageUrl) {
-    throw new Error("Fal.ai did not return an image URL");
+async function generateWithGoogleImage(prompt) {
+  if (!GOOGLE_API_KEY) {
+    throw new Error("GOOGLE_AI_API_KEY is missing in backend environment");
   }
 
-  console.log("Fal.ai image URL:", imageUrl);
-  return imageUrl;
+  let lastError;
+
+  for (const modelName of GOOGLE_IMAGE_MODELS) {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${GOOGLE_API_KEY}`;
+
+      const payload = {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseModalities: ["TEXT", "IMAGE"],
+        },
+      };
+
+      const response = await axios.post(endpoint, payload, {
+        headers: { "Content-Type": "application/json" },
+        timeout: 120000,
+      });
+
+      const parts = response.data?.candidates?.[0]?.content?.parts || [];
+      const imagePart = parts.find((part) => part.inlineData?.data);
+
+      if (!imagePart?.inlineData?.data) {
+        throw new Error(`No image data returned by ${modelName}`);
+      }
+
+      return Buffer.from(imagePart.inlineData.data, "base64");
+    } catch (error) {
+      lastError = error;
+      console.error(`Google model ${modelName} failed:`, error.message);
+    }
+  }
+
+  throw new Error(
+    lastError?.response?.data?.error?.message ||
+      lastError?.message ||
+      "Google image generation failed",
+  );
 }
 
 export default router;

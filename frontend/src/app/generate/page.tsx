@@ -21,11 +21,11 @@ export default function GeneratePage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [prompt, setPrompt] = useState("");
-  const [style, setStyle] = useState("realistic");
   const [complexity, setComplexity] = useState("medium");
   const [generating, setGenerating] = useState(false);
-  const [generationId, setGenerationId] = useState("");
   const [generatedImage, setGeneratedImage] = useState("");
+  const [coloredPreviewImage, setColoredPreviewImage] = useState("");
+  const [includeColoredPreview, setIncludeColoredPreview] = useState(false);
 
   const handleGenerate = async () => {
     if (!user) {
@@ -42,14 +42,14 @@ export default function GeneratePage() {
     try {
       setGenerating(true);
       setGeneratedImage("");
+      setColoredPreviewImage("");
 
       const { data } = await api.post("/generate/paint-by-numbers", {
         prompt,
-        style,
         complexity,
+        includeColoredPreview,
       });
 
-      setGenerationId(data.generationId);
       toast.success("Đang tạo tranh... Vui lòng đợi");
 
       // Poll for status
@@ -64,13 +64,18 @@ export default function GeneratePage() {
   const pollGenerationStatus = async (id: string) => {
     const maxAttempts = 60;
     let attempts = 0;
+    let isPolling = false;
 
     const interval = setInterval(async () => {
+      if (isPolling) return;
+
       try {
+        isPolling = true;
         const { data } = await api.get(`/generate/status/${id}`);
 
         if (data.status === "completed") {
           setGeneratedImage(data.imageUrl);
+          setColoredPreviewImage(data.coloredImageUrl || "");
           setGenerating(false);
           clearInterval(interval);
           toast.success("Tạo tranh thành công!");
@@ -88,6 +93,8 @@ export default function GeneratePage() {
         }
       } catch (error) {
         console.error("Polling error:", error);
+      } finally {
+        isPolling = false;
       }
     }, 5000);
   };
@@ -95,8 +102,9 @@ export default function GeneratePage() {
   const handleReset = () => {
     setPrompt("");
     setGeneratedImage("");
-    setStyle("realistic");
+    setColoredPreviewImage("");
     setComplexity("medium");
+    setIncludeColoredPreview(false);
   };
 
   return (
@@ -108,7 +116,7 @@ export default function GeneratePage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text2-height ">
             ✨ Tạo Tranh AI Độc Đáo
           </h1>
           <p className="text-xl text-purple-400">
@@ -134,41 +142,13 @@ export default function GeneratePage() {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Mô tả chi tiết tranh bạn muốn tạo...&#10;&#10;VD: Con mèo dễ thương ngồi trên cửa sổ, nhìn ra khu vườn hoa rực rỡ, phong cách anime"
+                placeholder="Mô tả chi tiết tranh bạn muốn tạo...&#10;&#10;VD: Con mèo dễ thương ngồi trên cửa sổ, nhìn ra khu vườn hoa rực rỡ"
                 className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none transition-all text-gray-900 placeholder:text-gray-400"
                 rows={6}
               />
               <p className="text-sm text-purple-300 mt-2">
                 💡 Mẹo: Mô tả càng chi tiết, tranh càng đẹp và chính xác!
               </p>
-            </div>
-
-            {/* Style Selection */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                🎨 Chọn Phong Cách
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {styles.map((s) => (
-                  <motion.button
-                    key={s.value}
-                    onClick={() => setStyle(s.value)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`p-6 rounded-xl border-2 transition-all ${
-                      style === s.value
-                        ? "border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg"
-                        : "border-gray-200 hover:border-purple-300 bg-white"
-                    }`}
-                  >
-                    <div className="text-4xl mb-3">{s.icon}</div>
-                    <div className="font-bold text-lg">{s.label}</div>
-                    <div className="text-sm text-purple-400 mt-1">
-                      {s.description}
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
             </div>
 
             {/* Complexity Selection */}
@@ -195,6 +175,9 @@ export default function GeneratePage() {
                           {c.icon}{" "}
                           <span className="text-pink-600">{c.label}</span>
                         </div>
+                        <div className="text-sm font-semibold text-purple-700 mt-1">
+                          Giá: {c.price.toLocaleString("vi-VN")}k
+                        </div>
                         <div className="text-sm text-purple-400 mt-1">
                           {c.description}
                         </div>
@@ -205,6 +188,26 @@ export default function GeneratePage() {
                     </div>
                   </motion.button>
                 ))}
+              </div>
+
+              <div className="mt-6 p-4 rounded-xl border border-purple-200 bg-purple-50/60">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeColoredPreview}
+                    onChange={(e) => setIncludeColoredPreview(e.target.checked)}
+                    className="mt-1 h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <div>
+                    <p className="font-semibold text-purple-700">
+                      Tạo kèm ảnh mẫu đã tô màu
+                    </p>
+                    <p className="text-sm text-purple-500">
+                      Bật tùy chọn này để có thêm ảnh tham khảo màu hoàn chỉnh.
+                      Thời gian tạo có thể lâu hơn.
+                    </p>
+                  </div>
+                </label>
               </div>
             </div>
 
@@ -296,16 +299,47 @@ export default function GeneratePage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                   >
-                    <div className="relative aspect-square mb-6 rounded-xl overflow-hidden shadow-lg">
-                      <Image
-                        src={generatedImage}
-                        alt="Generated painting"
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div>
+                        <p className="text-sm font-semibold text-purple-600 mb-2">
+                          Tranh Tô Màu
+                        </p>
+                        <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border border-purple-100">
+                          <Image
+                            src={generatedImage}
+                            alt="Generated paint-by-numbers"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-semibold text-pink-600 mb-2">
+                          Ảnh Tham Khảo Đã Tô Màu
+                        </p>
+                        <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border border-pink-100 bg-gradient-to-br from-pink-50 to-purple-50">
+                          {coloredPreviewImage ? (
+                            <Image
+                              src={coloredPreviewImage}
+                              alt="Colored reference preview"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-sm text-purple-400 px-4 text-center">
+                              Chưa có ảnh tham khảo màu cho lần tạo này
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <button className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 border-2 border-purple-300">
+                      <button
+                        type="button"
+                        onClick={() => router.push("/checkout")}
+                        className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 border-2 border-purple-300"
+                      >
                         <FaShoppingCart /> Mua Ngay
                       </button>
                       <button className="border-2 border-purple-600 text-purple-600 py-4 rounded-xl font-bold hover:bg-purple-50 transition-all flex items-center justify-center gap-2">
@@ -361,50 +395,26 @@ export default function GeneratePage() {
   );
 }
 
-const styles = [
-  {
-    value: "realistic",
-    label: "Chân Thực",
-    icon: "🖼️",
-    description: "Sống động, chi tiết",
-  },
-  {
-    value: "anime",
-    label: "Anime",
-    icon: "🎌",
-    description: "Phong cách Nhật Bản",
-  },
-  {
-    value: "cartoon",
-    label: "Hoạt Hình",
-    icon: "🎨",
-    description: "Vui nhộn, đáng yêu",
-  },
-  {
-    value: "abstract",
-    label: "Trừu Tượng",
-    icon: "🌈",
-    description: "Nghệ thuật hiện đại",
-  },
-];
-
 const complexities = [
   {
     value: "easy",
     label: "Dễ",
     icon: "⭐",
+    price: 200,
     description: "12-20 màu - Phù hợp người mới",
   },
   {
     value: "medium",
     label: "Trung Bình",
     icon: "⭐⭐",
+    price: 270,
     description: "20-36 màu - Cân bằng",
   },
   {
     value: "hard",
     label: "Khó",
     icon: "⭐⭐⭐",
+    price: 350,
     description: "36+ màu - Chi tiết cao",
   },
 ];

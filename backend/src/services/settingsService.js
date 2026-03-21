@@ -40,6 +40,7 @@ const defaultSettings = {
       bankName: "",
       accountNumber: "",
       accountName: "",
+      qrImageUrl: "",
     },
   },
   email: {
