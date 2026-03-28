@@ -28,13 +28,33 @@ app.set("trust proxy", 1);
 app.use(helmet());
 
 // CORS configuration - cho phép cả localhost và production frontend
-const allowedOrigins = [
+const normalizeOrigin = (value) => value?.trim().replace(/\/+$/, "");
+
+const envOrigins = [process.env.CORS_ORIGIN, process.env.FRONTEND_URL]
+  .flatMap((value) => (value ? value.split(",") : []))
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
+const allowedOrigins = new Set(
+  [
   "http://localhost:3000",
   "https://paint-by-numbers-ai-607c4.web.app",
   "https://paint-by-numbers-ai-607c4.firebaseapp.com",
-  process.env.CORS_ORIGIN,
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+    "https://happy-coloring-ai.vercel.app",
+    ...envOrigins,
+  ]
+    .map(normalizeOrigin)
+    .filter(Boolean)
+);
+
+const isAllowedVercelOrigin = (origin) => {
+  try {
+    const parsed = new URL(origin);
+    return parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+};
 
 app.use(
   cors({
@@ -42,9 +62,12 @@ app.use(
       // Cho phép requests không có origin (như mobile apps hoặc curl)
       if (!origin) return callback(null, true);
 
+      const normalizedOrigin = normalizeOrigin(origin);
+
       if (
-        allowedOrigins.indexOf(origin) !== -1 ||
-        origin.includes("localhost")
+        allowedOrigins.has(normalizedOrigin) ||
+        normalizedOrigin.includes("localhost") ||
+        isAllowedVercelOrigin(normalizedOrigin)
       ) {
         callback(null, true);
       } else {
