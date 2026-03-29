@@ -25,6 +25,7 @@ export default function OrderSuccessPage() {
   const { user } = useAuthStore();
   const { clearSelectedItems } = useCartStore();
   const [orderInfo, setOrderInfo] = useState<any>(null);
+  const [showAIPreview, setShowAIPreview] = useState(false);
 
   useEffect(() => {
     // Clear selected items sau khi order success
@@ -56,6 +57,38 @@ export default function OrderSuccessPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center py-12 px-4">
+      {showAIPreview && orderInfo?.aiGeneratedImageUrl && (
+        <div
+          className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-[2px] flex items-center justify-center p-4"
+          onClick={() => setShowAIPreview(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl bg-white p-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowAIPreview(false)}
+              className="absolute right-3 top-3 w-9 h-9 rounded-full bg-white/90 border border-gray-200 text-gray-700 hover:bg-gray-100"
+              aria-label="Đóng xem ảnh AI"
+            >
+              ✕
+            </button>
+            <p className="text-lg font-bold text-gray-900 mb-3">
+              Ảnh AI bạn vừa tạo
+            </p>
+            <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50 border border-purple-100">
+              <Image
+                src={orderInfo.aiGeneratedImageUrl}
+                alt="Ảnh AI vừa tạo"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -164,7 +197,7 @@ export default function OrderSuccessPage() {
             }}
           >
             <Image
-              src="/images/cute-cat.png.jpg.jpg"
+              src="/images/cute-cat.jpg"
               alt="Cute Cat Wizard"
               fill
               className="object-contain"
@@ -253,6 +286,22 @@ export default function OrderSuccessPage() {
                     </strong>{" "}
                     (Giảm {orderInfo.voucherDiscount}%)
                   </p>
+                )}
+                {orderInfo.aiGeneratedImageUrl && (
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    <span className="text-pink-500">🖼️</span>
+                    <span className="text-gray-800 font-medium">
+                      Đơn hàng có sản phẩm AI vừa tạo
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAIPreview(true)}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 transition-colors"
+                    >
+                      <FaImage />
+                      Xem ảnh vừa tạo
+                    </button>
+                  </div>
                 )}
               </>
             )}

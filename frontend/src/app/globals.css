@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --color-primary: #d988b9;
 
   /* Custom Brand Colors */
   --magenta-primary: #e6007a;
@@ -60,9 +61,50 @@ textarea::placeholder {
   }
 }
 
+@keyframes color-wave-shift {
+  0% {
+    color: var(--magenta-primary);
+  }
+  16.66% {
+    color: var(--magenta-deep);
+  }
+  33.33% {
+    color: var(--magenta-hot);
+  }
+  50% {
+    color: var(--violet-blue);
+  }
+  66.66% {
+    color: var(--violet-dark);
+  }
+  83.33% {
+    color: var(--orchid-dark);
+  }
+  100% {
+    color: var(--magenta-primary);
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .wave-color-text {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .wave-letter {
+    display: inline-block;
+    color: var(--magenta-primary);
+    animation: color-wave-shift 5.4s linear infinite;
+    will-change: color;
+  }
+
+  .wave-space {
+    width: 0.33em;
   }
 
   .store-name {
@@ -171,4 +213,9 @@ textarea::placeholder {
 
 .text2-height {
   height: 73px;
+}
+
+.md\:text-6xl {
+  font-size: 3rem /* 48px */;
+  line-height: 1.5;
 }

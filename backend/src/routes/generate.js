@@ -7,9 +7,41 @@ import { uploadToStorage } from "../utils/storageHelpers.js";
 const router = express.Router();
 
 const GOOGLE_API_KEY = process.env.GOOGLE_AI_API_KEY;
-const GOOGLE_IMAGE_MODELS = [
-  "models/gemini-2.5-flash-image"
-];
+const GOOGLE_IMAGE_MODELS = ["models/gemini-2.5-flash-image"];
+
+const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illustrator.
+Create exactly one printable paint-by-numbers sheet.
+
+User idea:
+"{{USER_PROMPT}}"
+
+Style: {{STYLE}}
+Complexity: {{COMPLEXITY}}
+
+Reference layout target:
+- Main artwork is centered inside a clean rectangular frame.
+- A horizontal color palette strip must be placed BELOW the artwork.
+
+Hard requirements:
+- Black-and-white line-art for the main painting area (no grayscale shading in the drawing).
+- Clean, crisp outlines with closed regions suitable for painting.
+- Large, readable numbers inside paint regions.
+- Every closed region must have a number, and repeated color regions must reuse the same number.
+- Show a numbered palette under the drawing using COLOR SWATCHES (colored blocks/circles), not color names.
+- Palette format: each swatch shows only its number and visual color.
+- Do NOT print color names anywhere.
+- Palette numbers must match exactly the numbers used in paint regions.
+- Keep the subject faithful to the user idea and visually similar in composition to the reference style.
+- No watermark, no logo, no signature, no decorative border effects.
+
+Output quality target:
+- High clarity, print-ready, easy for users to follow number-to-color mapping while painting.`;
+
+function buildLineArtPrompt(userPrompt, style, complexity) {
+  return LINE_ART_PROMPT_TEMPLATE.replace("{{USER_PROMPT}}", userPrompt)
+    .replace("{{STYLE}}", style)
+    .replace("{{COMPLEXITY}}", complexity);
+}
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
@@ -79,15 +111,9 @@ router.get("/status/:generationId", authenticateUser, async (req, res) => {
 });
 
 // Helper function to generate paint-by-numbers
-async function generatePaintByNumbers(
-  generationId,
-  prompt,
-  style,
-  complexity,
-) {
+async function generatePaintByNumbers(generationId, prompt, style, complexity) {
   try {
-    // Prompt 1: line-art paint-by-numbers output
-    const lineArtPrompt = `${prompt}, paint by numbers style, black and white clean line art, clear outlines, numbered sections, coloring book page, ${style} art style, ${complexity} detail level`;
+    const lineArtPrompt = buildLineArtPrompt(prompt.trim(), style, complexity);
 
     console.log("Generating with Google AI Studio image model...");
     const imageBuffer = await generateWithGoogleImage(lineArtPrompt);

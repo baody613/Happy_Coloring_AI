@@ -289,9 +289,9 @@ const generateResponse = async (intent, message, keywords) => {
           "✨ **Tạo Tranh AI - Độc Đáo Riêng Của Bạn**\n\n" +
           "🎯 Chỉ cần mô tả ý tưởng bằng tiếng Việt\n" +
           '   VD: _"con mèo đội mũ phù thủy ngồi uống cà phê"_\n\n' +
-          "🤖 AI (FLUX.1) sẽ tạo ảnh theo mô tả của bạn\n" +
-          "🎨 Tranh phong cách paint-by-numbers, đường viền rõ ràng\n" +
-          "⚡ Thời gian tạo: chỉ ~5-10 giây\n\n" +
+          "🤖 Hệ thống AI sẽ tạo tranh theo mô tả của bạn\n" +
+          "🎨 Kết quả gồm ảnh line-art paint-by-numbers, và có thể bật thêm ảnh màu tham khảo\n" +
+          "💰 Giá theo độ phức tạp: Dễ 200k, Trung bình 270k, Khó 350k\n\n" +
           "👉 Truy cập **Tạo Tranh** trên menu để thử ngay!",
         suggestions: ["Tạo tranh AI ngay", "Bảng giá", "Xem tranh mẫu"],
       };
@@ -314,10 +314,10 @@ const generateResponse = async (intent, message, keywords) => {
         text:
           "💳 **Phương thức thanh toán:**\n\n" +
           "✅ Chuyển khoản ngân hàng\n" +
-          "✅ Ví điện tử (MoMo, ZaloPay)\n" +
-          "✅ Thẻ Visa/Mastercard\n" +
+          "✅ MoMo\n" +
+          "✅ VNPay\n" +
           "✅ COD - thanh toán khi nhận hàng\n\n" +
-          "🔒 Thanh toán qua Stripe, bảo mật 100%",
+          "🔒 Hệ thống luôn xác nhận trạng thái đơn hàng sau khi thanh toán.",
         suggestions: ["Xem sản phẩm", "Phí vận chuyển?"],
       };
 

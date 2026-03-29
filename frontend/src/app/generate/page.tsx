@@ -31,6 +31,7 @@ export default function GeneratePage() {
   const [prompt, setPrompt] = useState("");
   const [complexity, setComplexity] = useState("medium");
   const [generating, setGenerating] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState("");
   const [showDetails, setShowDetails] = useState(false);
 
@@ -174,6 +175,41 @@ export default function GeneratePage() {
     }
   };
 
+  const handleDownload = async () => {
+    if (!generatedImage) {
+      toast.error("Vui lòng tạo tranh trước khi tải");
+      return;
+    }
+
+    try {
+      setDownloading(true);
+
+      const response = await fetch(generatedImage);
+      if (!response.ok) {
+        throw new Error("Download request failed");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `ai-paint-by-numbers-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+      toast.success("Đã tải ảnh về máy");
+    } catch (error) {
+      console.error("Download failed:", error);
+      window.open(generatedImage, "_blank", "noopener,noreferrer");
+      toast("Không thể tải trực tiếp, đã mở ảnh ở tab mới", {
+        icon: "ℹ️",
+      });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12 relative">
       <div className="container mx-auto px-4">
@@ -256,7 +292,6 @@ export default function GeneratePage() {
                   </motion.button>
                 ))}
               </div>
-
             </div>
 
             {/* Generate Button */}
@@ -386,8 +421,21 @@ export default function GeneratePage() {
                       >
                         {isAiFavorite ? <FaHeart /> : <FaRegHeart />} Yêu Thích
                       </button>
-                      <button className="border-2 border-purple-600 text-purple-600 py-4 rounded-xl font-bold hover:bg-purple-50 transition-all flex items-center justify-center gap-2">
-                        <FaDownload /> Tải Về
+                      <button
+                        type="button"
+                        onClick={handleDownload}
+                        disabled={downloading}
+                        className="border-2 border-purple-600 text-purple-600 py-4 rounded-xl font-bold hover:bg-purple-50 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {downloading ? (
+                          <>
+                            <FaSpinner className="animate-spin" /> Đang tải...
+                          </>
+                        ) : (
+                          <>
+                            <FaDownload /> Tải Về
+                          </>
+                        )}
                       </button>
                     </div>
                     {showDetails && aiProduct && (
@@ -405,7 +453,9 @@ export default function GeneratePage() {
                           }
                         </p>
                         <p>
-                          <span className="font-semibold">Số màu ước tính:</span>{" "}
+                          <span className="font-semibold">
+                            Số màu ước tính:
+                          </span>{" "}
                           {aiProduct.colors}
                         </p>
                         <p>

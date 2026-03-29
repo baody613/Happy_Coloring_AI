@@ -307,17 +307,7 @@ export default function AddProductsPage() {
                       />
                     </div>
                   )}
-                  <input
-                    type="text"
-                    required
-                    value={formData.imageUrl}
-                    onChange={(e) =>
-                      setFormData((p) => ({ ...p, imageUrl: e.target.value }))
-                    }
-                    placeholder="Hoặc nhập URL hình ảnh (https://...)"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900 placeholder-gray-400"
-                    disabled={uploadingImage}
-                  />
+
                   {formData.imageUrl && (
                     <div className="p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
                       <p className="text-sm font-semibold text-gray-700 mb-2">

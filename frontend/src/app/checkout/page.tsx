@@ -149,6 +149,13 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
+      const aiGeneratedImageUrl =
+        selectedCartItems.find(
+          (item) =>
+            item.product.category === "ai-products" ||
+            item.product.category === "Sản Phẩm AI",
+        )?.product.imageUrl || "";
+
       // Tạo đơn hàng
       const orderData = {
         userId: user?.uid,
@@ -225,6 +232,7 @@ export default function CheckoutPage() {
               itemCount: selectedCartItems.length,
               email: formData.email,
               paymentMethod: formData.paymentMethod,
+              aiGeneratedImageUrl,
             }),
           );
 
@@ -245,6 +253,7 @@ export default function CheckoutPage() {
           email: formData.email,
           voucherCode: orderData.voucherCode,
           voucherDiscount: orderData.voucherDiscount,
+          aiGeneratedImageUrl,
         }),
       );
 

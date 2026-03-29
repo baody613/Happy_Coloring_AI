@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "@/lib/api";
 
 interface Message {
   id: string;
@@ -51,17 +52,9 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text.trim() }),
+      const { data } = await api.post("/chat", {
+        message: text.trim(),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
 
       // Backend returns { success: true, data: { text, suggestions, products } }
       if (data.success && data.data) {
@@ -82,7 +75,7 @@ export default function Chatbot() {
       console.error("Chat error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "😅 Xin lỗi, tôi gặp lỗi. Vui lòng thử lại sau.",
+        text: "😅 Xin lỗi, tôi gặp lỗi khi kết nối trợ lý. Vui lòng thử lại sau.",
         sender: "bot",
         timestamp: new Date(),
       };

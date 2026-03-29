@@ -13,7 +13,10 @@ Những điểm cần sửa
 - Hỗ trợ khách hàng
 - thêm chọn xóa hàng loạt
 - fix lại chatbot
-
+- kiểm tra lại luồng
+- kiểm tra lại ảnh tải lên url
+- kiểm tra lại các câu lệnh trong Generate
+- không dùng mail có tên khác
 <!-- - Sort Trạng thái đơn hàng -->
 
 <!-- - hãy sửa lại logic phần yêu thích trong profile

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import { useFavoriteStore } from "@/store/favoriteStore";
 import { useHydration } from "@/hooks";
 import { isAdmin } from "@/lib/adminConfig";
 import {
@@ -14,6 +15,7 @@ import {
   FaPlus,
   FaShoppingBag,
   FaHeart,
+  FaRegHeart,
   FaTicketAlt,
   FaTimes,
   FaCheck,
@@ -23,6 +25,8 @@ import toast from "react-hot-toast";
 export default function CartPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { addFavorite, removeFavorite, isFavorite, setCurrentUser } =
+    useFavoriteStore();
   const hydrated = useHydration();
 
   useEffect(() => {
@@ -30,6 +34,11 @@ export default function CartPage() {
       router.replace("/admin");
     }
   }, [hydrated, user, router]);
+
+  useEffect(() => {
+    setCurrentUser(user?.uid || null);
+  }, [setCurrentUser, user?.uid]);
+
   const {
     items,
     savedForLater,
@@ -91,6 +100,29 @@ export default function CartPage() {
     } else {
       selectAllItems();
     }
+  };
+
+  const handleMoveToSavedForLater = (productId: string) => {
+    const cartItem = items.find((item) => item.product.id === productId);
+    if (!cartItem) return;
+
+    const favorited = isFavorite(productId);
+
+    if (favorited) {
+      removeFavorite(productId);
+      toast("Đã chuyển vào Mua Sau và xóa khỏi yêu thích", {
+        icon: "💔",
+        duration: 1800,
+      });
+    } else {
+      addFavorite(cartItem.product);
+      toast.success("Đã chuyển vào Mua Sau và thêm vào yêu thích!", {
+        icon: "❤️",
+        duration: 1800,
+      });
+    }
+
+    moveToSavedForLater(productId);
   };
 
   // Prevent hydration mismatch
@@ -251,16 +283,29 @@ export default function CartPage() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          moveToSavedForLater(item.product.id);
-                          toast.success("Đã chuyển vào Mua Sau!");
-                        }}
-                        className="text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-lg hover:bg-blue-200 transition flex items-center gap-1"
-                      >
-                        <FaHeart size={12} />
-                        Mua Sau
-                      </button>
+                      {(() => {
+                        const favorited = isFavorite(item.product.id);
+
+                        return (
+                          <button
+                            onClick={() =>
+                              handleMoveToSavedForLater(item.product.id)
+                            }
+                            className={`text-sm px-3 py-1 rounded-lg transition flex items-center gap-1 ${
+                              favorited
+                                ? "bg-rose-100 text-rose-600 hover:bg-rose-200"
+                                : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                            }`}
+                          >
+                            {favorited ? (
+                              <FaHeart size={12} />
+                            ) : (
+                              <FaRegHeart size={12} />
+                            )}
+                            Mua Sau
+                          </button>
+                        );
+                      })()}
                       <button
                         onClick={() => {
                           removeItem(item.product.id);

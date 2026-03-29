@@ -1,61 +1,24 @@
 ﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { motion, useInView } from "framer-motion";
-import { once } from "events";
+import api from "@/lib/api";
+import { Product } from "@/types";
 
-const templates = [
-  {
-    id: 1,
-    title: "Floral Serenity",
-    author: "Elena R.",
-    aspect: "aspect-[4/5]",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDUkKlkl7iHFBwxvnS2G2DrHonnbNsYP1NLV0DlgxAnipGfsYhgLFMg4t5lKXDlnb0HKD1-GWYGLaBWaPPW7RcL6dtKXIKBSSangsxMP5kjLwjF2cpmv4QgdxYDz7cJKQ3bx43huMKNWxPCZpgEuJRo8pIhPp9K44m7JGSdL4z0cmZF2hzJVOFx0G74LX7cCMxLnIFMSwmrXoADZBMDztlHxnNVHi1eUKE9h0cVCiRm7_kAMY48n7N9W1i1fVEkpPiiXIkwHNj428E",
-  },
-  {
-    id: 2,
-    title: "Mountain Escape",
-    author: "Studio Nova",
-    aspect: "aspect-square",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCc_G9xCRouIyREzipZqBrUi89_DJngQrC3DTz01_FJctn4Uan-Nd5WXUA4lLQHRggV2-0xRp0i59qPNGBZqD20ZZ5uFVuwZbvd4s3oTQU2w7bavaq3KmEG15Rnng9ptf0x-Ra_b3Ker4Q0TdravbEfIkajJWMhuQwmchAoqVbA4olg5N7w70Frr1OSjehRnOTiSo4zp7ODhlM7265vOyt-ipGOc91mXz4OwRHlY4aM7vAGkC4N1ykRMmYqFD1zOMi5OXNRhH_lCQI",
-  },
-  {
-    id: 3,
-    title: "Pastel Geometry",
-    author: "Marcus T.",
-    aspect: "aspect-[3/4]",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCqeJAyNKJ9kJuuZwuOq72_aZZRAfG99pDXw7GbQ1t2fRFXNQK5us1HaxY8LPWzDxFTaKem6tlqLBhu04BDKBOF5EC0OGHE64LI2PFXUOvcciUhgRNAZus0J61LF7PxU4QYC6QraM9SDchkYeD8leg8nyu6jtUsBh4eC2PzPdIsaYsluP_8GPWXR8PGWqkuTR4kJiaUruIGHgUzzZ4OybTWW_XmxMQcGbBvPORA1MVdRhtczkqqDidCTheNc9vv2kQMDJ9AshIGayQ",
-  },
-  {
-    id: 4,
-    title: "Dreamscape",
-    author: "Anna K.",
-    aspect: "aspect-video",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCe-3MODAWI-UY1Qk3AMepBssRQAVdWqo_PrxgeSysgMSNoRBWFclSMjTnjRbR-PsvgBE5CJ_voCtUoWgytwP38hw58Gnj5rjaEtb8M4G1l-Usz6eDpRMU2L4DPUvRrXBKXIc4_JdSVXYXbJ7UhoZDvdhZnCHpEVNwAJc4FHPkGBQQm6PB7PJewrDU354cV32HjMs5HDTEki5-kyPYrk-CitIQ7tZsAIo8ijrKi7LNXIhkFmNGdSDH8eEJJzUzmwxFyeUWUqcFISxg",
-  },
-  {
-    id: 5,
-    title: "Liquid Aura",
-    author: "J. Dean",
-    aspect: "aspect-[4/3]",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCMBkQlHOR2ooHlTbtQ3pzS_gse-H2UqY51P8SY6X3M2eow3KR3j0ajMwApQgZysJxiYVaqlgB_lJ7tcF3OCGTsDTQjXWJgE6U13O2hgI_YKP65rJheT3eYq941fAP1pUfHCO6wwgGJLSXAvQtbyHgDkQ5M3C0E3b0rIWNnz_XcXxgsYn06JTyYMSF-YeCBZr3ZFXFNgyzqCM1A-WyGLuO012VmVO52sWgWiuTwYr9nNIfMUJo1WmdzXiSYqw63wOsmmY8nY5ox6dA",
-  },
-  {
-    id: 6,
-    title: "Monstera Blues",
-    author: "Flora Designs",
-    aspect: "aspect-square",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB_fXHShDZcz_HyGV4ZoZIwpE3EAlLYfwn7c-pxYwjqcOpQQVfvAOWerVYyKciCZpmupj_isiXDVCKoRtRC3UmKrEbzYRr8SAge4YXTFXMygummAPHqsVIcSXbsTloA8-AwGufOPdIXm5cfFKJKTCOzw1ItC69yDykr5rDqzUJu985pevOJaTdYbjr3BbEJW9FIAMUH0DDU-hTHCFhVcMtVRc7nHSA6mtB07KPfT4LTKhbS9MnsQ3WfJmgffXEXBcACpAKBOnpC0F8",
-  },
-];
+const FEATURED_LIMIT = 8;
+const HERO_TITLE = "Color with Pure Elegance";
+
+const getAspectClass = (index: number) => {
+  const aspects = [
+    "aspect-[4/5]",
+    "aspect-square",
+    "aspect-[3/4]",
+    "aspect-video",
+  ];
+  return aspects[index % aspects.length];
+};
 
 function FadeIn({
   children,
@@ -84,27 +47,81 @@ function FadeIn({
 
 export default function Home() {
   const { initializeAuth } = useAuthStore();
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [isFeaturedLoading, setIsFeaturedLoading] = useState(true);
 
   useEffect(() => {
     initializeAuth();
   }, [initializeAuth]);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        setIsFeaturedLoading(true);
+        const response = await api.get("/products", {
+          params: {
+            page: 1,
+            limit: 100,
+          },
+        });
+
+        const products: Product[] = response.data?.data?.products || [];
+        const topSelling = [...products]
+          .filter(
+            (item) =>
+              (item.imageUrl || item.thumbnailUrl) && item.status === "active",
+          )
+          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+          .slice(0, FEATURED_LIMIT);
+
+        setFeaturedProducts(topSelling);
+      } catch (error) {
+        console.error("Không thể tải sản phẩm nổi bật:", error);
+        setFeaturedProducts([]);
+      } finally {
+        setIsFeaturedLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col items-center w-full">
       {/* Hero Section */}
       <section className="w-full max-w-[1440px] px-6 md:px-10 py-12 md:py-20 flex flex-col items-center">
         <div className="w-full max-w-[1200px] flex flex-col items-center gap-10">
-          <div className="flex flex-col gap-4 text-center max-w-[800px]">
+          <div className="flex flex-col gap-4 text-center max-w-[1000px]">
             <FadeIn>
-              <h1 className="text-slate-900 dark:text-white text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-[-0.04em]">
-                Unwind through Art
+              <h1
+                aria-label={HERO_TITLE}
+                className="wave-color-text text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-[-0.04em]"
+              >
+                {HERO_TITLE.split("").map((character, index) =>
+                  character === " " ? (
+                    <span
+                      key={`space-${index}`}
+                      className="wave-space"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <span
+                      key={`${character}-${index}`}
+                      className="wave-letter"
+                      style={{ animationDelay: `${index * 0.08}s` }}
+                      aria-hidden="true"
+                    >
+                      {character}
+                    </span>
+                  ),
+                )}
               </h1>
             </FadeIn>
 
             <FadeIn>
               <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl font-medium leading-relaxed mt-2">
-                Thu gian va sang tao voi tranh to mau so hoa. Mot khoang nghi
-                ngoi binh yen cho tam hon sang tao cua ban.
+                Indulging in the Vibrant & Artful Relaxation in your private
+                peace
               </p>
             </FadeIn>
 
@@ -114,13 +131,13 @@ export default function Home() {
                   href="/generate"
                   className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-full h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 text-white text-base font-bold transition-all hover:-translate-y-0.5"
                 >
-                  Tao Tranh AI
+                  Tạo Tranh AI
                 </Link>
                 <Link
                   href="/gallery"
                   className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-full h-14 px-8 border-2 border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary text-base font-bold transition-all"
                 >
-                  Kham Pha Gallery
+                  Khám Phá Gallery
                 </Link>
               </div>
             </FadeIn>
@@ -145,10 +162,14 @@ export default function Home() {
       <section className="w-full max-w-[1440px] px-6 md:px-10 py-12">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-slate-900 dark:text-white text-2xl md:text-3xl font-bold tracking-tight">
-            Mau Noi Bat
+            Sản Phẩm Nổi Bật
           </h2>
           <div className="flex gap-2">
-            <button className="p-2 rounded-full border border-slate-200 dark:border-surface-dark text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+            <button
+              type="button"
+              className="p-2 rounded-full border border-slate-200 dark:border-surface-dark text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors"
+              aria-label="Sản phẩm bán chạy"
+            >
               <span className="material-symbols-outlined text-[20px]">
                 filter_list
               </span>
@@ -157,25 +178,51 @@ export default function Home() {
         </div>
 
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
-          {templates.map((tpl) => (
-            <div
-              key={tpl.id}
-              className="break-inside-avoid group cursor-pointer"
-            >
-              <div className="relative w-full rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-sm hover:shadow-xl transition-all duration-300">
-                <div
-                  className={`w-full ${tpl.aspect} bg-cover bg-center group-hover:scale-105 transition-transform duration-500`}
-                  style={{ backgroundImage: `url("${tpl.image}")` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
-                  <p className="text-white text-lg font-bold">{tpl.title}</p>
-                  <p className="text-white/80 text-sm font-medium">
-                    By {tpl.author}
-                  </p>
-                </div>
+          {isFeaturedLoading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={`featured-skeleton-${index}`}
+                className="break-inside-avoid"
+              >
+                <div className="w-full aspect-square rounded-xl bg-slate-200/70 animate-pulse" />
               </div>
+            ))}
+
+          {!isFeaturedLoading &&
+            featuredProducts.map((product, index) => (
+              <Link
+                key={product.id}
+                href="/gallery"
+                className="break-inside-avoid group cursor-pointer block"
+              >
+                <div className="relative w-full rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-sm hover:shadow-xl transition-all duration-300">
+                  <div
+                    className={`w-full ${getAspectClass(index)} bg-cover bg-center group-hover:scale-105 transition-transform duration-500`}
+                    style={{
+                      backgroundImage: `url("${product.imageUrl || product.thumbnailUrl}")`,
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                    <p className="text-white text-lg font-bold line-clamp-2">
+                      {product.title}
+                    </p>
+                    <p className="text-white/85 text-sm font-medium">
+                      Đã bán: {product.sales || 0}
+                    </p>
+                    <p className="text-white text-sm font-semibold mt-1">
+                      {product.price.toLocaleString("vi-VN")}đ
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+
+          {!isFeaturedLoading && featuredProducts.length === 0 && (
+            <div className="col-span-full rounded-xl border border-slate-200 bg-slate-50 p-6 text-center text-slate-600">
+              Chưa có dữ liệu bán chạy. Bạn có thể xem toàn bộ sản phẩm trong
+              Gallery.
             </div>
-          ))}
+          )}
         </div>
 
         <div className="flex justify-center mt-12">
@@ -183,7 +230,7 @@ export default function Home() {
             href="/gallery"
             className="flex items-center justify-center gap-2 rounded-full h-12 px-8 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 text-sm font-bold transition-all shadow-sm"
           >
-            Xem Them
+            Xem Thêm
             <span className="material-symbols-outlined text-[18px]">
               expand_more
             </span>
@@ -305,17 +352,17 @@ export default function Home() {
               Tại Sao Chọn Yu Ling Store?
             </h2>
           </div>
-          <div className="grid sm:grid-cols-222 lg:grid-cols-4 gap-6 ">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
             {[
               {
                 icon: "✨",
                 title: "AI Tạo Tranh",
-                desc: "Upload ảnh bất kỳ, AI chuyển thành tranh tô màu theo số độc đáo.",
+                desc: "Tải ảnh bất kỳ, AI chuyển thành tranh tô màu theo số độc đáo.",
               },
               {
                 icon: "🚚",
                 title: "Giao Hàng Nhanh",
-                desc: "Miễn phí vận chuyển cho đơn từ 500K. Giao trong 3-5 ngày.",
+                desc: "Miễn phí vận chuyển cho đơn từ 500k. Giao trong 3-5 ngày.",
               },
               {
                 icon: "🎁",

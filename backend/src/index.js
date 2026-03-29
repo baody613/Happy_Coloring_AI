@@ -37,20 +37,22 @@ const envOrigins = [process.env.CORS_ORIGIN, process.env.FRONTEND_URL]
 
 const allowedOrigins = new Set(
   [
-  "http://localhost:3000",
-  "https://paint-by-numbers-ai-607c4.web.app",
-  "https://paint-by-numbers-ai-607c4.firebaseapp.com",
+    "http://localhost:3000",
+    "https://paint-by-numbers-ai-607c4.web.app",
+    "https://paint-by-numbers-ai-607c4.firebaseapp.com",
     "https://happy-coloring-ai.vercel.app",
     ...envOrigins,
   ]
     .map(normalizeOrigin)
-    .filter(Boolean)
+    .filter(Boolean),
 );
 
 const isAllowedVercelOrigin = (origin) => {
   try {
     const parsed = new URL(origin);
-    return parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app");
+    return (
+      parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app")
+    );
   } catch {
     return false;
   }
@@ -76,7 +78,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -150,7 +152,7 @@ app
         process.env.CORS_ORIGIN ||
         process.env.FRONTEND_URL ||
         "http://localhost:3000"
-      }`
+      }`,
     );
   })
   .on("error", (err) => {

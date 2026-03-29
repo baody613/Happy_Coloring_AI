@@ -358,7 +358,11 @@ export default function AdminOrdersClient() {
           <div className="flex flex-wrap gap-2">
             {[
               ["all", "📊 Tất Cả", "from-purple-600 to-pink-600"],
-              ["ai-products", "🤖 Sản Phẩm AI", "from-fuchsia-600 to-violet-600"],
+              [
+                "ai-products",
+                "🤖 Sản Phẩm AI",
+                "from-fuchsia-600 to-violet-600",
+              ],
               ...Object.entries(STATUS_CONFIG).map(([k, v]) => [
                 k,
                 `${v.emoji} ${v.label}`,
