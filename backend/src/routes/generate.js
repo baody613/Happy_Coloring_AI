@@ -8,19 +8,13 @@ const router = express.Router();
 
 const GOOGLE_API_KEY = process.env.GOOGLE_AI_API_KEY;
 const GOOGLE_IMAGE_MODELS = [
-  "models/gemini-2.5-flash-image",
-  "models/gemini-2.0-flash-preview-image-generation",
+  "models/gemini-2.5-flash-image"
 ];
 
 // Generate paint-by-numbers from text prompt
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
   try {
-    const {
-      prompt,
-      style = "realistic",
-      complexity = "medium",
-      includeColoredPreview = false,
-    } = req.body;
+    const { prompt, style = "realistic", complexity = "medium" } = req.body;
     const userId = req.user.uid;
 
     if (!prompt) {
@@ -37,21 +31,13 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       prompt,
       style,
       complexity,
-      includeColoredPreview: Boolean(includeColoredPreview),
       status: "processing",
       imageUrl: "",
-      coloredImageUrl: "",
       createdAt: new Date().toISOString(),
     });
 
     // Start AI generation (async)
-    generatePaintByNumbers(
-      generationId,
-      prompt,
-      style,
-      complexity,
-      Boolean(includeColoredPreview),
-    );
+    generatePaintByNumbers(generationId, prompt, style, complexity);
 
     res.status(202).json({
       message: "Generation started",
@@ -98,7 +84,6 @@ async function generatePaintByNumbers(
   prompt,
   style,
   complexity,
-  includeColoredPreview,
 ) {
   try {
     // Prompt 1: line-art paint-by-numbers output
@@ -114,25 +99,10 @@ async function generatePaintByNumbers(
       "generations",
     );
 
-    let coloredImageUrl = "";
-
-    if (includeColoredPreview) {
-      // Prompt 2: fully colored reference image so users can preview final look
-      const coloredPrompt = `${prompt}, full color illustration, vivid colors, no numbering, no text, polished finish, ${style} art style, ${complexity} detail level`;
-      const coloredImageBuffer = await generateWithGoogleImage(coloredPrompt);
-      const coloredFileName = `generation-${generationId}-colored.png`;
-      coloredImageUrl = await uploadToStorage(
-        coloredImageBuffer,
-        coloredFileName,
-        "generations",
-      );
-    }
-
     // Update generation record with uploaded generated image URL
     await db.collection("generations").doc(generationId).update({
       status: "completed",
       imageUrl,
-      coloredImageUrl,
       completedAt: new Date().toISOString(),
     });
 

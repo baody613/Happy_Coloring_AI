@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,9 +10,14 @@ import {
   FaRedo,
   FaShoppingCart,
   FaLightbulb,
+  FaEye,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
+import { useCartStore } from "@/store/cartStore";
+import { useFavoriteStore } from "@/store/favoriteStore";
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
@@ -20,12 +25,45 @@ import { useRouter } from "next/navigation";
 export default function GeneratePage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { addItem } = useCartStore();
+  const { addFavorite, removeFavorite, isFavorite, setCurrentUser } =
+    useFavoriteStore();
   const [prompt, setPrompt] = useState("");
   const [complexity, setComplexity] = useState("medium");
   const [generating, setGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState("");
-  const [coloredPreviewImage, setColoredPreviewImage] = useState("");
-  const [includeColoredPreview, setIncludeColoredPreview] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    setCurrentUser(user?.uid || null);
+  }, [setCurrentUser, user?.uid]);
+
+  const getComplexityPrice = (level: string) => {
+    const base =
+      complexities.find((item) => item.value === level)?.price || 200;
+    return base * 1000;
+  };
+
+  const buildAiProduct = () => ({
+    id: `ai-${generatedImage}`,
+    title: `Tranh AI: ${prompt.slice(0, 60) || "Custom"}`,
+    description: prompt,
+    category: "ai-products",
+    price: getComplexityPrice(complexity),
+    imageUrl: generatedImage,
+    thumbnailUrl: generatedImage,
+    difficulty: complexity as "easy" | "medium" | "hard",
+    dimensions: "40x40 cm",
+    colors: complexity === "easy" ? 20 : complexity === "medium" ? 36 : 48,
+    status: "active" as const,
+    sales: 0,
+    rating: 0,
+    reviews: [],
+    createdAt: new Date().toISOString(),
+  });
+
+  const aiProduct = generatedImage ? buildAiProduct() : null;
+  const isAiFavorite = aiProduct ? isFavorite(aiProduct.id) : false;
 
   const handleGenerate = async () => {
     if (!user) {
@@ -42,12 +80,11 @@ export default function GeneratePage() {
     try {
       setGenerating(true);
       setGeneratedImage("");
-      setColoredPreviewImage("");
+      setShowDetails(false);
 
       const { data } = await api.post("/generate/paint-by-numbers", {
         prompt,
         complexity,
-        includeColoredPreview,
       });
 
       toast.success("Đang tạo tranh... Vui lòng đợi");
@@ -75,7 +112,6 @@ export default function GeneratePage() {
 
         if (data.status === "completed") {
           setGeneratedImage(data.imageUrl);
-          setColoredPreviewImage(data.coloredImageUrl || "");
           setGenerating(false);
           clearInterval(interval);
           toast.success("Tạo tranh thành công!");
@@ -102,9 +138,40 @@ export default function GeneratePage() {
   const handleReset = () => {
     setPrompt("");
     setGeneratedImage("");
-    setColoredPreviewImage("");
     setComplexity("medium");
-    setIncludeColoredPreview(false);
+    setShowDetails(false);
+  };
+
+  const handleBuyNow = () => {
+    if (!aiProduct) {
+      toast.error("Vui lòng tạo tranh trước khi mua");
+      return;
+    }
+
+    addItem(aiProduct, 1);
+    toast.success("Đã thêm Tranh AI vào giỏ hàng");
+    router.push("/cart");
+  };
+
+  const handleToggleFavorite = () => {
+    if (!aiProduct) {
+      toast.error("Vui lòng tạo tranh trước");
+      return;
+    }
+
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để lưu yêu thích!", { icon: "🔐" });
+      router.push("/login");
+      return;
+    }
+
+    if (isAiFavorite) {
+      removeFavorite(aiProduct.id);
+      toast("Đã xóa khỏi yêu thích", { icon: "💔", duration: 1500 });
+    } else {
+      addFavorite(aiProduct);
+      toast.success("Đã thêm vào yêu thích!", { icon: "❤️", duration: 1500 });
+    }
   };
 
   return (
@@ -190,25 +257,6 @@ export default function GeneratePage() {
                 ))}
               </div>
 
-              <div className="mt-6 p-4 rounded-xl border border-purple-200 bg-purple-50/60">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeColoredPreview}
-                    onChange={(e) => setIncludeColoredPreview(e.target.checked)}
-                    className="mt-1 h-5 w-5 rounded border-purple-300 text-purple-600 focus:ring-purple-500"
-                  />
-                  <div>
-                    <p className="font-semibold text-purple-700">
-                      Tạo kèm ảnh mẫu đã tô màu
-                    </p>
-                    <p className="text-sm text-purple-500">
-                      Bật tùy chọn này để có thêm ảnh tham khảo màu hoàn chỉnh.
-                      Thời gian tạo có thể lâu hơn.
-                    </p>
-                  </div>
-                </label>
-              </div>
             </div>
 
             {/* Generate Button */}
@@ -299,53 +347,81 @@ export default function GeneratePage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                      <div>
-                        <p className="text-sm font-semibold text-purple-600 mb-2">
-                          Tranh Tô Màu
-                        </p>
-                        <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border border-purple-100">
-                          <Image
-                            src={generatedImage}
-                            alt="Generated paint-by-numbers"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-sm font-semibold text-pink-600 mb-2">
-                          Ảnh Tham Khảo Đã Tô Màu
-                        </p>
-                        <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border border-pink-100 bg-gradient-to-br from-pink-50 to-purple-50">
-                          {coloredPreviewImage ? (
-                            <Image
-                              src={coloredPreviewImage}
-                              alt="Colored reference preview"
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-sm text-purple-400 px-4 text-center">
-                              Chưa có ảnh tham khảo màu cho lần tạo này
-                            </div>
-                          )}
-                        </div>
+                    <div className="mb-6">
+                      <p className="text-sm font-semibold text-purple-600 mb-2">
+                        Tranh Tô Màu AI
+                      </p>
+                      <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg border border-purple-100">
+                        <Image
+                          src={generatedImage}
+                          alt="Generated paint-by-numbers"
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <button
                         type="button"
-                        onClick={() => router.push("/checkout")}
+                        onClick={handleBuyNow}
                         className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 border-2 border-purple-300"
                       >
                         <FaShoppingCart /> Mua Ngay
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowDetails((prev) => !prev)}
+                        className="border-2 border-indigo-500 text-indigo-600 py-4 rounded-xl font-bold hover:bg-indigo-50 transition-all flex items-center justify-center gap-2"
+                      >
+                        <FaEye /> {showDetails ? "Ẩn Chi Tiết" : "View Detail"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleToggleFavorite}
+                        className={`py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 border-2 ${
+                          isAiFavorite
+                            ? "bg-red-500 border-red-500 text-white"
+                            : "border-rose-500 text-rose-600 hover:bg-rose-50"
+                        }`}
+                      >
+                        {isAiFavorite ? <FaHeart /> : <FaRegHeart />} Yêu Thích
                       </button>
                       <button className="border-2 border-purple-600 text-purple-600 py-4 rounded-xl font-bold hover:bg-purple-50 transition-all flex items-center justify-center gap-2">
                         <FaDownload /> Tải Về
                       </button>
                     </div>
+                    {showDetails && aiProduct && (
+                      <div className="mt-4 rounded-xl border border-purple-200 bg-purple-50/70 p-4 space-y-2 text-sm text-purple-900">
+                        <p>
+                          <span className="font-semibold">Tên sản phẩm:</span>{" "}
+                          {aiProduct.title}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Độ khó:</span>{" "}
+                          {
+                            complexities.find(
+                              (item) => item.value === aiProduct.difficulty,
+                            )?.label
+                          }
+                        </p>
+                        <p>
+                          <span className="font-semibold">Số màu ước tính:</span>{" "}
+                          {aiProduct.colors}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Kích thước:</span>{" "}
+                          {aiProduct.dimensions}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Giá:</span>{" "}
+                          {aiProduct.price.toLocaleString("vi-VN")}đ
+                        </p>
+                        <p>
+                          <span className="font-semibold">Mô tả:</span>{" "}
+                          {aiProduct.description}
+                        </p>
+                      </div>
+                    )}
                     <button
                       onClick={handleReset}
                       className="w-full mt-3 border-2 border-gray-300 text-gray-700 py-4 rounded-xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
