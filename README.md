@@ -20,44 +20,47 @@
 
 ## ✨ Tính năng chính
 
-| Tính năng | Mô tả |
-|-----------|-------|
+| Tính năng                  | Mô tả                                                |
+| -------------------------- | ---------------------------------------------------- |
 | 🤖 **AI Image Generation** | Nhập mô tả, AI tạo ra tranh tô màu số hóa hoàn chỉnh |
-| 🖼️ **Gallery** | Thư viện tranh có sẵn với nhiều chủ đề đa dạng |
-| 🛒 **Shopping Cart** | Giỏ hàng, lưu sau, và thanh toán trực tuyến |
-| ❤️ **Yêu thích** | Lưu tranh yêu thích để xem lại sau |
-| 📦 **Order Management** | Theo dõi và quản lý đơn hàng theo thời gian thực |
-| 💬 **AI Chatbot** | Hỗ trợ khách hàng tự động bằng AI |
-| 🔐 **Authentication** | Đăng ký / đăng nhập an toàn qua Firebase |
-| 👑 **Admin Panel** | Quản lý sản phẩm, người dùng, đơn hàng toàn diện |
+| 🖼️ **Gallery**             | Thư viện tranh có sẵn với nhiều chủ đề đa dạng       |
+| 🛒 **Shopping Cart**       | Giỏ hàng, lưu sau, và thanh toán trực tuyến          |
+| ❤️ **Yêu thích**           | Lưu tranh yêu thích để xem lại sau                   |
+| 📦 **Order Management**    | Theo dõi và quản lý đơn hàng theo thời gian thực     |
+| 💬 **AI Chatbot**          | Hỗ trợ khách hàng tự động bằng AI                    |
+| 🔐 **Authentication**      | Đăng ký / đăng nhập an toàn qua Firebase             |
+| 👑 **Admin Panel**         | Quản lý sản phẩm, người dùng, đơn hàng toàn diện     |
 
 ---
 
 ## 🛠️ Công nghệ sử dụng
 
 ### Frontend
-| Công nghệ | Vai trò |
-|-----------|---------|
-| **Next.js 14** (App Router) | React framework, SSR |
-| **TypeScript** | Type safety |
-| **Tailwind CSS** | Styling |
-| **Zustand** | State management (cart, auth, favorites) |
-| **Framer Motion** | Animations |
+
+| Công nghệ                   | Vai trò                                  |
+| --------------------------- | ---------------------------------------- |
+| **Next.js 14** (App Router) | React framework, SSR                     |
+| **TypeScript**              | Type safety                              |
+| **Tailwind CSS**            | Styling                                  |
+| **Zustand**                 | State management (cart, auth, favorites) |
+| **Framer Motion**           | Animations                               |
 
 ### Backend
-| Công nghệ | Vai trò |
-|-----------|---------|
-| **Node.js + Express** | REST API server |
-| **Firebase Firestore** | Database |
-| **Firebase Auth** | Authentication |
-| **Firebase Storage** | Lưu trữ ảnh |
-| **Google Gemini AI** | Tạo tranh tô màu bằng AI |
+
+| Công nghệ              | Vai trò                  |
+| ---------------------- | ------------------------ |
+| **Node.js + Express**  | REST API server          |
+| **Firebase Firestore** | Database                 |
+| **Firebase Auth**      | Authentication           |
+| **Firebase Storage**   | Lưu trữ ảnh              |
+| **Google Gemini AI**   | Tạo tranh tô màu bằng AI |
 
 ### Deployment
-| Thành phần | Nền tảng |
-|------------|----------|
-| Frontend | **Vercel** — `https://happy-coloring-ai.vercel.app` |
-| Backend | **Render** — `https://paint-by-numbers-back-end.onrender.com` |
+
+| Thành phần | Nền tảng                                                      |
+| ---------- | ------------------------------------------------------------- |
+| Frontend   | **Vercel** — `https://happy-coloring-ai.vercel.app`           |
+| Backend    | **Render** — `https://paint-by-numbers-back-end.onrender.com` |
 
 ---
 
@@ -179,51 +182,56 @@ Chạy frontend:
 npm run dev
 ```
 
-Frontend sẽ chạy tại: `http://localhost:3000`
+Frontend sẽ chạy tại: `http://localhost:3002`
 
 ---
 
 ## 📝 API Endpoints
 
 ### 🔐 Authentication
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
+
+| Method | Endpoint             | Mô tả             |
+| ------ | -------------------- | ----------------- |
 | `POST` | `/api/auth/register` | Đăng ký tài khoản |
-| `POST` | `/api/auth/login` | Đăng nhập |
-| `POST` | `/api/auth/logout` | Đăng xuất |
+| `POST` | `/api/auth/login`    | Đăng nhập         |
+| `POST` | `/api/auth/logout`   | Đăng xuất         |
 
 ### 🤖 AI Generation
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `POST` | `/api/generate/paint-by-numbers` | Tạo tranh tô màu từ prompt |
-| `GET` | `/api/generate/status/:id` | Kiểm tra trạng thái generation |
+
+| Method | Endpoint                         | Mô tả                          |
+| ------ | -------------------------------- | ------------------------------ |
+| `POST` | `/api/generate/paint-by-numbers` | Tạo tranh tô màu từ prompt     |
+| `GET`  | `/api/generate/status/:id`       | Kiểm tra trạng thái generation |
 
 ### 🖼️ Products
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `GET` | `/api/products` | Danh sách sản phẩm |
-| `GET` | `/api/products/:id` | Chi tiết sản phẩm |
-| `POST` | `/api/products` | Tạo sản phẩm *(admin)* |
-| `PUT` | `/api/products/:id` | Cập nhật sản phẩm *(admin)* |
-| `DELETE` | `/api/products/:id` | Xóa sản phẩm *(admin)* |
+
+| Method   | Endpoint            | Mô tả                       |
+| -------- | ------------------- | --------------------------- |
+| `GET`    | `/api/products`     | Danh sách sản phẩm          |
+| `GET`    | `/api/products/:id` | Chi tiết sản phẩm           |
+| `POST`   | `/api/products`     | Tạo sản phẩm _(admin)_      |
+| `PUT`    | `/api/products/:id` | Cập nhật sản phẩm _(admin)_ |
+| `DELETE` | `/api/products/:id` | Xóa sản phẩm _(admin)_      |
 
 ### 📦 Orders
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `POST` | `/api/orders` | Tạo đơn hàng |
-| `GET` | `/api/orders/user/:userId` | Đơn hàng của user |
-| `GET` | `/api/orders/:orderId` | Chi tiết đơn hàng |
-| `PUT` | `/api/orders/:orderId/status` | Cập nhật trạng thái *(admin)* |
-| `POST` | `/api/orders/:orderId/cancel` | Hủy đơn hàng |
+
+| Method | Endpoint                      | Mô tả                         |
+| ------ | ----------------------------- | ----------------------------- |
+| `POST` | `/api/orders`                 | Tạo đơn hàng                  |
+| `GET`  | `/api/orders/user/:userId`    | Đơn hàng của user             |
+| `GET`  | `/api/orders/:orderId`        | Chi tiết đơn hàng             |
+| `PUT`  | `/api/orders/:orderId/status` | Cập nhật trạng thái _(admin)_ |
+| `POST` | `/api/orders/:orderId/cancel` | Hủy đơn hàng                  |
 
 ### 👑 Admin
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| `GET` | `/api/admin/users` | Danh sách người dùng |
-| `PUT` | `/api/admin/users/:userId/role` | Phân quyền người dùng |
-| `GET` | `/api/admin/orders` | Tất cả đơn hàng |
-| `GET` | `/api/admin/orders/stats` | Thống kê đơn hàng |
-| `GET` | `/api/admin/products/stats` | Thống kê sản phẩm |
+
+| Method | Endpoint                        | Mô tả                 |
+| ------ | ------------------------------- | --------------------- |
+| `GET`  | `/api/admin/users`              | Danh sách người dùng  |
+| `PUT`  | `/api/admin/users/:userId/role` | Phân quyền người dùng |
+| `GET`  | `/api/admin/orders`             | Tất cả đơn hàng       |
+| `GET`  | `/api/admin/orders/stats`       | Thống kê đơn hàng     |
+| `GET`  | `/api/admin/products/stats`     | Thống kê sản phẩm     |
 
 ---
 
