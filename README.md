@@ -1,122 +1,146 @@
-# Happy Coloring with AI - Trang Web Bán Tranh Tô Màu Số Hóa
+﻿<div align="center">
 
-Một nền tảng thương mại điện tử hiện đại cho phép người dùng mua tranh tô màu số hóa hoặc tạo tranh tùy chỉnh bằng AI.
+# 🎨 Happy Coloring AI
 
-## 🎨 Tính năng chính
+### Nền tảng tranh tô màu số hóa thông minh
 
-- **AI Image Generation**: Tạo tranh tô màu số hóa từ mô tả văn bản
-- **Gallery**: Thư viện tranh có sẵn với nhiều chủ đề
-- **User Authentication**: Đăng ký/đăng nhập an toàn
-- **Shopping Cart**: Giỏ hàng và thanh toán
-- **Order Management**: Quản lý đơn hàng
-- **Cloud Storage**: Lưu trữ ảnh và dữ liệu người dùng trên Firebase
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?style=for-the-badge&logo=firebase)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=for-the-badge&logo=vercel)
+
+**[🌐 Xem Demo Live](https://happy-coloring-ai.vercel.app)** &nbsp;|&nbsp; **[📖 API Docs](#-api-endpoints)**
+
+> Nền tảng thương mại điện tử cho phép người dùng mua tranh tô màu số hóa có sẵn hoặc tạo tranh tùy chỉnh theo ý tưởng của mình bằng AI.
+
+</div>
+
+---
+
+## ✨ Tính năng chính
+
+| Tính năng | Mô tả |
+|-----------|-------|
+| 🤖 **AI Image Generation** | Nhập mô tả, AI tạo ra tranh tô màu số hóa hoàn chỉnh |
+| 🖼️ **Gallery** | Thư viện tranh có sẵn với nhiều chủ đề đa dạng |
+| 🛒 **Shopping Cart** | Giỏ hàng, lưu sau, và thanh toán trực tuyến |
+| ❤️ **Yêu thích** | Lưu tranh yêu thích để xem lại sau |
+| 📦 **Order Management** | Theo dõi và quản lý đơn hàng theo thời gian thực |
+| 💬 **AI Chatbot** | Hỗ trợ khách hàng tự động bằng AI |
+| 🔐 **Authentication** | Đăng ký / đăng nhập an toàn qua Firebase |
+| 👑 **Admin Panel** | Quản lý sản phẩm, người dùng, đơn hàng toàn diện |
+
+---
 
 ## 🛠️ Công nghệ sử dụng
 
 ### Frontend
-
-- **Next.js 14** - React framework
-- **Tailwind CSS** - Styling
-- **TypeScript** - Type safety
-- **Zustand** - State management
+| Công nghệ | Vai trò |
+|-----------|---------|
+| **Next.js 14** (App Router) | React framework, SSR |
+| **TypeScript** | Type safety |
+| **Tailwind CSS** | Styling |
+| **Zustand** | State management (cart, auth, favorites) |
+| **Framer Motion** | Animations |
 
 ### Backend
+| Công nghệ | Vai trò |
+|-----------|---------|
+| **Node.js + Express** | REST API server |
+| **Firebase Firestore** | Database |
+| **Firebase Auth** | Authentication |
+| **Firebase Storage** | Lưu trữ ảnh |
+| **Google Gemini AI** | Tạo tranh tô màu bằng AI |
 
-- **Node.js** - Runtime
-- **Express** - Web framework
-- **Firebase** - Authentication & Database
-- **Replicate API** - AI image generation
+### Deployment
+| Thành phần | Nền tảng |
+|------------|----------|
+| Frontend | **Vercel** — `https://happy-coloring-ai.vercel.app` |
+| Backend | **Render** — `https://paint-by-numbers-back-end.onrender.com` |
 
-## 📁 Cấu trúc dự án (Optimized)
+---
+
+## 📁 Cấu trúc dự án
 
 ```
 paint-by-numbers-ai/
-├── frontend/                    # Next.js application
-│   ├── src/
-│   │   ├── app/                # App router pages
-│   │   │   ├── admin/          # Admin pages
-│   │   │   │   ├── settings/   # Modular settings (NEW)
-│   │   │   │   ├── products/
-│   │   │   │   ├── orders/
-│   │   │   │   └── users/
-│   │   │   └── ...
-│   │   ├── components/         # React components
-│   │   │   ├── ui/             # UI component library (NEW)
-│   │   │   ├── AdminTable.tsx  # Shared admin table (NEW)
-│   │   │   ├── AdminModal.tsx  # Shared admin modal (NEW)
-│   │   │   ├── FormField.tsx   # Form components (NEW)
-│   │   │   └── Navbar-optimized.tsx # Optimized navbar (NEW)
-│   │   ├── store/              # Zustand stores
-│   │   │   ├── authStore-optimized.ts    # With selectors (NEW)
-│   │   │   ├── cartStore-optimized.ts    # With selectors (NEW)
-│   │   │   └── favoriteStore-optimized.ts # With selectors (NEW)
-│   │   ├── lib/                # API clients
-│   │   ├── hooks/              # Custom hooks (NEW)
-│   │   ├── utils/              # Helper functions (NEW)
-│   │   ├── constants/          # App constants (NEW)
-│   │   └── types/              # TypeScript types
-│   ├── public/
-│   └── COMPONENTS_GUIDE.md     # Components documentation (NEW)
-├── backend/                    # Express API
-│   ├── src/
-│   │   ├── routes/            # API routes
-│   │   │   ├── admin/         # Modular admin routes (NEW)
-│   │   │   ├── products-optimized.js  # Optimized routes (NEW)
-│   │   │   └── orders-optimized.js    # Optimized routes (NEW)
-│   │   ├── services/          # Business logic layer (NEW)
-│   │   ├── validators/        # Request validation (NEW)
-│   │   ├── utils/             # Helper functions (NEW)
-│   │   ├── middleware/        # Express middleware
-│   │   │   └── adminAuth.js   # Admin authorization (NEW)
-│   │   └── config/
-│   └── OPTIMIZATION_GUIDE.md  # Backend guide (NEW)
-├── OPTIMIZATION_SUMMARY.md    # Full optimization summary (NEW)
-├── MIGRATION_CHECKLIST.md     # Migration steps (NEW)
+├── frontend/                    # Next.js 14 App
+│   └── src/
+│       ├── app/                 # Pages (App Router)
+│       │   ├── page.tsx         # Homepage
+│       │   ├── generate/        # Tạo tranh AI
+│       │   ├── gallery/         # Thư viện tranh
+│       │   ├── products/        # Danh sách sản phẩm
+│       │   ├── cart/            # Giỏ hàng
+│       │   ├── checkout/        # Thanh toán
+│       │   ├── profile/         # Trang cá nhân
+│       │   └── admin/           # Trang quản trị
+│       ├── components/          # React components dùng chung
+│       ├── store/               # Zustand stores (auth, cart, favorites)
+│       ├── lib/                 # API clients & Firebase config
+│       ├── hooks/               # Custom hooks
+│       ├── utils/               # Helper functions
+│       ├── constants/           # App constants
+│       └── types/               # TypeScript types
+│
+├── backend/                     # Express REST API
+│   └── src/
+│       ├── routes/              # API routes
+│       ├── services/            # Business logic
+│       ├── middleware/          # Auth & admin middleware
+│       ├── validators/          # Request validation
+│       ├── utils/               # Helper functions
+│       └── config/              # Firebase config
+│
 └── README.md
 ```
 
-## 🚀 Cài đặt và chạy
+---
 
-### Prerequisites
+## 🚀 Cài đặt và chạy local
+
+### Yêu cầu
 
 - Node.js 18+
 - npm hoặc yarn
-- Firebase account
-- Replicate API key (cho AI generation)
+- Tài khoản Firebase (Firestore, Auth, Storage)
+- Google AI API Key (Gemini)
+
+---
 
 ### 1. Clone repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/baody613/Happy_Coloring_AI.git
 cd paint-by-numbers-ai
 ```
 
-### 2. Setup Backend
+---
+
+### 2. Cài đặt Backend
 
 ```bash
 cd backend
 npm install
 ```
 
-Tạo file `.env`:
+Tạo file `backend/.env`:
 
 ```env
 PORT=5000
 NODE_ENV=development
 
-# Firebase
-FIREBASE_API_KEY=your_firebase_api_key
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+# Firebase Admin SDK
 FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PRIVATE_KEY="your_private_key"
 FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
 
-# AI API
-REPLICATE_API_TOKEN=your_replicate_token
-STABILITY_API_KEY=your_stability_key
+# Google Gemini AI
+GOOGLE_AI_API_KEY=your_gemini_api_key
 
-# Frontend URL
+# CORS
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -126,14 +150,18 @@ Chạy backend:
 npm run dev
 ```
 
-### 3. Setup Frontend
+Backend sẽ chạy tại: `http://localhost:5000`
+
+---
+
+### 3. Cài đặt Frontend
 
 ```bash
 cd frontend
 npm install
 ```
 
-Tạo file `.env.local`:
+Tạo file `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
@@ -151,128 +179,95 @@ Chạy frontend:
 npm run dev
 ```
 
-### 4. Truy cập ứng dụng
+Frontend sẽ chạy tại: `http://localhost:3000`
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
+---
 
 ## 📝 API Endpoints
 
-### Authentication
+### 🔐 Authentication
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/auth/register` | Đăng ký tài khoản |
+| `POST` | `/api/auth/login` | Đăng nhập |
+| `POST` | `/api/auth/logout` | Đăng xuất |
 
-- `POST /api/auth/register` - Đăng ký
-- `POST /api/auth/login` - Đăng nhập
-- `POST /api/auth/logout` - Đăng xuất
+### 🤖 AI Generation
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/generate/paint-by-numbers` | Tạo tranh tô màu từ prompt |
+| `GET` | `/api/generate/status/:id` | Kiểm tra trạng thái generation |
 
-### AI Generation
+### 🖼️ Products
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/api/products` | Danh sách sản phẩm |
+| `GET` | `/api/products/:id` | Chi tiết sản phẩm |
+| `POST` | `/api/products` | Tạo sản phẩm *(admin)* |
+| `PUT` | `/api/products/:id` | Cập nhật sản phẩm *(admin)* |
+| `DELETE` | `/api/products/:id` | Xóa sản phẩm *(admin)* |
 
-- `POST /api/generate/paint-by-numbers` - Tạo tranh tô màu từ prompt
-- `GET /api/generate/status/:id` - Kiểm tra trạng thái generation
+### 📦 Orders
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `POST` | `/api/orders` | Tạo đơn hàng |
+| `GET` | `/api/orders/user/:userId` | Đơn hàng của user |
+| `GET` | `/api/orders/:orderId` | Chi tiết đơn hàng |
+| `PUT` | `/api/orders/:orderId/status` | Cập nhật trạng thái *(admin)* |
+| `POST` | `/api/orders/:orderId/cancel` | Hủy đơn hàng |
 
-### Products
+### 👑 Admin
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/api/admin/users` | Danh sách người dùng |
+| `PUT` | `/api/admin/users/:userId/role` | Phân quyền người dùng |
+| `GET` | `/api/admin/orders` | Tất cả đơn hàng |
+| `GET` | `/api/admin/orders/stats` | Thống kê đơn hàng |
+| `GET` | `/api/admin/products/stats` | Thống kê sản phẩm |
 
-- `GET /api/products` - Lấy danh sách sản phẩm
-- `GET /api/products/categories` - Lấy danh mục (NEW)
-- `GET /api/products/:id` - Chi tiết sản phẩm
-- `POST /api/products` - Tạo sản phẩm (admin)
-- `PUT /api/products/:id` - Cập nhật sản phẩm (admin)
-- `DELETE /api/products/:id` - Xóa sản phẩm (admin)
+---
 
-### Orders
+## 🎯 Luồng sử dụng
 
-- `POST /api/orders` - Tạo đơn hàng
-- `GET /api/orders/user/:userId` - Lấy đơn hàng của user
-- `GET /api/orders/:orderId` - Chi tiết đơn hàng
-- `PUT /api/orders/:orderId/status` - Cập nhật trạng thái (admin)
-- `POST /api/orders/:orderId/cancel` - Hủy đơn hàng
+```
+1. Đăng ký / Đăng nhập
+        ↓
+2. Duyệt Gallery hoặc nhập mô tả để tạo tranh AI
+        ↓
+3. Thêm tranh vào giỏ hàng
+        ↓
+4. Điền thông tin và thanh toán
+        ↓
+5. Theo dõi trạng thái đơn hàng
+```
 
-### Admin
-
-- `GET /api/admin/users` - Quản lý users
-- `GET /api/admin/users/stats` - Thống kê users (NEW)
-- `PUT /api/admin/users/:userId/role` - Cập nhật role
-- `GET /api/admin/products` - Quản lý products
-- `GET /api/admin/products/stats` - Thống kê products (NEW)
-- `GET /api/admin/orders` - Quản lý orders
-- `GET /api/admin/orders/stats` - Thống kê orders (NEW)
-- `GET /api/admin/settings/system` - Cấu hình hệ thống (NEW)
-- `PUT /api/admin/settings/system` - Cập nhật cấu hình (NEW)
-- `GET /api/admin/settings/payment` - Cấu hình thanh toán (NEW)
-- `PUT /api/admin/settings/payment` - Cập nhật thanh toán (NEW)
-- `GET /api/admin/settings/email` - Cấu hình email (NEW)
-- `PUT /api/admin/settings/email` - Cập nhật email (NEW)
-
-## 🚀 New Features (Optimized Version)
-
-### Frontend
-
-- ✅ **Shared UI Components**: Button, Input, Loading, Alert
-- ✅ **Admin Components**: AdminTable, AdminModal, FormField
-- ✅ **Optimized Stores**: Selectors for better performance
-- ✅ **Utils & Hooks**: Reusable utilities and custom hooks
-- ✅ **Constants**: Centralized configuration
-
-### Backend
-
-- ✅ **Services Layer**: Separated business logic
-- ✅ **Validators**: Joi validation with Vietnamese messages
-- ✅ **Admin Middleware**: Role-based access control
-- ✅ **Modular Routes**: Better organization
-- ✅ **Standardized Responses**: Consistent API responses
-
-## 📚 Documentation
-
-- **[OPTIMIZATION_SUMMARY.md](./OPTIMIZATION_SUMMARY.md)** - Full optimization overview
-- **[MIGRATION_CHECKLIST.md](./MIGRATION_CHECKLIST.md)** - Step-by-step migration guide
-- **[backend/OPTIMIZATION_GUIDE.md](./backend/OPTIMIZATION_GUIDE.md)** - Backend migration guide
-- **[frontend/COMPONENTS_GUIDE.md](./frontend/COMPONENTS_GUIDE.md)** - Components usage guide
-
-## 🎯 Workflow người dùng
-
-1. **Duyệt Gallery**: Xem các mẫu tranh có sẵn
-2. **Tạo tranh AI**: Nhập mô tả → AI tạo tranh tô màu
-3. **Thêm vào giỏ**: Chọn kích thước, số lượng
-4. **Thanh toán**: Điền thông tin giao hàng
-5. **Theo dõi đơn**: Xem trạng thái đơn hàng
+---
 
 ## 🔐 Bảo mật
 
-- Firebase Authentication cho user management
-- JWT tokens cho API authentication
-- CORS configuration
-- Input validation & sanitization
-- Rate limiting
+- **Firebase Authentication** — quản lý người dùng an toàn
+- **JWT tokens** — xác thực API requests
+- **CORS** — chỉ cho phép domain được cấu hình
+- **Input validation** — kiểm tra đầu vào trước khi xử lý
+- **Rate limiting** — chống spam và DDoS
+
+---
 
 ## 📦 Deployment
 
-### Frontend (Vercel)
+### Frontend → Vercel
 
 ```bash
 cd frontend
 vercel deploy --prod
 ```
 
-### Backend (Railway/Render)
+### Backend → Render
 
-```bash
-cd backend
-# Push to GitHub
-# Connect repository to Railway/Render
-```
+Push code lên GitHub → Render tự động deploy khi có commit mới vào nhánh `main`.
 
-## 🤝 Đóng góp
-
-Mọi đóng góp đều được chào đón! Vui lòng tạo issue hoặc pull request.
+---
 
 ## 📄 License
 
-MIT License
-
-## 📧 Liên hệ
-
-Nếu có câu hỏi, vui lòng liên hệ qua email hoặc tạo issue.
-#   H a p p y * C o l o r i n g * A I 
- 
- #   H a p p y * C o l o r i n g * A I 
- 
- 
+MIT License © 2025 Yu Ling Store
