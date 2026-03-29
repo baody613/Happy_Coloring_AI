@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import api from "./api";
 
 export interface CreatePaymentRequest {
   orderId: string;
@@ -53,19 +51,12 @@ export interface PaymentVerifyResponse {
  * Create payment URL for VNPay or MoMo
  */
 export const createPayment = async (
-  data: CreatePaymentRequest,
-  token: string
+  data: CreatePaymentRequest
 ): Promise<CreatePaymentResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/payment/create`, data, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.post("/payment/create", data);
     return response.data;
   } catch (error: any) {
-    console.error("Create payment error:", error);
     throw error.response?.data || error;
   }
 };
@@ -74,21 +65,12 @@ export const createPayment = async (
  * Get transaction details by order ID
  */
 export const getTransaction = async (
-  orderId: string,
-  token: string
+  orderId: string
 ): Promise<TransactionResponse> => {
   try {
-    const response = await axios.get(
-      `${API_URL}/payment/transaction/${orderId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await api.get(`/payment/transaction/${orderId}`);
     return response.data;
   } catch (error: any) {
-    console.error("Get transaction error:", error);
     throw error.response?.data || error;
   }
 };
@@ -97,18 +79,12 @@ export const getTransaction = async (
  * Verify payment status of an order
  */
 export const verifyPayment = async (
-  orderId: string,
-  token: string
+  orderId: string
 ): Promise<PaymentVerifyResponse> => {
   try {
-    const response = await axios.get(`${API_URL}/payment/verify/${orderId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get(`/payment/verify/${orderId}`);
     return response.data;
   } catch (error: any) {
-    console.error("Verify payment error:", error);
     throw error.response?.data || error;
   }
 };

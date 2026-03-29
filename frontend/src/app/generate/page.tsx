@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,7 +10,6 @@ import {
   FaRedo,
   FaShoppingCart,
   FaLightbulb,
-  FaEye,
   FaHeart,
   FaRegHeart,
 } from "react-icons/fa";
@@ -34,6 +33,14 @@ export default function GeneratePage() {
   const [downloading, setDownloading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState("");
   const [showDetails, setShowDetails] = useState(false);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clear polling interval on unmount to prevent memory leak
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     setCurrentUser(user?.uid || null);
@@ -46,7 +53,7 @@ export default function GeneratePage() {
   };
 
   const buildAiProduct = () => ({
-    id: `ai-${generatedImage}`,
+    id: `ai-${crypto.randomUUID()}`,
     title: `Tranh AI: ${prompt.slice(0, 60) || "Custom"}`,
     description: prompt,
     category: "ai-products",
@@ -99,12 +106,12 @@ export default function GeneratePage() {
     }
   };
 
-  const pollGenerationStatus = async (id: string) => {
+  const pollGenerationStatus = (id: string) => {
     const maxAttempts = 60;
     let attempts = 0;
     let isPolling = false;
 
-    const interval = setInterval(async () => {
+    pollIntervalRef.current = setInterval(async () => {
       if (isPolling) return;
 
       try {
@@ -114,22 +121,25 @@ export default function GeneratePage() {
         if (data.status === "completed") {
           setGeneratedImage(data.imageUrl);
           setGenerating(false);
-          clearInterval(interval);
+          clearInterval(pollIntervalRef.current!);
+          pollIntervalRef.current = null;
           toast.success("Tạo tranh thành công!");
         } else if (data.status === "failed") {
           setGenerating(false);
-          clearInterval(interval);
+          clearInterval(pollIntervalRef.current!);
+          pollIntervalRef.current = null;
           toast.error("Tạo tranh thất bại: " + (data.error || "Unknown error"));
         }
 
         attempts++;
         if (attempts >= maxAttempts) {
-          clearInterval(interval);
+          clearInterval(pollIntervalRef.current!);
+          pollIntervalRef.current = null;
           setGenerating(false);
           toast.error("Timeout: Quá trình tạo tranh mất quá lâu");
         }
       } catch (error) {
-        console.error("Polling error:", error);
+        if (process.env.NODE_ENV !== "production") console.error("Polling error:", error);
       } finally {
         isPolling = false;
       }

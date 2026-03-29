@@ -69,6 +69,7 @@ export default function CartPage() {
       toast.error("Vui lòng chọn sản phẩm để thanh toán!");
       return;
     }
+    setIsProcessing(true);
     router.push("/checkout");
   };
 
@@ -79,13 +80,13 @@ export default function CartPage() {
     }
   };
 
-  const handleApplyVoucher = () => {
+  const handleApplyVoucher = async () => {
     if (!voucherInput.trim()) {
       toast.error("Vui lòng nhập mã voucher!");
       return;
     }
 
-    if (applyVoucher(voucherInput)) {
+    if (await applyVoucher(voucherInput)) {
       toast.success(`Áp dụng voucher thành công! Giảm ${voucherDiscount}%`);
       setVoucherInput("");
       setShowVoucherInput(false);

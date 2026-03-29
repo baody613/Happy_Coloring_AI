@@ -28,6 +28,14 @@ backend/build/
 *.log
 npm-debug.log*
 yarn-debug.log*
+
+# Local dev notes and sensitive env dumps
+note.txt
+note.md
+Note.MD
+*-env-vars.txt
+encode-*.ps1
+check-backend.ps1
 yarn-error.log*
 lerna-debug.log*
 

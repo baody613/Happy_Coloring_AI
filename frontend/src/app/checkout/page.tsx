@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
 import { useHydration } from "@/hooks";
-import { auth } from "@/lib/firebase";
 import {
   FaShoppingBag,
   FaCreditCard,
@@ -50,7 +49,6 @@ export default function CheckoutPage() {
   const selectedCartItems = items.filter((item) =>
     selectedItems.includes(item.product.id),
   );
-  const [formData, setFormData] = useState({
     fullName: user?.displayName || "",
     email: user?.email || "",
     phone: "",
@@ -61,21 +59,6 @@ export default function CheckoutPage() {
     note: "",
     paymentMethod: "cod", // cod, bank_transfer, credit_card
   });
-
-  const normalizeQrImageUrl = (rawUrl?: string) => {
-    if (!rawUrl) return "";
-    const trimmed = rawUrl.trim();
-    if (!trimmed) return "";
-
-    if (/^https?:\/\//i.test(trimmed)) return trimmed;
-    if (trimmed.startsWith("/frontend/public/")) {
-      return trimmed.replace("/frontend/public", "");
-    }
-    if (trimmed.startsWith("frontend/public/")) {
-      return `/${trimmed.replace("frontend/public/", "")}`;
-    }
-    return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
-  };
 
   useEffect(() => {
     // Không redirect khi đang xử lý thanh toán
@@ -103,7 +86,7 @@ export default function CheckoutPage() {
           bankName: data?.bankName || "",
           accountNumber: data?.accountNumber || "",
           accountName: data?.accountName || "",
-          qrImageUrl: normalizeQrImageUrl(data?.qrImageUrl),
+          qrImageUrl: data?.qrImageUrl || "",
         });
       })
       .catch(() => {
@@ -188,19 +171,8 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
-      // Gửi API tạo đơn hàng
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        throw new Error("User not authenticated");
-      }
-
-      const token = await currentUser.getIdToken();
-
-      const orderResponse = await api.post("/orders", orderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // Gửi API tạo đơn hàng — api interceptor tự động đính bearer token
+      const orderResponse = await api.post("/orders", orderData);
 
       const createdOrder = orderResponse.data.data;
 
@@ -214,13 +186,10 @@ export default function CheckoutPage() {
         formData.paymentMethod === "momo"
       ) {
         // Tạo payment URL
-        const paymentResponse = await createPayment(
-          {
-            orderId: createdOrder.id,
-            paymentMethod: formData.paymentMethod,
-          },
-          token,
-        );
+        const paymentResponse = await createPayment({
+          orderId: createdOrder.id,
+          paymentMethod: formData.paymentMethod,
+        });
 
         if (paymentResponse.success && paymentResponse.data?.paymentUrl) {
           // Lưu thông tin đơn hàng trước khi redirect

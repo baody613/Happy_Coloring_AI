@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
+import { Product } from "@/types";
 
 interface Message {
   id: string;
@@ -10,7 +11,7 @@ interface Message {
   sender: "user" | "bot";
   timestamp: Date;
   suggestions?: string[];
-  products?: any[];
+  products?: Product[];
 }
 
 export default function Chatbot() {

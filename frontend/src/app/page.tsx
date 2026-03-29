@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useAuthStore } from "@/store/authStore";
 import { motion, useInView } from "framer-motion";
 import api from "@/lib/api";
 import { Product } from "@/types";
@@ -46,14 +45,10 @@ function FadeIn({
 }
 
 export default function Home() {
-  const { initializeAuth } = useAuthStore();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [isFeaturedLoading, setIsFeaturedLoading] = useState(true);
 
-  useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
-
+  // AuthProvider in layout already calls initializeAuth() — no need to call here again
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
@@ -61,18 +56,17 @@ export default function Home() {
         const response = await api.get("/products", {
           params: {
             page: 1,
-            limit: 100,
+            limit: FEATURED_LIMIT,
+            sortBy: "sales",
+            sortOrder: "desc",
+            status: "active",
           },
         });
 
         const products: Product[] = response.data?.data?.products || [];
-        const topSelling = [...products]
-          .filter(
-            (item) =>
-              (item.imageUrl || item.thumbnailUrl) && item.status === "active",
-          )
-          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
-          .slice(0, FEATURED_LIMIT);
+        const topSelling = products.filter(
+          (item) => item.imageUrl || item.thumbnailUrl,
+        );
 
         setFeaturedProducts(topSelling);
       } catch (error) {

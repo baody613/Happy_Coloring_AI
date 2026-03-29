@@ -89,9 +89,26 @@ export const getOrdersByUserId = async (userId, page = 1, limit = 10) => {
   return getAllOrders(page, limit, { userId });
 };
 
+// Server-side voucher table — single source of truth
+const VALID_VOUCHERS = {
+  YULING10: 10,
+  YULING20: 20,
+  YULING30: 30,
+  GIAMGIA15: 15,
+  KHAITRUONG: 25,
+};
+
+const validateVoucher = (code) => {
+  if (!code) return 0;
+  return VALID_VOUCHERS[String(code).toUpperCase()] || 0;
+};
+
 // Create new order
 export const createOrder = async (userId, orderData) => {
   const orderNumber = generateOrderNumber();
+
+  // Validate voucher server-side — never trust client-sent discount
+  const serverDiscount = validateVoucher(orderData.voucherCode);
 
   const newOrder = {
     orderNumber,
@@ -100,6 +117,8 @@ export const createOrder = async (userId, orderData) => {
     shippingAddress: orderData.shippingAddress,
     totalAmount: orderData.totalAmount,
     paymentMethod: orderData.paymentMethod,
+    voucherCode: serverDiscount > 0 ? String(orderData.voucherCode).toUpperCase() : null,
+    voucherDiscount: serverDiscount,
     status: "pending",
     paymentStatus: "pending",
     createdAt: formatDate(),
@@ -182,10 +201,18 @@ export const getOrderStats = async () => {
   const totalRevenue = orders
     .filter((o) => o.status !== "cancelled")
     .reduce((sum, o) => sum + getOrderAmount(o), 0);
-  const paidOrders = orders.filter((o) => isPaidOrder(o)).length;
-  const paidRevenue = orders
-    .filter((o) => isPaidOrder(o))
-    .reduce((sum, o) => sum + getOrderAmount(o), 0);
+
+  // Single pass to compute both paidOrders count and paidRevenue
+  const { paidOrders, paidRevenue } = orders.reduce(
+    (acc, o) => {
+      if (isPaidOrder(o)) {
+        acc.paidOrders += 1;
+        acc.paidRevenue += getOrderAmount(o);
+      }
+      return acc;
+    },
+    { paidOrders: 0, paidRevenue: 0 },
+  );
 
   return {
     total,

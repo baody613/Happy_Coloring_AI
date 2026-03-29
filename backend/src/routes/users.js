@@ -5,10 +5,14 @@ import { sendSuccess, sendError } from "../utils/helpers.js";
 
 const router = express.Router();
 
-// Get user profile
+// Get user profile — owner or admin only
 router.get("/:userId", authenticateUser, async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (userId !== req.user.uid && !req.user.isAdmin) {
+      return sendError(res, "Forbidden", 403);
+    }
 
     const user = await getUserById(userId);
 

@@ -1,7 +1,9 @@
 import { auth } from "../config/firebase.js";
 
-// Admin emails
-const ADMIN_EMAILS = ["admin@yulingstore.com", "baody613@gmail.com"];
+// Admin emails — loaded from env; fallback for local dev only
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS
+  ? process.env.ADMIN_EMAILS.split(",").map((e) => e.trim().toLowerCase())
+  : ["admin@yulingstore.com", "baody613@gmail.com"];
 
 export const authenticateUser = async (req, res, next) => {
   try {

@@ -1,10 +1,12 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import admin from "firebase-admin";
+import { createHash } from "crypto";
 import { db } from "../config/firebase.js";
 
 const router = express.Router();
 
+const hashOtp = (otp) => createHash("sha256").update(otp).digest("hex");
 // Configure Nodemailer with Gmail
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -49,7 +51,8 @@ router.post("/send-code", async (req, res) => {
       await admin.auth().getUserByEmail(email);
     } catch (error) {
       if (error.code === "auth/user-not-found") {
-        return res.status(404).json({ error: "Email not found" });
+        // Return 200 to prevent email enumeration attacks
+        return res.status(200).json({ success: true, message: "If the email exists, a code was sent." });
       }
       throw error;
     }
@@ -58,14 +61,14 @@ router.post("/send-code", async (req, res) => {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     await db.collection("password_reset_codes").doc(email).set({
-      code: otp,
+      code: hashOtp(otp),
       email: email,
       expiresAt: expiresAt,
       used: false,
       createdAt: new Date(),
     });
 
-    // Send email via SendGrid
+    // Send password reset code via Nodemailer (Gmail SMTP)
     console.log("📧 Sending password reset code to:", email);
     const htmlContent = `
       <!DOCTYPE html>
@@ -198,7 +201,7 @@ router.post("/verify-code", async (req, res) => {
       return res.status(400).json({ error: "Code expired" });
     }
 
-    if (otpData.code !== code) {
+    if (otpData.code !== hashOtp(code)) {
       return res.status(400).json({ error: "Invalid code" });
     }
 
@@ -240,7 +243,7 @@ router.post("/reset-password", async (req, res) => {
       return res.status(400).json({ error: "Code expired" });
     }
 
-    if (otpData.code !== code) {
+    if (otpData.code !== hashOtp(code)) {
       return res.status(400).json({ error: "Invalid code" });
     }
 

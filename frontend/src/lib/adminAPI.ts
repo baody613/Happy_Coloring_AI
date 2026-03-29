@@ -32,7 +32,7 @@ export const adminProductAPI = {
   },
 
   // Update product
-  update: async (productId: string, updateData: any) => {
+  update: async (productId: string, updateData: Partial<import('@/types').Product>) => {
     const response = await api.put(`/admin/products/${productId}`, updateData);
     return response.data;
   },

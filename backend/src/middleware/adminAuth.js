@@ -11,6 +11,12 @@ export const requireAdmin = async (req, res, next) => {
       return sendError(res, "Authentication required", 401);
     }
 
+    // Short-circuit: isAdmin already confirmed by authenticateUser
+    if (req.user.isAdmin === true) {
+      req.user.role = "admin";
+      return next();
+    }
+
     const user = await getUserById(req.user.uid);
 
     // Primary source: role in users collection.

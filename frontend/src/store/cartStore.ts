@@ -20,7 +20,7 @@ interface CartState {
   moveToSavedForLater: (productId: string) => void;
   moveToCart: (productId: string) => void;
   removeSavedItem: (productId: string) => void;
-  applyVoucher: (code: string) => boolean;
+  applyVoucher: (code: string) => Promise<boolean>;
   removeVoucher: () => void;
   getSelectedTotal: () => number;
   getDiscountedTotal: () => number;
@@ -131,22 +131,26 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      applyVoucher: (code: string) => {
-        // Simple voucher validation - you can expand this
-        const vouchers: { [key: string]: number } = {
-          YULING10: 10,
-          YULING20: 20,
-          YULING30: 30,
-          GIAMGIA15: 15,
-          KHAITRUONG: 25,
-        };
-
-        const discount = vouchers[code.toUpperCase()];
-        if (discount) {
-          set({ voucherCode: code.toUpperCase(), voucherDiscount: discount });
-          return true;
+      applyVoucher: async (code: string) => {
+        try {
+          // Validate via backend — keeps voucher codes out of the client bundle
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/orders/validate-voucher`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code }),
+            },
+          );
+          const data = await response.json();
+          if (data.valid && data.discount > 0) {
+            set({ voucherCode: String(code).toUpperCase(), voucherDiscount: data.discount });
+            return true;
+          }
+          return false;
+        } catch {
+          return false;
         }
-        return false;
       },
 
       removeVoucher: () => {

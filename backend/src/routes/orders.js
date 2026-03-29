@@ -17,6 +17,24 @@ import {
 
 const router = express.Router();
 
+// Server-side voucher table (mirrors orderService.js)
+const VALID_VOUCHERS = {
+  YULING10: 10,
+  YULING20: 20,
+  YULING30: 30,
+  GIAMGIA15: 15,
+  KHAITRUONG: 25,
+};
+
+// Validate voucher code
+router.post("/validate-voucher", async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.json({ valid: false, discount: 0 });
+
+  const discount = VALID_VOUCHERS[String(code).toUpperCase()] || 0;
+  return res.json({ valid: discount > 0, discount });
+});
+
 // Create order
 router.post(
   "/",
@@ -73,7 +91,7 @@ router.get("/:orderId", authenticateUser, async (req, res) => {
     }
 
     // Check if user is requesting their own order
-    if (order.userId !== req.user.uid && req.user.role !== "admin") {
+    if (order.userId !== req.user.uid && !req.user.isAdmin) {
       return sendError(res, "Unauthorized", 403);
     }
 
@@ -122,7 +140,7 @@ router.post("/:orderId/cancel", authenticateUser, async (req, res) => {
     }
 
     // Check if user is cancelling their own order
-    if (order.userId !== req.user.uid && req.user.role !== "admin") {
+    if (order.userId !== req.user.uid && !req.user.isAdmin) {
       return sendError(res, "Unauthorized", 403);
     }
 

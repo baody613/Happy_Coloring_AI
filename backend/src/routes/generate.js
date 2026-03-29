@@ -53,6 +53,10 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       return res.status(400).json({ error: "Prompt is required" });
     }
 
+    if (prompt.length > 500) {
+      return res.status(400).json({ error: "Prompt must be 500 characters or fewer" });
+    }
+
     // Create generation record
     const generationRef = db.collection("generations").doc();
     const generationId = generationRef.id;

@@ -95,10 +95,7 @@ export const getProductById = async (productId) => {
   if (!productDoc.exists) {
     return null;
   }
-  const [productWithSales] = await attachPaidSalesToProducts([
-    { id: productDoc.id, ...productDoc.data() },
-  ]);
-  return productWithSales;
+  return { id: productDoc.id, ...productDoc.data() };
 };
 
 // Get all products with pagination and filters
@@ -225,10 +222,8 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       filters.sortOrder,
     );
 
-    const productsWithSales = await attachPaidSalesToProducts(sortedProducts);
-
     return {
-      products: productsWithSales,
+      products: sortedProducts,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
