@@ -40,12 +40,7 @@ const sortProducts = (products, sortBy, sortOrder = "desc") => {
   });
 };
 
-const PAID_PAYMENT_STATUSES = new Set([
-  "paid",
-  "success",
-  "completed",
-  "done",
-]);
+const PAID_PAYMENT_STATUSES = new Set(["paid", "success", "completed", "done"]);
 
 const PAID_ORDER_STATUSES = new Set(["delivered", "completed"]);
 

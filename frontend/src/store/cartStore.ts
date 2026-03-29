@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { CartItem, Product } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { CartItem, Product } from "@/types";
 
 interface CartState {
   items: CartItem[];
@@ -33,19 +33,21 @@ export const useCartStore = create<CartState>()(
       items: [],
       savedForLater: [],
       selectedItems: [],
-      voucherCode: '',
+      voucherCode: "",
       voucherDiscount: 0,
 
       addItem: (product, quantity = 1) => {
         const items = get().items;
-        const existingItem = items.find((item) => item.product.id === product.id);
+        const existingItem = items.find(
+          (item) => item.product.id === product.id,
+        );
 
         if (existingItem) {
           set({
             items: items.map((item) =>
               item.product.id === product.id
                 ? { ...item, quantity: item.quantity + quantity }
-                : item
+                : item,
             ),
           });
         } else {
@@ -71,25 +73,36 @@ export const useCartStore = create<CartState>()(
 
         set({
           items: get().items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
+            item.product.id === productId ? { ...item, quantity } : item,
           ),
         });
       },
 
-      clearCart: () => set({ items: [], selectedItems: [], voucherCode: '', voucherDiscount: 0 }),
+      clearCart: () =>
+        set({
+          items: [],
+          selectedItems: [],
+          voucherCode: "",
+          voucherDiscount: 0,
+        }),
 
       getTotalItems: () => {
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
 
       getTotalPrice: () => {
-        return get().items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+        return get().items.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0,
+        );
       },
 
       toggleSelectItem: (productId) => {
         const selectedItems = get().selectedItems;
         if (selectedItems.includes(productId)) {
-          set({ selectedItems: selectedItems.filter((id) => id !== productId) });
+          set({
+            selectedItems: selectedItems.filter((id) => id !== productId),
+          });
         } else {
           set({ selectedItems: [...selectedItems, productId] });
         }
@@ -115,10 +128,14 @@ export const useCartStore = create<CartState>()(
       },
 
       moveToCart: (productId) => {
-        const item = get().savedForLater.find((item) => item.product.id === productId);
+        const item = get().savedForLater.find(
+          (item) => item.product.id === productId,
+        );
         if (item) {
           set({
-            savedForLater: get().savedForLater.filter((item) => item.product.id !== productId),
+            savedForLater: get().savedForLater.filter(
+              (item) => item.product.id !== productId,
+            ),
             items: [...get().items, item],
             selectedItems: [...get().selectedItems, productId],
           });
@@ -127,7 +144,9 @@ export const useCartStore = create<CartState>()(
 
       removeSavedItem: (productId) => {
         set({
-          savedForLater: get().savedForLater.filter((item) => item.product.id !== productId),
+          savedForLater: get().savedForLater.filter(
+            (item) => item.product.id !== productId,
+          ),
         });
       },
 
@@ -144,7 +163,10 @@ export const useCartStore = create<CartState>()(
           );
           const data = await response.json();
           if (data.valid && data.discount > 0) {
-            set({ voucherCode: String(code).toUpperCase(), voucherDiscount: data.discount });
+            set({
+              voucherCode: String(code).toUpperCase(),
+              voucherDiscount: data.discount,
+            });
             return true;
           }
           return false;
@@ -154,14 +176,17 @@ export const useCartStore = create<CartState>()(
       },
 
       removeVoucher: () => {
-        set({ voucherCode: '', voucherDiscount: 0 });
+        set({ voucherCode: "", voucherDiscount: 0 });
       },
 
       getSelectedTotal: () => {
         const selectedItems = get().selectedItems;
         return get()
           .items.filter((item) => selectedItems.includes(item.product.id))
-          .reduce((total, item) => total + item.product.price * item.quantity, 0);
+          .reduce(
+            (total, item) => total + item.product.price * item.quantity,
+            0,
+          );
       },
 
       getDiscountedTotal: () => {
@@ -173,15 +198,17 @@ export const useCartStore = create<CartState>()(
       clearSelectedItems: () => {
         const selectedIds = get().selectedItems;
         set({
-          items: get().items.filter((item) => !selectedIds.includes(item.product.id)),
+          items: get().items.filter(
+            (item) => !selectedIds.includes(item.product.id),
+          ),
           selectedItems: [],
-          voucherCode: '',
+          voucherCode: "",
           voucherDiscount: 0,
         });
       },
     }),
     {
-      name: 'cart-storage',
-    }
-  )
+      name: "cart-storage",
+    },
+  ),
 );

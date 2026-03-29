@@ -28,6 +28,7 @@ const EMPTY_FORM = {
   thumbnailUrl: "",
   difficulty: "medium" as "easy" | "medium" | "hard",
   colors: 24,
+  discountPercent: 0,
 };
 
 const CATEGORY_OPTIONS = [
@@ -56,6 +57,11 @@ export default function AddProductsPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [priceDisplay, setPriceDisplay] = useState("");
   const [formData, setFormData] = useState({ ...EMPTY_FORM });
+
+  const salePrice = useMemo(() => {
+    if (!formData.discountPercent || formData.discountPercent <= 0) return null;
+    return Math.round(formData.price * (1 - formData.discountPercent / 100));
+  }, [formData.price, formData.discountPercent]);
 
   const badgeImg =
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext fill="%239ca3af" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3ENo image%3C/text%3E%3C/svg%3E';
@@ -93,14 +99,24 @@ export default function AddProductsPage() {
             return;
           }
 
+          const basePrice = (product as any).originalPrice || product.price;
+          const existingDiscount =
+            (product as any).discountPercent ||
+            (product.originalPrice && product.originalPrice > product.price
+              ? Math.round(
+                  ((product.originalPrice - product.price) /
+                    product.originalPrice) *
+                    100,
+                )
+              : 0);
           setPriceDisplay(
-            Math.floor(product.price / 1000).toLocaleString("vi-VN"),
+            Math.floor(basePrice / 1000).toLocaleString("vi-VN"),
           );
           setFormData({
             title: product.title,
             description: product.description || "",
             category: product.category || "paint-by-numbers",
-            price: product.price,
+            price: basePrice,
             imageUrl: product.imageUrl,
             thumbnailUrl: product.imageUrl,
             difficulty: (product.difficulty || "medium") as
@@ -108,6 +124,7 @@ export default function AddProductsPage() {
               | "medium"
               | "hard",
             colors: 24,
+            discountPercent: existingDiscount,
           });
         } catch {
           toast.error("Không thể tải dữ liệu sản phẩm!");
@@ -187,11 +204,33 @@ export default function AddProductsPage() {
       isEditing ? "Đang cập nhật sản phẩm..." : "Đang thêm sản phẩm...",
     );
 
+    const discountPercent = formData.discountPercent || 0;
+    const basePrice = formData.price;
+    const finalPrice =
+      discountPercent > 0
+        ? Math.round(basePrice * (1 - discountPercent / 100))
+        : basePrice;
+    const finalOriginalPrice: number | undefined =
+      discountPercent > 0 ? basePrice : undefined;
+
+    const submitData = {
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      imageUrl: formData.imageUrl,
+      thumbnailUrl: formData.thumbnailUrl,
+      difficulty: formData.difficulty,
+      colors: formData.colors,
+      discountPercent,
+      price: finalPrice,
+      originalPrice: finalOriginalPrice,
+    };
+
     try {
       if (isEditing && editProductId) {
-        await adminAPI.products.update(editProductId, formData);
+        await adminAPI.products.update(editProductId, submitData);
       } else {
-        await adminAPI.products.create(formData);
+        await adminAPI.products.create(submitData);
       }
 
       toast.success(
@@ -257,7 +296,7 @@ export default function AddProductsPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-700">
-                  Giá *
+                  Giá Gốc *
                 </label>
                 <div className="relative">
                   <input
@@ -273,8 +312,43 @@ export default function AddProductsPage() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Vi du: Nhap "150" = 150.000 VND
+                  Ví dụ: Nhập &quot;150&quot; = 150.000 VND
                 </p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">
+                  🏷️ Giảm Giá (%)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={formData.discountPercent || ""}
+                  onChange={(e) => {
+                    const val = Math.min(
+                      100,
+                      Math.max(0, parseInt(e.target.value, 10) || 0),
+                    );
+                    setFormData((p) => ({ ...p, discountPercent: val }));
+                  }}
+                  placeholder="0 = không giảm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                />
+                {salePrice !== null && salePrice > 0 ? (
+                  <p className="text-sm mt-2 text-green-700 font-semibold">
+                    🎉 Giá bán:{" "}
+                    <span className="text-red-600">
+                      {salePrice.toLocaleString("vi-VN")} VND
+                    </span>{" "}
+                    <span className="text-gray-400 line-through text-xs">
+                      {formData.price.toLocaleString("vi-VN")} VND
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nhập 1–100 để áp dụng khuyến mãi
+                  </p>
+                )}
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-semibold mb-2 text-gray-700">

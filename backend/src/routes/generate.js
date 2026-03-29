@@ -33,6 +33,7 @@ Hard requirements:
 - Palette numbers must match exactly the numbers used in paint regions.
 - Keep the subject faithful to the user idea and visually similar in composition to the reference style.
 - No watermark, no logo, no signature, no decorative border effects.
+- Do not create a 18+ adult content, violent, or disturbing image. Keep it family-friendly.
 
 Output quality target:
 - High clarity, print-ready, easy for users to follow number-to-color mapping while painting.`;
@@ -54,7 +55,9 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
     }
 
     if (prompt.length > 500) {
-      return res.status(400).json({ error: "Prompt must be 500 characters or fewer" });
+      return res
+        .status(400)
+        .json({ error: "Prompt must be 500 characters or fewer" });
     }
 
     // Create generation record

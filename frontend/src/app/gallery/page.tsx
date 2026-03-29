@@ -37,6 +37,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 const CATEGORY_ICONS: Record<string, string> = {
   all: "🎨",
+  sale: "🏷️",
   animals: "🐾",
   landscape: "🌄",
   flowers: "🌸",
@@ -51,6 +52,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 const CATEGORY_LABELS: Record<string, string> = {
   all: "Tất Cả",
+  sale: "Giảm Giá",
   animals: "Động Vật",
   landscape: "Phong Cảnh",
   flowers: "Hoa Lá",
@@ -440,12 +442,30 @@ function ProductQuickView({
             >
               {product.title}
             </motion.h2>
-            <motion.p
-              className="text-2xl font-extrabold text-purple-700 mb-4"
+            <motion.div
+              className="flex items-end gap-3 mb-4"
               variants={quickViewItemVariants}
             >
-              {product.price.toLocaleString("vi-VN")}đ
-            </motion.p>
+              <span className="text-2xl font-extrabold text-purple-700">
+                {product.price.toLocaleString("vi-VN")}đ
+              </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <>
+                  <span className="text-base text-gray-400 line-through">
+                    {product.originalPrice.toLocaleString("vi-VN")}đ
+                  </span>
+                  <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
+                    -
+                    {Math.round(
+                      ((product.originalPrice - product.price) /
+                        product.originalPrice) *
+                        100,
+                    )}
+                    %
+                  </span>
+                </>
+              )}
+            </motion.div>
             <motion.p
               className="text-gray-600 mb-4 whitespace-pre-line"
               variants={quickViewItemVariants}
@@ -522,10 +542,11 @@ export default function GalleryPage() {
 
       const params: Record<string, string | number> = {
         page,
-        limit: ITEMS_PER_PAGE,
+        limit: category === "sale" ? 200 : ITEMS_PER_PAGE,
       };
 
-      if (category !== "all") params.category = category;
+      if (category !== "all" && category !== "sale")
+        params.category = category;
       if (difficulty !== "all") params.difficulty = difficulty;
 
       if (sortBy === "price_asc") {
@@ -568,11 +589,19 @@ export default function GalleryPage() {
   }, [category, difficulty, sortBy, search]);
 
   // Client-side search filter
-  const displayedProducts = search.trim()
+  const searchFiltered = search.trim()
     ? products.filter((p) =>
         p.title.toLowerCase().includes(search.trim().toLowerCase()),
       )
     : products;
+
+  // Sale filter
+  const displayedProducts =
+    category === "sale"
+      ? searchFiltered.filter(
+          (p) => p.originalPrice && p.originalPrice > p.price,
+        )
+      : searchFiltered;
 
   const uniqueCategories = Array.from(
     new Set(categories.map((cat) => cat.trim()).filter(Boolean)),
@@ -637,6 +666,18 @@ export default function GalleryPage() {
                 </button>
               );
             })}
+            {/* Sale tab */}
+            <button
+              onClick={() => setCategory("sale")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                category === "sale"
+                  ? "bg-red-500 text-white border-red-500 shadow-md shadow-red-200"
+                  : "bg-white text-red-500 border-red-200 hover:bg-red-50 hover:border-red-400"
+              }`}
+            >
+              <span>🏷️</span>
+              <span>Giảm Giá</span>
+            </button>
           </div>
         </div>
       </div>

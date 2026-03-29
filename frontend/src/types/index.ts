@@ -24,6 +24,7 @@ export interface Product {
   category: string;
   price: number;
   originalPrice?: number;
+  discountPercent?: number;
   imageUrl: string;
   thumbnailUrl: string;
   difficulty: "easy" | "medium" | "hard";

@@ -12,6 +12,7 @@ import {
   FaLightbulb,
   FaHeart,
   FaRegHeart,
+  FaEye,
 } from "react-icons/fa";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -139,7 +140,8 @@ export default function GeneratePage() {
           toast.error("Timeout: Quá trình tạo tranh mất quá lâu");
         }
       } catch (error) {
-        if (process.env.NODE_ENV !== "production") console.error("Polling error:", error);
+        if (process.env.NODE_ENV !== "production")
+          console.error("Polling error:", error);
       } finally {
         isPolling = false;
       }

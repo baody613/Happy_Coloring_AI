@@ -37,7 +37,7 @@ const envOrigins = [process.env.CORS_ORIGIN, process.env.FRONTEND_URL]
 
 const allowedOrigins = new Set(
   [
-    "http://localhost:3000",
+    "http://localhost:3002",
     "https://paint-by-numbers-ai-607c4.web.app",
     "https://paint-by-numbers-ai-607c4.firebaseapp.com",
     "https://happy-coloring-ai.vercel.app",
@@ -129,6 +129,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/chat", chatRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {

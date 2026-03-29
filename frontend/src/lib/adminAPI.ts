@@ -21,6 +21,8 @@ export const adminProductAPI = {
     description?: string;
     category?: string;
     price: number;
+    originalPrice?: number;
+    discountPercent?: number;
     imageUrl: string;
     thumbnailUrl?: string;
     difficulty?: "easy" | "medium" | "hard";
@@ -32,7 +34,10 @@ export const adminProductAPI = {
   },
 
   // Update product
-  update: async (productId: string, updateData: Partial<import('@/types').Product>) => {
+  update: async (
+    productId: string,
+    updateData: Partial<import("@/types").Product>,
+  ) => {
     const response = await api.put(`/admin/products/${productId}`, updateData);
     return response.data;
   },

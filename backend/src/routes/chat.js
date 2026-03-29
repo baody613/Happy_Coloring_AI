@@ -4,30 +4,27 @@ import { sendSuccess, sendError } from "../utils/helpers.js";
 
 const router = express.Router();
 
-// POST /api/chat - Handle chat messages
+// Handle incoming chat messages
 router.post("/", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body;
 
-    if (
-      !message ||
-      typeof message !== "string" ||
-      message.trim().length === 0
-    ) {
+    if (!message || typeof message !== "string" || message.trim() === "") {
       return sendError(res, "Message is required", 400);
     }
 
-    const result = await handleChatMessage(message.trim());
+    // Giới hạn history 20 tin nhắn gần nhất để không quá dài
+    const recentHistory = Array.isArray(history) ? history.slice(-20) : [];
+
+    const result = await handleChatMessage(message.trim(), recentHistory);
 
     if (!result.success) {
       return sendError(res, "Failed to process message", 500);
     }
-
     sendSuccess(res, result.response);
   } catch (error) {
-    console.error("Chat route error:", error);
+    console.error("Chat error:", error);
     sendError(res, error.message);
   }
 });
-
 export default router;

@@ -117,7 +117,8 @@ export const createOrder = async (userId, orderData) => {
     shippingAddress: orderData.shippingAddress,
     totalAmount: orderData.totalAmount,
     paymentMethod: orderData.paymentMethod,
-    voucherCode: serverDiscount > 0 ? String(orderData.voucherCode).toUpperCase() : null,
+    voucherCode:
+      serverDiscount > 0 ? String(orderData.voucherCode).toUpperCase() : null,
     voucherDiscount: serverDiscount,
     status: "pending",
     paymentStatus: "pending",

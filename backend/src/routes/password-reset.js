@@ -52,7 +52,12 @@ router.post("/send-code", async (req, res) => {
     } catch (error) {
       if (error.code === "auth/user-not-found") {
         // Return 200 to prevent email enumeration attacks
-        return res.status(200).json({ success: true, message: "If the email exists, a code was sent." });
+        return res
+          .status(200)
+          .json({
+            success: true,
+            message: "If the email exists, a code was sent.",
+          });
       }
       throw error;
     }
@@ -60,13 +65,16 @@ router.post("/send-code", async (req, res) => {
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await db.collection("password_reset_codes").doc(email).set({
-      code: hashOtp(otp),
-      email: email,
-      expiresAt: expiresAt,
-      used: false,
-      createdAt: new Date(),
-    });
+    await db
+      .collection("password_reset_codes")
+      .doc(email)
+      .set({
+        code: hashOtp(otp),
+        email: email,
+        expiresAt: expiresAt,
+        used: false,
+        createdAt: new Date(),
+      });
 
     // Send password reset code via Nodemailer (Gmail SMTP)
     console.log("📧 Sending password reset code to:", email);

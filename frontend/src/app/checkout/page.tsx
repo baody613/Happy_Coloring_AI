@@ -49,6 +49,8 @@ export default function CheckoutPage() {
   const selectedCartItems = items.filter((item) =>
     selectedItems.includes(item.product.id),
   );
+
+  const [formData, setFormData] = useState({
     fullName: user?.displayName || "",
     email: user?.email || "",
     phone: "",

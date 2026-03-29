@@ -51,7 +51,7 @@ export interface PaymentVerifyResponse {
  * Create payment URL for VNPay or MoMo
  */
 export const createPayment = async (
-  data: CreatePaymentRequest
+  data: CreatePaymentRequest,
 ): Promise<CreatePaymentResponse> => {
   try {
     const response = await api.post("/payment/create", data);
@@ -65,7 +65,7 @@ export const createPayment = async (
  * Get transaction details by order ID
  */
 export const getTransaction = async (
-  orderId: string
+  orderId: string,
 ): Promise<TransactionResponse> => {
   try {
     const response = await api.get(`/payment/transaction/${orderId}`);
@@ -79,7 +79,7 @@ export const getTransaction = async (
  * Verify payment status of an order
  */
 export const verifyPayment = async (
-  orderId: string
+  orderId: string,
 ): Promise<PaymentVerifyResponse> => {
   try {
     const response = await api.get(`/payment/verify/${orderId}`);
