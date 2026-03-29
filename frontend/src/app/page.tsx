@@ -89,7 +89,7 @@ export default function Home() {
             <FadeIn>
               <h1
                 aria-label={HERO_TITLE}
-                className="wave-color-text text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-[-0.04em]"
+                className="wave-color-text text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-[-0.04em]"
               >
                 {HERO_TITLE.split("").map((character, index) =>
                   character === " " ? (
@@ -113,7 +113,7 @@ export default function Home() {
             </FadeIn>
 
             <FadeIn>
-              <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl font-medium leading-relaxed mt-2">
+              <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed mt-2">
                 Indulging in the Vibrant & Artful Relaxation in your private
                 peace
               </p>
@@ -123,13 +123,13 @@ export default function Home() {
               <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
                 <Link
                   href="/generate"
-                  className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-full h-14 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 text-white text-base font-bold transition-all hover:-translate-y-0.5"
+                  className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 text-white text-sm sm:text-base font-bold transition-all hover:-translate-y-0.5"
                 >
                   Tạo Tranh AI
                 </Link>
                 <Link
                   href="/gallery"
-                  className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-full h-14 px-8 border-2 border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary text-base font-bold transition-all"
+                  className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 border-2 border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary text-sm sm:text-base font-bold transition-all"
                 >
                   Khám Phá Gallery
                 </Link>

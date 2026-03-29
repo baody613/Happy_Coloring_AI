@@ -242,10 +242,10 @@ export default function ProfilePage() {
 
         {/* Tab Navigation */}
         <div className="bg-white rounded-xl shadow-lg mb-6">
-          <div className="flex border-b overflow-x-auto">
+          <div className="flex border-b overflow-x-auto scrollbar-hide">
             <button
               onClick={() => setActiveTab("info")}
-              className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-semibold whitespace-nowrap ${
                 activeTab === "info"
                   ? "border-b-2 border-purple-600 text-purple-600"
                   : "text-gray-600"
@@ -255,7 +255,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("orders")}
-              className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-semibold whitespace-nowrap ${
                 activeTab === "orders"
                   ? "border-b-2 border-purple-600 text-purple-600"
                   : "text-gray-600"
@@ -265,7 +265,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("favorites")}
-              className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-semibold whitespace-nowrap ${
                 activeTab === "favorites"
                   ? "border-b-2 border-purple-600 text-purple-600"
                   : "text-gray-600"
@@ -275,7 +275,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("utilities")}
-              className={`flex-1 py-4 px-6 font-semibold whitespace-nowrap ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm font-semibold whitespace-nowrap ${
                 activeTab === "utilities"
                   ? "border-b-2 border-purple-600 text-purple-600"
                   : "text-gray-600"

@@ -223,18 +223,18 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12 relative">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-6 sm:py-12 relative">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-6 sm:mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text2-height ">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text2-height ">
             ✨ Tạo Tranh AI Độc Đáo
           </h1>
-          <p className="text-xl text-purple-400">
+          <p className="text-base sm:text-xl text-purple-400">
             Biến ý tưởng của bạn thành tranh tô màu chuyên nghiệp
           </p>
         </motion.div>
@@ -247,10 +247,10 @@ export default function GeneratePage() {
             className="space-y-6"
           >
             {/* Prompt Card */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
               <div className="flex items-center gap-3 mb-4">
                 <FaLightbulb className="text-yellow-500 text-2xl" />
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                   Mô Tả Ý Tưởng
                 </h2>
               </div>
@@ -267,8 +267,8 @@ export default function GeneratePage() {
             </div>
 
             {/* Complexity Selection */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
                 ⚙️ Độ Phức Tạp
               </h2>
               <div className="space-y-3">
@@ -278,7 +278,7 @@ export default function GeneratePage() {
                     onClick={() => setComplexity(c.value)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
+                    className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all text-left ${
                       complexity === c.value
                         ? "border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 shadow-md"
                         : "border-gray-200 hover:border-purple-300 bg-white"
@@ -365,8 +365,8 @@ export default function GeneratePage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:sticky lg:top-8 h-fit"
           >
-            <div className="bg-white rounded-2xl shadow-xl p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
                 🖼️ Kết Quả
               </h2>
 

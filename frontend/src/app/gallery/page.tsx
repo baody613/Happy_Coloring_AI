@@ -644,7 +644,7 @@ export default function GalleryPage() {
       {/* Category Tabs */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-1 px-1">
             {["all", ...uniqueCategories].map((cat) => {
               const icon = CATEGORY_ICONS[cat] ?? "🖼️";
               const label =
@@ -655,28 +655,28 @@ export default function GalleryPage() {
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
                     active
                       ? "bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-200"
                       : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-300"
                   }`}
                 >
                   <span>{icon}</span>
-                  <span>{label}</span>
+                  <span className="whitespace-nowrap">{label}</span>
                 </button>
               );
             })}
             {/* Sale tab */}
             <button
               onClick={() => setCategory("sale")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border ${
                 category === "sale"
                   ? "bg-red-500 text-white border-red-500 shadow-md shadow-red-200"
                   : "bg-white text-red-500 border-red-200 hover:bg-red-50 hover:border-red-400"
               }`}
             >
               <span>🏷️</span>
-              <span>Giảm Giá</span>
+              <span className="whitespace-nowrap">Giảm Giá</span>
             </button>
           </div>
         </div>

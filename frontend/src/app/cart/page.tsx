@@ -208,17 +208,17 @@ export default function CartPage() {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-              🛒 Giỏ Hàng Của Bạn
-              <span className="text-lg text-purple-600">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2 flex-wrap">
+              🛒 Giỏ Hàng
+              <span className="text-base sm:text-lg text-purple-600">
                 ({items.length} sản phẩm)
               </span>
             </h1>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <button
                 onClick={handleSelectAll}
-                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                className="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition"
               >
                 {selectedItems.length === items.length
                   ? "❌ Bỏ Chọn Tất Cả"
@@ -226,7 +226,7 @@ export default function CartPage() {
               </button>
               <button
                 onClick={handleClearCart}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                className="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition"
               >
                 🗑️ Xóa Tất Cả
               </button>
@@ -240,13 +240,13 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={item.product.id}
-                className={`bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all ${
+                className={`bg-white rounded-xl shadow-md p-4 sm:p-6 hover:shadow-xl transition-all ${
                   selectedItems.includes(item.product.id)
                     ? "ring-2 ring-purple-500"
                     : ""
                 }`}
               >
-                <div className="flex gap-6">
+                <div className="flex gap-3 sm:gap-6">
                   {/* Checkbox */}
                   <div className="flex items-start pt-2">
                     <input
@@ -258,7 +258,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Product Image */}
-                  <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                  <div className="relative w-20 h-20 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
                     <Image
                       src={item.product.imageUrl}
                       alt={item.product.title}
@@ -269,16 +269,16 @@ export default function CartPage() {
 
                   {/* Product Info */}
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    <h3 className="text-base sm:text-xl font-bold text-gray-800 mb-1 line-clamp-2">
                       {item.product.title}
                     </h3>
-                    <p className="text-gray-600 mb-2">
+                    <p className="text-gray-600 text-sm mb-1">
                       Độ khó:{" "}
                       <span className="font-semibold">
                         {item.product.difficulty || "Medium"}
                       </span>
                     </p>
-                    <p className="text-2xl font-bold text-purple-600 mb-3">
+                    <p className="text-lg sm:text-2xl font-bold text-purple-600 mb-2">
                       {(item.product.price || 0).toLocaleString("vi-VN")} VNĐ
                     </p>
 
@@ -322,7 +322,7 @@ export default function CartPage() {
 
                   {/* Quantity Controls */}
                   <div className="flex flex-col items-end justify-between">
-                    <div className="flex items-center gap-3 bg-gray-100 rounded-lg p-2">
+                    <div className="flex items-center gap-1 sm:gap-3 bg-gray-100 rounded-lg p-1.5 sm:p-2">
                       <button
                         onClick={() =>
                           updateQuantity(
@@ -330,24 +330,24 @@ export default function CartPage() {
                             Math.max(1, item.quantity - 1),
                           )
                         }
-                        className="w-8 h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
                       >
                         <FaMinus className="text-purple-600" />
                       </button>
-                      <span className="text-xl font-bold w-12 text-center text-gray-900">
+                      <span className="text-base sm:text-xl font-bold w-7 sm:w-12 text-center text-gray-900">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() =>
                           updateQuantity(item.product.id, item.quantity + 1)
                         }
-                        className="w-8 h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
                       >
                         <FaPlus className="text-purple-600" />
                       </button>
                     </div>
 
-                    <p className="text-lg font-bold text-gray-800">
+                    <p className="text-xs sm:text-lg font-bold text-gray-800">
                       Tổng:{" "}
                       {(
                         (item.product.price || 0) * item.quantity
