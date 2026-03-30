@@ -31,6 +31,8 @@ export const createProductSchema = Joi.object({
     "number.min": "Giá phải lớn hơn hoặc bằng 0",
     "any.required": "Giá là bắt buộc",
   }),
+  originalPrice: Joi.number().min(0).optional(),
+  discountPercent: Joi.number().min(0).max(100).optional(),
   imageUrl: Joi.string().required().messages({
     "any.required": "Hình ảnh là bắt buộc",
   }),
@@ -49,6 +51,8 @@ export const updateProductSchema = Joi.object({
   description: Joi.string().allow(""),
   category: Joi.string().allow(""),
   price: Joi.number().min(0),
+  originalPrice: Joi.number().min(0).optional(),
+  discountPercent: Joi.number().min(0).max(100).optional(),
   imageUrl: Joi.string(),
   thumbnailUrl: Joi.string().allow(""),
   difficulty: Joi.string().valid("easy", "medium", "hard"),

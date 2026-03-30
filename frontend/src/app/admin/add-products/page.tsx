@@ -109,9 +109,7 @@ export default function AddProductsPage() {
                     100,
                 )
               : 0);
-          setPriceDisplay(
-            Math.floor(basePrice / 1000).toLocaleString("vi-VN"),
-          );
+          setPriceDisplay(Math.floor(basePrice / 1000).toLocaleString("vi-VN"));
           setFormData({
             title: product.title,
             description: product.description || "",

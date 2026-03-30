@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAdmin } from "../middleware/adminAuth.js";
+import { requireAdmin } from "../middleware/auth.js";
 import {
   getProductStats,
   getOrderStats,

@@ -449,22 +449,23 @@ function ProductQuickView({
               <span className="text-2xl font-extrabold text-purple-700">
                 {product.price.toLocaleString("vi-VN")}đ
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <>
-                  <span className="text-base text-gray-400 line-through">
-                    {product.originalPrice.toLocaleString("vi-VN")}đ
-                  </span>
-                  <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
-                    -
-                    {Math.round(
-                      ((product.originalPrice - product.price) /
-                        product.originalPrice) *
-                        100,
-                    )}
-                    %
-                  </span>
-                </>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <>
+                    <span className="text-base text-gray-400 line-through">
+                      {product.originalPrice.toLocaleString("vi-VN")}đ
+                    </span>
+                    <span className="text-sm font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
+                      -
+                      {Math.round(
+                        ((product.originalPrice - product.price) /
+                          product.originalPrice) *
+                          100,
+                      )}
+                      %
+                    </span>
+                  </>
+                )}
             </motion.div>
             <motion.p
               className="text-gray-600 mb-4 whitespace-pre-line"
@@ -545,8 +546,7 @@ export default function GalleryPage() {
         limit: category === "sale" ? 200 : ITEMS_PER_PAGE,
       };
 
-      if (category !== "all" && category !== "sale")
-        params.category = category;
+      if (category !== "all" && category !== "sale") params.category = category;
       if (difficulty !== "all") params.difficulty = difficulty;
 
       if (sortBy === "price_asc") {
@@ -644,7 +644,7 @@ export default function GalleryPage() {
       {/* Category Tabs */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide -mx-1 px-1">
+          <div className="flex flex-wrap justify-center gap-2">
             {["all", ...uniqueCategories].map((cat) => {
               const icon = CATEGORY_ICONS[cat] ?? "🖼️";
               const label =

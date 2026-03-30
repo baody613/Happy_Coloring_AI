@@ -211,8 +211,14 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     }
 
+    // Attach real sales count from orders when sorting by sales
+    const productsWithSales =
+      filters.sortBy === "sales"
+        ? await attachPaidSalesToProducts(products)
+        : products;
+
     const sortedProducts = sortProducts(
-      products,
+      productsWithSales,
       filters.sortBy,
       filters.sortOrder,
     );

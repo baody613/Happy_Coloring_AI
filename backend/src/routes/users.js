@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateUser } from "../middleware/auth.js";
-import { getUserById, updateUser } from "../services/index.js";
+import { getUserById, updateUser, createUser } from "../services/index.js";
 import { sendSuccess, sendError } from "../utils/helpers.js";
 
 const router = express.Router();
@@ -17,7 +17,18 @@ router.get("/:userId", authenticateUser, async (req, res) => {
     const user = await getUserById(userId);
 
     if (!user) {
-      return sendError(res, "User not found", 404);
+      // User exists in Firebase Auth but not in Firestore — auto-create document
+      const firebaseUser = await import("../config/firebase.js").then((m) =>
+        m.auth.getUser(userId),
+      );
+      const newUser = await createUser(userId, {
+        email: firebaseUser.email || req.user.email || "",
+        displayName: firebaseUser.displayName || "",
+        phoneNumber: firebaseUser.phoneNumber || "",
+        photoURL: firebaseUser.photoURL || "",
+        role: "user",
+      });
+      return sendSuccess(res, newUser);
     }
 
     sendSuccess(res, user);

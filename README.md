@@ -333,13 +333,13 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 
 ### Giải thích thiết kế
 
-| Quyết định | Lý do |
-|-----------|-------|
-| **Async + Polling** | Google AI mất 30–90s, nếu chờ thẳng sẽ timeout HTTP |
-| **Firestore làm queue** | Backend ghi trạng thái, frontend đọc — tách biệt hoàn toàn |
-| **Upload Firebase Storage** | Ảnh lưu vĩnh viễn, không phụ thuộc vào session hay RAM server |
-| **Prompt engineering** | Template cố định đảm bảo AI luôn ra đúng định dạng tranh tô màu |
-| **Kiểm tra userId** | Chỉ chủ sở hữu mới được xem kết quả — bảo mật dữ liệu |
+| Quyết định                  | Lý do                                                           |
+| --------------------------- | --------------------------------------------------------------- |
+| **Async + Polling**         | Google AI mất 30–90s, nếu chờ thẳng sẽ timeout HTTP             |
+| **Firestore làm queue**     | Backend ghi trạng thái, frontend đọc — tách biệt hoàn toàn      |
+| **Upload Firebase Storage** | Ảnh lưu vĩnh viễn, không phụ thuộc vào session hay RAM server   |
+| **Prompt engineering**      | Template cố định đảm bảo AI luôn ra đúng định dạng tranh tô màu |
+| **Kiểm tra userId**         | Chỉ chủ sở hữu mới được xem kết quả — bảo mật dữ liệu           |
 
 ---
 
