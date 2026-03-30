@@ -251,6 +251,98 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 
 ---
 
+## 🤖 Luồng hoạt động AI tạo tranh
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        FRONTEND                             │
+│                                                             │
+│  User nhập prompt + chọn độ phức tạp                       │
+│         │                                                   │
+│         ▼                                                   │
+│  handleGenerate() → POST /api/generate/paint-by-numbers     │
+│         │                                                   │
+│         ▼                                                   │
+│  Nhận { generationId } → pollGenerationStatus(id)          │
+│         │                                                   │
+│         ▼                                                   │
+│  Mỗi 5 giây: GET /api/generate/status/:id ─────────────┐   │
+│         │                                               │   │
+│         ▼ status = "completed"                          │   │
+│  setGeneratedImage(imageUrl) → Hiện ảnh + nút tải      │   │
+│                                                         │   │
+└─────────────────────────────────────────────────────────────┘
+         Polling liên tục mỗi 5s ◄──────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                         BACKEND                             │
+│                                                             │
+│  POST /paint-by-numbers                                     │
+│    │                                                        │
+│    ├─ Validate prompt (bắt buộc, ≤500 ký tự)              │
+│    │                                                        │
+│    ├─ Tạo document Firestore                               │
+│    │    { status: "processing", imageUrl: "" }             │
+│    │                                                        │
+│    ├─ Gọi generatePaintByNumbers() ← KHÔNG await           │
+│    │    (chạy ngầm, không chặn response)                   │
+│    │                                                        │
+│    └─ Trả về 202 + generationId ngay lập tức              │
+│                                                             │
+│  ════════════════════════════════════════════════════════   │
+│                                                             │
+│  generatePaintByNumbers() [chạy ngầm]                      │
+│    │                                                        │
+│    ├─ buildLineArtPrompt() → ghép template + user data     │
+│    │                                                        │
+│    ├─ generateWithGoogleImage(prompt)                      │
+│    │    └─ POST → Google AI Studio API                     │
+│    │         model: gemini-2.5-flash-image                 │
+│    │         timeout: 120 giây                             │
+│    │         ← Nhận base64 ảnh                             │
+│    │         └─ Buffer.from(base64, "base64")              │
+│    │                                                        │
+│    ├─ uploadToStorage(buffer) → Firebase Storage           │
+│    │    └─ Lấy imageUrl công khai                          │
+│    │                                                        │
+│    └─ Cập nhật Firestore                                   │
+│         { status: "completed", imageUrl: "..." }           │
+│         hoặc { status: "failed", error: "..." }            │
+│                                                             │
+│  GET /status/:generationId                                  │
+│    ├─ Đọc document Firestore                               │
+│    ├─ Kiểm tra userId = req.user.uid (bảo mật)            │
+│    └─ Trả về toàn bộ data (status, imageUrl, error)       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                    FIREBASE / GOOGLE                        │
+│                                                             │
+│  Firestore  ← lưu trạng thái generation (processing/       │
+│               completed/failed) + metadata                  │
+│                                                             │
+│  Storage    ← lưu file PNG ảnh tranh AI                    │
+│               path: generations/{fileName}.png             │
+│                                                             │
+│  Google AI  ← nhận prompt → sinh ảnh base64               │
+│  Studio API    model: gemini-2.5-flash-image               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Giải thích thiết kế
+
+| Quyết định | Lý do |
+|-----------|-------|
+| **Async + Polling** | Google AI mất 30–90s, nếu chờ thẳng sẽ timeout HTTP |
+| **Firestore làm queue** | Backend ghi trạng thái, frontend đọc — tách biệt hoàn toàn |
+| **Upload Firebase Storage** | Ảnh lưu vĩnh viễn, không phụ thuộc vào session hay RAM server |
+| **Prompt engineering** | Template cố định đảm bảo AI luôn ra đúng định dạng tranh tô màu |
+| **Kiểm tra userId** | Chỉ chủ sở hữu mới được xem kết quả — bảo mật dữ liệu |
+
+---
+
 ## 🔐 Bảo mật
 
 - **Firebase Authentication** — quản lý người dùng an toàn
