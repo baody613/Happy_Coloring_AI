@@ -257,20 +257,20 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 ┌─────────────────────────────────────────────────────────────┐
 │                        FRONTEND                             │
 │                                                             │
-│  User nhập prompt + chọn độ phức tạp                       │
+│  User nhập prompt + chọn độ phức tạp                        │
 │         │                                                   │
 │         ▼                                                   │
 │  handleGenerate() → POST /api/generate/paint-by-numbers     │
 │         │                                                   │
 │         ▼                                                   │
-│  Nhận { generationId } → pollGenerationStatus(id)          │
+│  Nhận { generationId } → pollGenerationStatus(id)           │
 │         │                                                   │
 │         ▼                                                   │
-│  Mỗi 5 giây: GET /api/generate/status/:id ─────────────┐   │
-│         │                                               │   │
-│         ▼ status = "completed"                          │   │
-│  setGeneratedImage(imageUrl) → Hiện ảnh + nút tải      │   │
-│                                                         │   │
+│  Mỗi 5 giây: GET /api/generate/status/:id ─────────────┐    │
+│         │                                              │    │
+│         ▼ status = "completed"                         │    │
+│  setGeneratedImage(imageUrl) → Hiện ảnh + nút tải      │    │
+│                                                        │    │
 └─────────────────────────────────────────────────────────────┘
          Polling liên tục mỗi 5s ◄──────────────────────┘
 
@@ -279,54 +279,54 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 │                                                             │
 │  POST /paint-by-numbers                                     │
 │    │                                                        │
-│    ├─ Validate prompt (bắt buộc, ≤500 ký tự)              │
+│    ├─ Validate prompt (bắt buộc, ≤500 ký tự)                │
 │    │                                                        │
-│    ├─ Tạo document Firestore                               │
-│    │    { status: "processing", imageUrl: "" }             │
+│    ├─ Tạo document Firestore                                │
+│    │    { status: "processing", imageUrl: "" }              │
 │    │                                                        │
-│    ├─ Gọi generatePaintByNumbers() ← KHÔNG await           │
-│    │    (chạy ngầm, không chặn response)                   │
+│    ├─ Gọi generatePaintByNumbers() ← KHÔNG await            │
+│    │    (chạy ngầm, không chặn response)                    │
 │    │                                                        │
-│    └─ Trả về 202 + generationId ngay lập tức              │
+│    └─ Trả về 202 + generationId ngay lập tức                │
 │                                                             │
 │  ════════════════════════════════════════════════════════   │
 │                                                             │
-│  generatePaintByNumbers() [chạy ngầm]                      │
+│  generatePaintByNumbers() [chạy ngầm]                       │
 │    │                                                        │
-│    ├─ buildLineArtPrompt() → ghép template + user data     │
+│    ├─ buildLineArtPrompt() → ghép template + user data      │
 │    │                                                        │
-│    ├─ generateWithGoogleImage(prompt)                      │
-│    │    └─ POST → Google AI Studio API                     │
-│    │         model: gemini-2.5-flash-image                 │
-│    │         timeout: 120 giây                             │
-│    │         ← Nhận base64 ảnh                             │
-│    │         └─ Buffer.from(base64, "base64")              │
+│    ├─ generateWithGoogleImage(prompt)                       │
+│    │    └─ POST → Google AI Studio API                      │
+│    │         model: gemini-2.5-flash-image                  │
+│    │         timeout: 120 giây                              │
+│    │         ← Nhận base64 ảnh                              │
+│    │         └─ Buffer.from(base64, "base64")               │
 │    │                                                        │
-│    ├─ uploadToStorage(buffer) → Firebase Storage           │
-│    │    └─ Lấy imageUrl công khai                          │
+│    ├─ uploadToStorage(buffer) → Firebase Storage            │
+│    │    └─ Lấy imageUrl công khai                           │
 │    │                                                        │
-│    └─ Cập nhật Firestore                                   │
-│         { status: "completed", imageUrl: "..." }           │
-│         hoặc { status: "failed", error: "..." }            │
+│    └─ Cập nhật Firestore                                    │
+│         { status: "completed", imageUrl: "..." }            │
+│         hoặc { status: "failed", error: "..." }             │
 │                                                             │
 │  GET /status/:generationId                                  │
-│    ├─ Đọc document Firestore                               │
-│    ├─ Kiểm tra userId = req.user.uid (bảo mật)            │
-│    └─ Trả về toàn bộ data (status, imageUrl, error)       │
+│    ├─ Đọc document Firestore                                │
+│    ├─ Kiểm tra userId = req.user.uid (bảo mật)              │
+│    └─ Trả về toàn bộ data (status, imageUrl, error)         │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │                    FIREBASE / GOOGLE                        │
 │                                                             │
-│  Firestore  ← lưu trạng thái generation (processing/       │
+│  Firestore  ← lưu trạng thái generation (processing/        │
 │               completed/failed) + metadata                  │
 │                                                             │
-│  Storage    ← lưu file PNG ảnh tranh AI                    │
-│               path: generations/{fileName}.png             │
+│  Storage    ← lưu file PNG ảnh tranh AI                     │
+│               path: generations/{fileName}.png              │
 │                                                             │
-│  Google AI  ← nhận prompt → sinh ảnh base64               │
-│  Studio API    model: gemini-2.5-flash-image               │
+│  Google AI  ← nhận prompt → sinh ảnh base64                 │
+│  Studio API    model: gemini-2.5-flash-image                │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```

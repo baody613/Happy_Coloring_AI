@@ -127,6 +127,51 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       query = query.where("price", "<=", parseFloat(filters.maxPrice));
     }
 
+    const limitNum = parseInt(limit);
+    const pageNum = parseInt(page);
+    const skip = (pageNum - 1) * limitNum;
+
+    // "sales" is a computed field (not stored in Firestore) — must sort in-memory
+    if (filters.sortBy === "sales") {
+      const allSnapshot = await query.get();
+      const total = allSnapshot.size;
+
+      if (total === 0) {
+        return {
+          products: [],
+          pagination: {
+            page: pageNum,
+            limit: limitNum,
+            total: 0,
+            totalPages: 0,
+          },
+        };
+      }
+
+      const allProducts = allSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const withSales = await attachPaidSalesToProducts(allProducts);
+      const sorted = sortProducts(
+        withSales,
+        "sales",
+        filters.sortOrder || "desc",
+      );
+      const paginated = sorted.slice(skip, skip + limitNum);
+
+      return {
+        products: paginated,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      };
+    }
+
     // Get total count
     const totalSnapshot = await query.get();
     const total = totalSnapshot.size;
@@ -136,17 +181,13 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       return {
         products: [],
         pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
+          page: pageNum,
+          limit: limitNum,
           total: 0,
           totalPages: 0,
         },
       };
     }
-
-    // For pagination, use the results we already have if within first page
-    const skip = (page - 1) * limit;
-    const limitNum = parseInt(limit);
 
     let products;
     if (skip === 0 && limitNum >= total) {
@@ -198,7 +239,7 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
         );
       }
 
-      // Apply sorting if specified
+      // Apply sorting if specified (only for Firestore-stored fields)
       if (filters.sortBy) {
         paginatedQuery = paginatedQuery.orderBy(
           filters.sortBy,
@@ -211,14 +252,8 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     }
 
-    // Attach real sales count from orders when sorting by sales
-    const productsWithSales =
-      filters.sortBy === "sales"
-        ? await attachPaidSalesToProducts(products)
-        : products;
-
     const sortedProducts = sortProducts(
-      productsWithSales,
+      products,
       filters.sortBy,
       filters.sortOrder,
     );
@@ -226,8 +261,8 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
     return {
       products: sortedProducts,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page: pageNum,
+        limit: limitNum,
         total,
         totalPages: Math.ceil(total / limit),
       },

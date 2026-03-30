@@ -40,7 +40,7 @@ THÔNG TIN Cửa HÀNG:
 SẢN PHẨM HIỆN CÓ:
 ${productsList}
 
-QUY TẪC: Không bọa thông tin. Nếu không biết thì nói thật.
+QUY TẮC: Không bịa thông tin. Nếu không biết thì nói thật.
 `.trim();
 
 export const handleChatMessage = async (message, history = []) => {
