@@ -1,0 +1,599 @@
+═══════════════════════════════════════════════════════════════════
+         THESIS DEFENSE SCRIPT (ENGLISH VERSION)
+         PROJECT: HAPPY COLORING AI – PAINT-BY-NUMBERS PLATFORM
+═══════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 1 – TECHNOLOGIES, LIBRARIES & SYSTEM FLOW  [~2 minutes]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Opening – 15 seconds]
+"Good morning/afternoon, professors. I would like to begin my thesis
+defense for the project titled: Building an AI-Integrated E-commerce
+Platform for Paint-by-Numbers – Happy Coloring AI."
+
+─────────────────────────────────────────────────────────────────
+TECHNOLOGIES USED
+─────────────────────────────────────────────────────────────────
+"The project is clearly separated into two parts: Frontend and Backend."
+
+► FRONTEND – User Interface:
+  • Next.js 14 (App Router) + React 18 + TypeScript
+    → Main framework; supports SSR and file-based routing.
+  • Tailwind CSS → Utility-first CSS for responsive UI without
+    writing raw CSS.
+  • Zustand → Lightweight global state management (cart, auth,
+    favorites) chosen over Redux to eliminate boilerplate.
+  • Firebase SDK (client) → Client-side user authentication.
+  • Axios → HTTP client with interceptors that auto-attach tokens
+    and refresh them when expired.
+  • Framer Motion → Animations on the Generate page.
+  • React Hot Toast → User-facing toast notifications.
+
+► BACKEND – Server:
+  • Node.js + Express.js → REST API server.
+  • Firebase Admin SDK → Server-side token verification, Firestore
+    read/write, Firebase Storage file management.
+  • Google AI Studio API (Gemini 2.5 Flash Image) → AI image generation.
+  • Google AI Studio API (Gemini 2.5 Flash Text) → AI chatbot assistant.
+  • Helmet → Automatic HTTP security headers.
+  • Morgan → Request logging middleware.
+  • Express Rate Limit → 100 requests per 15 minutes per IP.
+  • Joi → Request body validation.
+  • Nodemailer → Password reset emails.
+
+► DATABASE & STORAGE:
+  • Firestore (NoSQL) → Stores all data: products, orders, users,
+    AI generation records.
+  • Firebase Storage → Stores image files (product images + AI-generated images).
+
+─────────────────────────────────────────────────────────────────
+COMPLETE SYSTEM FLOW
+─────────────────────────────────────────────────────────────────
+"The system operates through 5 main stages:"
+
+  [1] Authentication
+      Users register / log in via Firebase Auth.
+      AuthProvider listens to onAuthStateChanged and syncs
+      with the Zustand authStore.
+      Every backend request carries a Firebase ID Token in the
+      Authorization: Bearer <token> header.
+
+  [2] Browse & Purchase
+      Products are fetched from Firestore and displayed in a list.
+      Users add items to cart (persisted in Zustand + localStorage).
+      Apply voucher → Checkout → Select payment method.
+
+  [3] Payment
+      VNPay or MoMo → Backend generates a signed payment URL (HMAC).
+      After payment → Payment gateway sends a callback to backend
+      → Backend verifies the HMAC signature → Updates order status in Firestore.
+      COD / Bank transfer → Order created immediately, admin confirms later.
+
+  [4] AI Image Generation
+      User submits a description → Backend calls Gemini AI to generate image
+      → Image stored in Firebase Storage → Frontend polls for the result.
+      (Detailed walkthrough in Part 3.)
+
+  [5] Administration
+      Admin logs in → Dashboard for managing products, orders, users.
+      Two-layer admin authentication ensures security.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 2 – MAIN FEATURES & BACKEND  [~4 minutes]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─────────────────────────────────────────────────────────────────
+MAIN FEATURES
+─────────────────────────────────────────────────────────────────
+"The system provides 8 core feature groups:"
+
+  1. User Authentication
+     Register, log in, log out via Firebase Auth.
+     "Remember me" support: enabled → token stored in localStorage;
+     disabled → token stored in sessionStorage, cleared on tab close.
+     Password reset: backend sends an email with a reset link via Nodemailer.
+
+  2. Products
+     Catalog of real paint-by-numbers products with filtering by
+     category, difficulty, and price range. Pagination supported.
+     Admin can add / edit / delete / hide products and upload images.
+
+  3. Shopping Cart
+     Zustand + persist (localStorage) → cart survives page refresh.
+     Supports "Save for Later" and per-item selection.
+     Discount vouchers: YULING10 (10%), YULING20 (20%), GIAMGIA15 (15%).
+
+  4. Multi-method Payment
+     VNPay → URL signed with HMAC-SHA512.
+     MoMo  → URL signed with HMAC-SHA256.
+     COD (Cash on Delivery).
+     Bank Transfer.
+     Online payments: HMAC signature verified on callback before updating order.
+
+  5. Orders
+     Order lifecycle: pending → processing → shipping → delivered / cancelled.
+     Users can view their order history. Admin updates status.
+
+  6. AI Image Generation
+     The most distinctive feature – covered in detail in Part 3.
+
+  7. AI Chatbot
+     Floating chatbot available on every page, powered by Gemini 2.5 Flash.
+     On each call, the backend fetches the current active product list
+     from Firestore (up to 30 items) and injects it into the system prompt
+     → AI knows exactly what products are available, their prices and difficulty.
+     Maintains conversation history (last 20 messages) → context-aware replies.
+
+  8. Admin Dashboard
+     Full management: products, orders, users, system settings.
+
+─────────────────────────────────────────────────────────────────
+BACKEND ARCHITECTURE
+─────────────────────────────────────────────────────────────────
+"The backend follows a clear layered architecture:"
+
+  Routes  →  Middleware  →  Services  →  Firebase (DB / Storage)
+
+  • Routes: receive requests, perform basic input validation, call services.
+  • Middleware:
+    - auth.js: verifies Firebase ID Token, attaches req.user.
+    - adminAuth.js: two-layer admin check (email whitelist + Firestore role).
+  • Services: contain all business logic
+    (productService, orderService, paymentService, chatService, etc.)
+  • Config: initializes Firebase Admin SDK once on startup.
+  • Utils: uploadToStorage, deleteFromStorage, helper functions.
+
+─────────────────────────────────────────────────────────────────
+CODE QUALITY IMPROVEMENTS
+─────────────────────────────────────────────────────────────────
+"Throughout development, I focused on improving code quality
+across three dimensions:"
+
+  ► Security
+    - Helmet: automatic HTTP security headers (prevents XSS, clickjacking).
+    - CORS: only specific frontend domains allowed, no wildcard.
+    - Rate limiting: 100 req/15 min per IP → brute-force and DDoS protection.
+    - Two-layer admin auth: Layer 1 checks email list (fast, no DB hit);
+      Layer 2 checks Firestore role field (accurate, tamper-resistant).
+    - Input validation: Joi validates all request bodies before processing.
+    - AI prompt guard: max 500 characters, explicit 18+ content prohibition.
+    - HMAC signature verification on all payment callbacks before DB updates.
+    - Ownership check: only the owner can retrieve their own generation result.
+
+  ► Performance & User Experience
+    - 202 Accepted + Polling pattern: AI image generation can take 30–120 seconds.
+      A synchronous request would timeout. Solution: return 202 immediately,
+      frontend polls every 5 seconds for up to 5 minutes.
+      Polling uses useRef to prevent memory leaks on component unmount.
+    - Axios interceptor: calls getIdToken(true) before every request → never
+      sends an expired token. On 401: auto-refresh once, then redirect to /login.
+    - SSR-safe storage: Next.js renders on both server (Node) and browser.
+      safeStorage.ts wraps localStorage/sessionStorage with try-catch and
+      typeof window checks → no crashes during server-side rendering.
+    - Zustand persist: cart and favorites stored in localStorage → survive F5.
+    - Live chatbot context: product data injected on every AI call → always
+      up-to-date, no fine-tuning or manual model updates needed.
+
+  ► Maintainability
+    - Business logic cleanly separated into Services → Routes only delegate.
+    - Prompt template uses placeholders ({{USER_PROMPT}}, {{STYLE}},
+      {{COMPLEXITY}}) → AI instructions can be updated without touching logic.
+    - Firebase config supports both private key formats (base64-encoded or
+      \n-escaped) → easy deployment across different cloud platforms.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 3 – DEEP DIVE: AI IMAGE GENERATION FEATURE  [~5 minutes]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+─────────────────────────────────────────────────────────────────
+OVERVIEW
+─────────────────────────────────────────────────────────────────
+"This is the core and most distinctive feature of the project.
+I will walk through each step of the processing pipeline in detail."
+
+AI Model used: gemini-2.5-flash-image (Google AI Studio)
+Capability: generates images from text, returning them as Base64 inline data.
+
+─────────────────────────────────────────────────────────────────
+DETAILED PROCESSING FLOW (7 STEPS)
+─────────────────────────────────────────────────────────────────
+
+  STEP 1 – USER SUBMITS A REQUEST
+  ─────────────────────────────────
+  The user must be logged in (route protected by authenticateUser middleware).
+  They enter a description (prompt, max 500 characters) and select:
+    • Complexity: easy / medium / hard (affects level of detail in the image)
+    • Style: defaults to "realistic"
+  Frontend sends POST /api/generate/paint-by-numbers with a Bearer Token.
+
+  STEP 2 – BACKEND CREATES A RECORD IMMEDIATELY
+  ───────────────────────────────────────────────
+  Since AI image generation can take 30–120 seconds, keeping the HTTP
+  connection open would cause a client-side timeout.
+  Solution: the backend immediately creates a document in the Firestore
+  "generations" collection with status = "processing", then returns an
+  HTTP 202 Accepted response with a generationId — all within ~100ms.
+
+  Data stored in Firestore:
+    { id, userId, prompt, style, complexity,
+      status: "processing", imageUrl: "", createdAt }
+
+  → Frontend receives the generationId and begins polling.
+
+  STEP 3 – PROMPT ENGINEERING
+  ─────────────────────────────
+  After sending 202, the backend fires generatePaintByNumbers() as
+  a background task WITHOUT await (fire-and-forget pattern)
+  → does not block the Node.js Event Loop.
+
+  buildLineArtPrompt() replaces three placeholders in the template:
+    {{USER_PROMPT}}  → the user's description
+    {{STYLE}}        → art style (default: realistic)
+    {{COMPLEXITY}}   → easy / medium / hard
+
+  The template is designed as a persona prompt:
+    - Role assignment: "You are a professional paint-by-numbers illustrator"
+      → AI "thinks" from the perspective of an expert illustrator.
+    - Hard requirements: black-and-white line art, closed regions with numbers,
+      color swatch palette below the artwork (no color names printed),
+      no watermarks, no 18+ content.
+    - Quality target: high clarity, print-ready output.
+
+  Why Prompt Engineering instead of training a custom model?
+  → Gemini is already trained on billions of data points.
+    Instead of expensive training, I "steer" the model with a detailed prompt
+    → resource-efficient, easy to update, produces good results.
+
+  STEP 4 – CALLING THE GOOGLE AI STUDIO API
+  ───────────────────────────────────────────
+  URL: https://generativelanguage.googleapis.com/v1beta/
+       models/gemini-2.5-flash-image:generateContent?key=<API_KEY>
+
+  Request body:
+    {
+      "contents": [{ "parts": [{ "text": "<built prompt>" }] }],
+      "generationConfig": {
+        "responseModalities": ["TEXT", "IMAGE"]
+      }
+    }
+
+  Key points:
+    • responseModalities: ["TEXT", "IMAGE"] → instructs Gemini to return image data.
+    • Timeout: 120 seconds (high-quality image generation takes time).
+    • API Key stored in environment variables (.env), NEVER hardcoded.
+
+  Response from Google AI:
+    {
+      "candidates": [{
+        "content": {
+          "parts": [
+            { "text": "..." },
+            { "inlineData": {
+                "mimeType": "image/png",
+                "data": "<base64 string>" }}
+          ]
+        }
+      }]
+    }
+
+  Extracting the image data:
+    → Iterate through parts[], find the element containing inlineData.
+    → Take the base64 string → convert to a Node.js binary Buffer:
+       Buffer.from(base64Data, "base64")
+
+  STEP 5 – UPLOAD TO FIREBASE STORAGE
+  ──────────────────────────────────────
+  uploadToStorage(buffer, fileName, folder) in storageHelpers.js:
+    1. Create file reference: storage.bucket().file("generations/<fileName>")
+    2. Save: file.save(buffer, { metadata: { contentType: "image/png" }})
+    3. Call file.makePublic() → file becomes publicly accessible
+    4. Returns a URL in the format:
+       https://storage.googleapis.com/<bucket>/generations/<fileName>
+
+  Why store in Storage instead of returning the base64 string directly?
+    • A base64-encoded PNG (~500KB image) becomes ~600KB of text → heavy API response.
+    • A short URL is all the frontend needs: <img src="url">.
+    • Permanent storage → users can revisit their generated images later.
+
+  STEP 6 – UPDATE FIRESTORE AND SIGNAL COMPLETION
+  ─────────────────────────────────────────────────
+  Once the URL is available, backend updates the Firestore document:
+    { status: "completed", imageUrl: "<url>", completedAt: "..." }
+
+  If any step fails (API error, Storage error, etc.):
+    { status: "failed", error: "<message>", failedAt: "..." }
+
+  STEP 7 – FRONTEND POLLING AND DISPLAYING THE RESULT
+  ─────────────────────────────────────────────────────
+  Frontend uses setInterval every 5 seconds to call:
+    GET /api/generate/status/:generationId
+
+  Backend security check: the userId stored in Firestore must match
+  the req.user.uid from the token → other users cannot view each other's results.
+
+  Polling logic:
+    • status = "processing" → keep waiting.
+    • status = "completed"  → clear interval, display image.
+    • status = "failed"     → clear interval, display error message.
+    • After 60 attempts × 5 seconds = 5 minutes → report timeout.
+
+  Memory leak prevention:
+    → Store the setInterval ID in a useRef.
+    → useEffect cleanup function calls clearInterval when component unmounts.
+    → Guarantees no API calls continue after the user navigates away.
+
+  After receiving the image, users can:
+    • Download it (fetch as blob → create <a> tag programmatically → trigger click).
+    • Add to cart as an AI-generated product.
+    • Save as a favorite (stored in favoriteStore).
+
+─────────────────────────────────────────────────────────────────
+TWO AI MODELS IN THE PROJECT
+─────────────────────────────────────────────────────────────────
+"I use two distinct Gemini models for two different purposes:"
+
+  ┌──────────────────┬──────────────────────────┬──────────────────────────┐
+  │ Criterion        │ Generate (Image)          │ Chat (Chatbot)           │
+  ├──────────────────┼──────────────────────────┼──────────────────────────┤
+  │ Model            │ gemini-2.5-flash-image   │ gemini-2.5-flash         │
+  │ Input            │ Text prompt              │ Text (conversation)       │
+  │ Output           │ Image (Base64 → Buffer)  │ Text                     │
+  │ responseModal.   │ ["TEXT", "IMAGE"]        │ Default (TEXT only)      │
+  │ Timeout          │ 120 seconds              │ 15 seconds               │
+  │ Temperature      │ Default                  │ 0.7 (moderately creative)│
+  │ Context          │ Fixed prompt template    │ System prompt + products │
+  │ History          │ None                     │ Last 20 messages         │
+  └──────────────────┴──────────────────────────┴──────────────────────────┘
+
+─────────────────────────────────────────────────────────────────
+WHY GEMINI OVER OTHER MODELS?
+─────────────────────────────────────────────────────────────────
+  • Gemini 2.5 Flash Image: one of the few free models that support
+    inline image generation via a REST API.
+  • Google AI Studio: generous free tier — no costs incurred for this project.
+  • Simple API: plain HTTP calls, no heavy SDK required.
+  • Output quality is well-suited for the paint-by-numbers use case.
+  • The code already defines a GOOGLE_IMAGE_MODELS[] array → easy to add
+    fallback models if needed in the future.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 4 – PREDICTED PROFESSOR QUESTIONS & SUGGESTED ANSWERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+══════════════════ GROUP 1: AI-RELATED QUESTIONS ══════════════════
+
+❓ Q1: "Did you train your own AI model? If not, can this really be called AI?"
+✅ Answer:
+  I did not train a model from scratch, because the objective of this
+  project is to build a real-world application, not to conduct AI research.
+  I integrate Google Gemini — a Large Multimodal Model trained by Google
+  on billions of data points.
+  Integrating AI through APIs is the standard industry approach
+  (e.g., ChatGPT API, Midjourney API, Stable Diffusion API).
+  My contribution lies in designing the Prompt Engineering strategy that
+  steers the model to consistently produce paint-by-numbers formatted output,
+  and building the entire processing system around the AI results.
+
+❓ Q2: "What is Prompt Engineering? How do you understand it?"
+✅ Answer:
+  Prompt Engineering is the practice of crafting instructions (prompts) to
+  control an AI model's behavior — essentially "programming in natural language."
+  In this project, my prompt follows a structured approach:
+    1. Role assignment: "You are a professional paint-by-numbers illustrator"
+       → The AI adopts the mindset of an expert illustrator.
+    2. Hard requirements: closed regions, numbered cells, color swatches
+       below the artwork, no color names printed, no 18+ content.
+    3. Dynamic variables: {{USER_PROMPT}}, {{STYLE}}, {{COMPLEXITY}} are
+       substituted at runtime based on user input.
+  Result: the same model consistently produces properly formatted
+  paint-by-numbers sheets — not generic colored art or random images.
+
+❓ Q3: "What is responseModalities and why is it needed?"
+✅ Answer:
+  responseModalities is a configuration parameter that tells Google Gemini
+  what data types to include in its response.
+  By default, Gemini only returns text.
+  When I set responseModalities: ["TEXT", "IMAGE"], the model understands
+  it must also return image data as inlineData (Base64 encoded).
+  Without this parameter → only text is returned, no image data.
+
+❓ Q4: "Why polling instead of WebSockets?"
+✅ Answer:
+  WebSockets are ideal for persistent two-way connections (real-time chat,
+  gaming, live collaboration). Here, I only need one-directional status
+  checking (server → client) every 5 seconds.
+  Polling is simpler to implement, requires no extra configuration, works
+  reliably through proxies and load balancers, and uses short-lived
+  connections rather than keeping a persistent socket open.
+  For a production system with thousands of concurrent users, WebSockets
+  or Server-Sent Events would be more efficient.
+
+❓ Q5: "What is HTTP 202 Accepted? Why not use 200?"
+✅ Answer:
+  HTTP 200 OK means the request has been fully processed and a result is
+  ready.
+  HTTP 202 Accepted means the request has been received and is being
+  processed — the result will be available later.
+  This is the standard REST API convention for asynchronous operations.
+  Seeing 202, the client immediately knows: "I need to poll for the result,"
+  rather than incorrectly assuming the operation is complete as with 200.
+
+❓ Q6: "Can the AI generate inappropriate content? How do you handle that?"
+✅ Answer:
+  I handle this at three layers:
+    1. Input layer: prompt is capped at 500 characters, reducing attack surface.
+    2. Prompt template layer: includes the hard requirement "Do not create
+       18+ adult content, violent, or disturbing images. Keep it family-friendly."
+    3. Model layer: Google Gemini has built-in content safety filters.
+       If a prompt violates policies → model returns an error → backend
+       updates status = "failed" → user sees a failure notification.
+
+══════════════════ GROUP 2: BACKEND & SECURITY ══════════════════
+
+❓ Q7: "How did you secure the system?"
+✅ Answer:
+  Security is implemented in multiple layers:
+  • Helmet: automatic HTTP security headers (prevents XSS, clickjacking).
+  • CORS: only specific frontend domains are permitted — no wildcard.
+  • Rate limiting: 100 req/15 min per IP → brute-force and small DDoS protection.
+  • Firebase Auth tokens: all sensitive routes require a Bearer token,
+    verified by Firebase Admin SDK on every request.
+  • Two-layer admin auth: email whitelist (fast, no DB) + Firestore role (accurate).
+  • Input validation: Joi validates all request bodies before processing.
+  • HMAC signatures for payments: VNPay (SHA512), MoMo (SHA256).
+    Backend recomputes the signature on callbacks → prevents forgery.
+  • Ownership check: AI generation status is only accessible by the owner.
+
+❓ Q8: "Why use two layers of Admin Authentication?"
+✅ Answer:
+  Layer 1 (auth.js): checks if the user's email is in the ADMIN_EMAILS
+  environment list. Fast — no database query needed. Used for general middleware.
+  Layer 2 (adminAuth.js): queries Firestore, checks the user's role field.
+  More accurate — admin permissions can be granted/revoked flexibly via the DB.
+  Combined: fast for the common case, accurate and role-flexible as the system scales.
+
+❓ Q9: "What is HMAC and why use it for payment?"
+✅ Answer:
+  HMAC (Hash-based Message Authentication Code) is an algorithm that produces
+  a digital signature from message content + a secret key that only the
+  server knows.
+  VNPay and MoMo require every request and callback to carry an HMAC signature.
+  On receiving a callback, the backend recomputes the HMAC from the received
+  data using the secret key. If it matches → data is authentic and unmodified.
+  This prevents attackers from crafting fake callbacks to mark orders as
+  "paid" without actually completing a payment transaction.
+
+❓ Q10: "How does Firestore compare to MySQL / PostgreSQL?"
+✅ Answer:
+  Firestore is a NoSQL document database. I chose it because:
+  • Native integration with the Firebase ecosystem (Auth + Storage = one platform).
+  • No rigid schema → easy to evolve data structures during development.
+  • Built-in real-time listeners.
+  • Free tier is sufficient for this project.
+  Drawbacks: no JOIN support; complex queries are difficult; no full ACID
+  guarantees like RDBMS; higher cost at large scale.
+  For a system with complex reporting or analytics needs, MySQL or
+  PostgreSQL would be a better choice.
+
+══════════════════ GROUP 3: FRONTEND & ARCHITECTURE ══════════════════
+
+❓ Q11: "Why Zustand instead of Redux?"
+✅ Answer:
+  Redux requires significant boilerplate: actions, reducers, selectors,
+  middleware configuration.
+  Zustand's API is far simpler — a store can be created in 5–10 lines.
+  Bundle size is smaller (~1KB vs ~7KB for Redux).
+  No Provider wrapper needed around the entire app.
+  For this project's scale (3 stores: auth, cart, favorites), Zustand is
+  the right fit. For a larger application with many complex slices,
+  Redux Toolkit would offer better structure and developer tooling.
+
+❓ Q12: "How does Next.js App Router differ from Pages Router?"
+✅ Answer:
+  Pages Router (legacy): routing based on files in /pages,
+  uses getServerSideProps / getStaticProps for data fetching.
+  App Router (Next.js 13+): routing based on /app directory,
+  React Server Components by default, nested Layouts, automatic loading.tsx
+  and error.tsx handling, granular fetch caching.
+  I chose App Router because it is the future direction of Next.js, and
+  nested Layouts allow Navbar/Footer to be rendered once without re-mounting.
+
+❓ Q13: "What is SSR? Do you use it?"
+✅ Answer:
+  SSR (Server-Side Rendering) means HTML is pre-rendered on the server before
+  being sent to the client → benefits SEO and initial page load speed.
+  With Next.js App Router, components are Server Components by default.
+  Components that need user interaction (useState, useEffect) are marked
+  "use client" to render in the browser.
+  For example, the products list page can fetch data server-side → complete
+  HTML is visible when Google crawls → better SEO than a pure SPA.
+
+❓ Q14: "How do you handle token expiration?"
+✅ Answer:
+  Firebase ID Tokens expire after 1 hour. I handle this in two layers:
+  Layer 1 (proactive): The Axios request interceptor calls getIdToken(true)
+  before every request → Firebase SDK automatically refreshes the token
+  if it is close to expiry.
+  Layer 2 (reactive): If the server still returns 401, the Axios response
+  interceptor catches it, attempts one more refresh. If that fails →
+  redirect to /login.
+  Users almost never encounter a token expiration error because the
+  interceptor ensures a fresh token is always used.
+
+══════════════════ GROUP 4: DESIGN & BUSINESS ══════════════════
+
+❓ Q15: "What makes this different from a standard e-commerce website?"
+✅ Answer:
+  The key differentiator is the on-demand AI image generation feature.
+  Users are not limited to buying pre-made products — they can describe
+  any idea and the AI produces a fully personalized paint-by-numbers sheet.
+  Combined with a chatbot that has live knowledge of the store's actual
+  inventory, the shopping experience is significantly smarter and more
+  modern than a typical catalog-style e-commerce site.
+
+❓ Q16: "What are the current limitations and how would you improve them?"
+✅ Answer:
+  Current limitations:
+    • AI generation depends entirely on the Google API → any policy or
+      pricing change directly impacts the system.
+    • Polling every 5 seconds generates many requests under concurrent load
+      → should be upgraded to WebSockets or Server-Sent Events.
+    • No product review or rating system yet.
+    • No purchase-history-based product recommendation.
+  Planned improvements:
+    • Replace polling with SSE (Server-Sent Events).
+    • Add Redis caching for the product list to reduce Firestore reads.
+    • Allow users to specify a custom color palette for AI generation.
+    • Implement a CI/CD pipeline for automated deployment.
+
+❓ Q17: "Where is the system deployed?"
+✅ Answer:
+  Frontend: Vercel (vercel.json is included) → automatic CI/CD on push,
+  native Next.js support, global CDN, generous free tier.
+  Backend: Render (render.yaml) or Railway (railway.json)
+  → Node.js/Express hosting, free tier is sufficient for a demo.
+  Database & Storage: Firebase (Firestore + Storage) → fully managed,
+  no database server to maintain.
+
+❓ Q18: "What challenges did you face and how did you solve them?"
+✅ Suggested Answer:
+  Challenge 1: AI image generation is slow → synchronous requests time out.
+    Solution: Switched to the 202 Accepted + async background + polling pattern.
+
+  Challenge 2: Firebase ID Token expires during active user sessions.
+    Solution: Axios interceptor proactively calls getIdToken(true) before
+    every request; auto-redirects to login on persistent 401.
+
+  Challenge 3: localStorage crashes when Next.js renders server-side.
+    Solution: Created a safeStorage wrapper with typeof window checks.
+
+  Challenge 4: Memory leak when users leave the Generate page mid-polling.
+    Solution: Store intervalId in useRef; clearInterval in useEffect cleanup.
+
+  Challenge 5: Preventing fake payment callbacks from marking orders as paid.
+    Solution: Recompute HMAC signature on every callback and compare it
+    before updating any order status in the database.
+
+══════════════════════════════════════════════════════════════════
+CLOSING – THANK YOU
+══════════════════════════════════════════════════════════════════
+
+"That concludes my thesis defense presentation.
+Thank you, professors, for your time and attention.
+I welcome any questions or feedback you may have. Thank you."
+
+═══════════════════════════════════════════════════════════════════
+                    [END OF SCRIPT]
+═══════════════════════════════════════════════════════════════════
+
+PRACTICE NOTES:
+  • Part 1 (2 min): Memorize the technology list and deliver it naturally.
+  • Part 3 (AI – most important): Practice each of the 7 steps until fluent.
+    Ensure you can clearly explain: Base64, Buffer, the polling pattern, and 202.
+  • Q&A: You do not need to recite answers word-for-word.
+    The priority is understanding the concept, speaking confidently,
+    and honestly acknowledging limitations if asked.

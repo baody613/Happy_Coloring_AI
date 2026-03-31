@@ -58,7 +58,7 @@ export interface Order {
   shippingAddress: Address;
   totalAmount: number;
   paymentMethod: string;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "processing" | "shipping" | "delivered" | "cancelled";
   createdAt: string;
   updatedAt: string;
 }

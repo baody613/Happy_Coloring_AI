@@ -35,7 +35,7 @@ THÔNG TIN Cửa HÀNG:
 - Giao hàng: toàn quốc, miễn phí từ 200.000đ, 2-5 ngày
 - Đổi trả: 7 ngày nếu lỗi sản phẩm
 - Voucher: YULING10 (10%), YULING20 (20%), GIAMGIA15 (15%)
-- Tạo tranh AI: trang /generate trên website
+- Tạo tranh AI: trang generate trên website
 
 SẢN PHẨM HIỆN CÓ:
 ${productsList}

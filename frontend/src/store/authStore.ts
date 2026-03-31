@@ -17,12 +17,12 @@ interface AuthState {
   signIn: (
     email: string,
     password: string,
-    rememberMe?: boolean
+    rememberMe?: boolean,
   ) => Promise<void>;
   signUp: (
     email: string,
     password: string,
-    displayName: string
+    displayName: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
   setUser: (user: User | null) => void;
@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const token = await userCredential.user.getIdToken();
 
@@ -85,7 +85,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
 
       // Update display name
@@ -98,6 +98,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (typeof window !== "undefined") {
         safeLocalStorage.setItem("authToken", token);
+      }
+
+      // Create Firestore user document via backend
+      try {
+        await api.post(
+          "/auth/register",
+          { email, password: "__firebase_managed__", displayName },
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+      } catch {
+        // If backend register fails (e.g. user already exists), ignore —
+        // profile page will auto-create the doc on first visit
       }
 
       // Create user object

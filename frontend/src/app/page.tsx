@@ -247,7 +247,7 @@ export default function Home() {
             <span className="text-primary font-semibold text-sm uppercase tracking-widest">
               Về Chúng Tôi
             </span>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-300 mt-3 mb-6 leading-tight">
+            <h2 className="text-4xl md\:text-6xl font-extrabold text-slate-300 mt-3 mb-6 leading-tight">
               Yu Ling Store —<br />
               Nghệ Thuật Cho Mọi Người
             </h2>

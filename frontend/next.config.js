@@ -2,11 +2,11 @@
 const nextConfig = {
   images: {
     unoptimized: true,
-    domains: [
-      "storage.googleapis.com",
-      "firebasestorage.googleapis.com",
-      "v3b.fal.media",
-      "fal.media",
+    remotePatterns: [
+      { protocol: "https", hostname: "storage.googleapis.com" },
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+      { protocol: "https", hostname: "v3b.fal.media" },
+      { protocol: "https", hostname: "fal.media" },
     ],
   },
   reactStrictMode: true,

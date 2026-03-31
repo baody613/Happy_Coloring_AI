@@ -4,6 +4,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
 
 // Routes
 import authRoutes from "./routes/auth.js";
@@ -23,6 +25,23 @@ const PORT = process.env.PORT || 5000;
 
 // Trust proxy - Required for Render and other reverse proxies
 app.set("trust proxy", 1);
+
+// Swagger UI — tắt helmet CSP riêng cho route /api-docs
+app.use("/api-docs", (req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:",
+  );
+  next();
+});
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: "Happy Coloring AI – API Docs",
+    swaggerOptions: { persistAuthorization: true },
+  }),
+);
 
 // Middleware
 app.use(helmet());
@@ -129,7 +148,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/chat", chatRoutes);
+
+// Swagger JSON spec (để import vào Postman nếu cần)
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 // 404 handler
 app.use("*", (req, res) => {
