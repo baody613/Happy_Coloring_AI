@@ -1,84 +1,84 @@
-import Joi from "joi";
+﻿import Joi from "joi";
 
-// User validation schemas
-export const registerSchema = Joi.object({
-  email: Joi.string().email().required().messages({
-    "string.email": "Email không hợp lệ",
-    "any.required": "Email là bắt buộc",
+// ---- Reusable field fragments ----
+const f = {
+  requiredEmail: Joi.string().email().required().messages({
+    "string.email": "Email khong hop le",
+    "any.required": "Email la bat buoc",
   }),
+  optionalEmail: Joi.string().email(),
   password: Joi.string().min(6).required().messages({
-    "string.min": "Mật khẩu phải có ít nhất 6 ký tự",
-    "any.required": "Mật khẩu là bắt buộc",
+    "string.min": "Mat khau phai co it nhat 6 ky tu",
+    "any.required": "Mat khau la bat buoc",
   }),
-  displayName: Joi.string().required().messages({
-    "any.required": "Tên hiển thị là bắt buộc",
-  }),
+};
+
+const req = (msg) =>
+  Joi.string().required().messages({ "any.required": msg });
+
+// ---- User schemas ----
+export const registerSchema = Joi.object({
+  email: f.requiredEmail,
+  password: f.password,
+  displayName: req("Ten hien thi la bat buoc"),
 });
 
 export const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
+  email: f.requiredEmail,
   password: Joi.string().required(),
 });
 
-// Product validation schemas
-export const createProductSchema = Joi.object({
-  title: Joi.string().required().messages({
-    "any.required": "Tiêu đề là bắt buộc",
-  }),
-  description: Joi.string().allow(""),
-  category: Joi.string().allow(""),
-  price: Joi.number().min(0).required().messages({
-    "number.min": "Giá phải lớn hơn hoặc bằng 0",
-    "any.required": "Giá là bắt buộc",
-  }),
-  originalPrice: Joi.number().min(0).optional(),
-  discountPercent: Joi.number().min(0).max(100).optional(),
-  imageUrl: Joi.string().required().messages({
-    "any.required": "Hình ảnh là bắt buộc",
-  }),
-  thumbnailUrl: Joi.string().allow(""),
-  difficulty: Joi.string().valid("easy", "medium", "hard").default("medium"),
-  dimensions: Joi.object({
-    width: Joi.number().required(),
-    height: Joi.number().required(),
-    unit: Joi.string().default("cm"),
-  }).optional(),
-  colors: Joi.number().min(1).optional(),
-});
-
-export const updateProductSchema = Joi.object({
+// ---- Product schemas ----
+const productBase = {
   title: Joi.string(),
   description: Joi.string().allow(""),
   category: Joi.string().allow(""),
-  price: Joi.number().min(0),
+  price: Joi.number()
+    .min(0)
+    .messages({ "number.min": "Gia phai lon hon hoac bang 0" }),
   originalPrice: Joi.number().min(0).optional(),
   discountPercent: Joi.number().min(0).max(100).optional(),
   imageUrl: Joi.string(),
   thumbnailUrl: Joi.string().allow(""),
   difficulty: Joi.string().valid("easy", "medium", "hard"),
-  status: Joi.string().valid("active", "inactive", "deleted"),
   dimensions: Joi.object({
     width: Joi.number(),
     height: Joi.number(),
-    unit: Joi.string(),
+    unit: Joi.string().default("cm"),
+  }).optional(),
+  colors: Joi.number().min(1).optional(),
+};
+
+export const createProductSchema = Joi.object({
+  ...productBase,
+  title: req("Tieu de la bat buoc"),
+  price: productBase.price.required().messages({
+    "number.min": "Gia phai lon hon hoac bang 0",
+    "any.required": "Gia la bat buoc",
   }),
-  colors: Joi.number().min(1),
+  imageUrl: req("Hinh anh la bat buoc"),
+  difficulty: Joi.string().valid("easy", "medium", "hard").default("medium"),
+});
+
+export const updateProductSchema = Joi.object({
+  ...productBase,
+  status: Joi.string().valid("active", "inactive", "deleted"),
 }).min(1);
 
-// Order validation schemas
+// ---- Order schema ----
 export const createOrderSchema = Joi.object({
-  userId: Joi.string().optional(), // Frontend sends this but backend overrides with authenticated user
+  userId: Joi.string().optional(),
   items: Joi.array()
     .items(
       Joi.object({
         productId: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         price: Joi.number().min(0).required(),
-        title: Joi.string().optional(), // Allow title for order history display
-        imageUrl: Joi.string().optional(), // Allow both relative path and full URL
+        title: Joi.string().optional(),
+        imageUrl: Joi.string().optional(),
         category: Joi.string().optional(),
         isAIProduct: Joi.boolean().optional(),
-      }),
+      })
     )
     .min(1)
     .required(),
@@ -91,15 +91,15 @@ export const createOrderSchema = Joi.object({
     ward: Joi.string().allow(""),
   }).required(),
   totalAmount: Joi.number().min(0).required(),
-  originalAmount: Joi.number().min(0).optional(), // Allow original amount before discount
-  voucherCode: Joi.string().allow("", null).optional(), // Allow voucher code
-  voucherDiscount: Joi.number().min(0).optional(), // Allow voucher discount
-  note: Joi.string().allow("").optional(), // Allow order note
+  originalAmount: Joi.number().min(0).optional(),
+  voucherCode: Joi.string().allow("", null).optional(),
+  voucherDiscount: Joi.number().min(0).optional(),
+  note: Joi.string().allow("").optional(),
   paymentMethod: Joi.string()
     .valid("cod", "vnpay", "momo", "banking")
     .required(),
-  status: Joi.string().optional(), // Frontend may send but backend sets default
-  createdAt: Joi.string().optional(), // Frontend may send timestamp
+  status: Joi.string().optional(),
+  createdAt: Joi.string().optional(),
 });
 
 export const updateOrderStatusSchema = Joi.object({
@@ -108,7 +108,7 @@ export const updateOrderStatusSchema = Joi.object({
     .required(),
 });
 
-// Settings validation schemas
+// ---- Settings schemas ----
 export const systemSettingsSchema = Joi.object({
   siteName: Joi.string(),
   siteDescription: Joi.string(),
@@ -148,9 +148,9 @@ export const paymentSettingsSchema = Joi.object({
 export const emailSettingsSchema = Joi.object({
   smtpHost: Joi.string(),
   smtpPort: Joi.number().min(1).max(65535),
-  smtpUser: Joi.string().email(),
+  smtpUser: f.optionalEmail,
   smtpPassword: Joi.string().allow(""),
-  fromEmail: Joi.string().email(),
+  fromEmail: f.optionalEmail,
   fromName: Joi.string(),
   emailNotifications: Joi.object({
     orderConfirmation: Joi.boolean(),
@@ -160,27 +160,20 @@ export const emailSettingsSchema = Joi.object({
   }),
 });
 
-// Validation middleware
-export const validate = (schema) => {
-  return (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
+// ---- Validation middleware factory ----
+export const validate = (schema) => (req, res, next) => {
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (!error) return next();
 
-    if (error) {
-      const errors = error.details.map((detail) => ({
-        field: detail.path.join("."),
-        message: detail.message,
-      }));
+  const fieldErrors = error.details.map(({ path, message }) => ({
+    field: path.join("."),
+    message,
+  }));
 
-      console.error("❌ Validation failed:", JSON.stringify(errors, null, 2));
-      console.error("📦 Request body:", JSON.stringify(req.body, null, 2));
-
-      return res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errors,
-      });
-    }
-
-    next();
-  };
+  console.error("Validation error on", req.path, JSON.stringify(fieldErrors));
+  return res.status(400).json({
+    success: false,
+    message: "Validation failed",
+    errors: fieldErrors,
+  });
 };

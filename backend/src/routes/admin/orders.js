@@ -26,6 +26,8 @@ router.get("/", async (req, res) => {
       paymentMethod,
       startDate,
       endDate,
+      search,
+      isAIProduct,
     } = req.query;
 
     const filters = {};
@@ -33,6 +35,8 @@ router.get("/", async (req, res) => {
     if (paymentMethod) filters.paymentMethod = paymentMethod;
     if (startDate) filters.startDate = startDate;
     if (endDate) filters.endDate = endDate;
+    if (search) filters.search = search;
+    if (isAIProduct === "true") filters.isAIProduct = true;
 
     const result = await getAllOrders(parseInt(page), parseInt(limit), filters);
 
@@ -100,7 +104,7 @@ router.put(
       console.error("Update order status error:", error);
       sendError(res, error.message);
     }
-  }
+  },
 );
 
 // Update payment status

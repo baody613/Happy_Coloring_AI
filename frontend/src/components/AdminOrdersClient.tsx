@@ -157,24 +157,15 @@ export default function AdminOrdersClient() {
         if (status !== "all" && status !== "ai-products") {
           params.status = status;
         }
-        const res = await adminAPI.orders.getAll(params);
-        let list: Order[] = res.data?.orders || res.orders || [];
-
         if (status === "ai-products") {
-          list = list.filter((order) => isAIOrder(order));
+          params.isAIProduct = "true";
+        }
+        if (searchText.trim()) {
+          params.search = searchText.trim();
         }
 
-        // client-side search by order id / customer name / phone
-        if (searchText.trim()) {
-          const q = searchText.toLowerCase();
-          list = list.filter(
-            (o) =>
-              o.id.toLowerCase().includes(q) ||
-              (o.orderNumber || "").toLowerCase().includes(q) ||
-              (o.shippingAddress?.fullName || "").toLowerCase().includes(q) ||
-              (o.shippingAddress?.phone || "").includes(q),
-          );
-        }
+        const res = await adminAPI.orders.getAll(params);
+        const list: Order[] = res.data?.orders || res.orders || [];
 
         setOrders(list);
         if (res.data?.pagination) setPagination(res.data.pagination);
@@ -558,14 +549,14 @@ export default function AdminOrdersClient() {
                 <button
                   onClick={() => loadOrders(pagination.page - 1)}
                   disabled={pagination.page <= 1}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 hover:bg-purple-50 transition-colors"
+                  className="px-4 py-2 text-purple-600 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 hover:bg-purple-50 transition-colors"
                 >
                   ← Trước
                 </button>
                 <button
                   onClick={() => loadOrders(pagination.page + 1)}
                   disabled={pagination.page >= pagination.totalPages}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 hover:bg-purple-50 transition-colors"
+                  className="px-4 py-2 text-purple-600 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 hover:bg-purple-50 transition-colors"
                 >
                   Sau →
                 </button>

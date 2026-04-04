@@ -1,164 +1,192 @@
-"use client";
-import { useState, useRef, useEffect } from "react";
+﻿"use client";
+import { useReducer, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "@/lib/api";
 
-interface Message {
+interface ChatMessage {
   id: string;
-  text: string;
-  sender: "user" | "bot";
+  role: "user" | "bot";
+  content: string;
+}
+
+type ChatState = {
+  open: boolean;
+  messages: ChatMessage[];
+  draft: string;
+  busy: boolean;
+};
+
+type ChatAction =
+  | { type: "TOGGLE" }
+  | { type: "SET_DRAFT"; value: string }
+  | { type: "PUSH_USER"; text: string }
+  | { type: "PUSH_BOT"; text: string };
+
+const WELCOME: ChatMessage = {
+  id: "init",
+  role: "bot",
+  content: "Xin chao! Toi la tro ly AI Yu Ling Store. Ban can toi giup gi?",
+};
+
+function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  switch (action.type) {
+    case "TOGGLE":
+      return { ...state, open: !state.open };
+    case "SET_DRAFT":
+      return { ...state, draft: action.value };
+    case "PUSH_USER":
+      return {
+        ...state,
+        messages: [
+          ...state.messages,
+          { id: `u-${Date.now()}`, role: "user", content: action.text },
+        ],
+        draft: "",
+        busy: true,
+      };
+    case "PUSH_BOT":
+      return {
+        ...state,
+        messages: [
+          ...state.messages,
+          { id: `b-${Date.now()}`, role: "bot", content: action.text },
+        ],
+        busy: false,
+      };
+  }
 }
 
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      sender: "bot",
-      text: "Xin chào! 👋 Tôi là trợ lý AI Yu Ling Store. Bạn cần tôi giúp gì?",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const [state, dispatch] = useReducer(chatReducer, {
+    open: false,
+    messages: [WELCOME],
+    draft: "",
+    busy: false,
+  });
+  const anchorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    anchorRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [state.messages]);
 
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: text.trim(),
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setIsLoading(true);
-
+  const handleSend = async (text: string) => {
+    if (!text.trim() || state.busy) return;
+    dispatch({ type: "PUSH_USER", text });
     try {
-      // Gửi kèm history (bỏ welcome) để AI nhớ ngữ cảnh
-      const history = messages.filter((m) => m.id !== "welcome");
-      const { data } = await api.post("/chat", {
-        message: text.trim(),
-        history,
+      const history = state.messages.filter((m) => m.id !== "init");
+      const { data } = await api.post("/chat", { message: text.trim(), history });
+      dispatch({
+        type: "PUSH_BOT",
+        text: data.success ? data.data.text : "Loi ket noi, thu lai nhe!",
       });
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "bot",
-          text: data.success ? data.data.text : "😅 Lỗi kết nối, thử lại nhé!",
-        },
-      ]);
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "bot",
-          text: "😅 Không thể kết nối AI lúc này. Thử lại sau!",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
+      dispatch({
+        type: "PUSH_BOT",
+        text: "Khong the ket noi AI luc nay. Thu lai sau!",
+      });
     }
   };
 
   return (
     <>
-      {/* Nút mở/đóng */}
+      {/* Toggle button */}
       <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-[#FE979B] to-[#FEAE97] shadow-lg flex items-center justify-center text-white text-2xl"
+        onClick={() => dispatch({ type: "TOGGLE" })}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#3E3C6E] to-[#FE979B] shadow-xl flex items-center justify-center text-white text-2xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
+        aria-label={state.open ? "Dong chat" : "Mo chat"}
       >
-        {isOpen ? "✕" : "💬"}
+        {state.open ? "X" : "Chat"}
       </motion.button>
 
-      {/* Cửa sổ chat */}
+      {/* Chat panel — slides in from the right */}
       <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-50 h-[70vh] sm:h-[560px] max-h-[560px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        {state.open && (
+          <motion.section
+            role="dialog"
+            aria-label="Chat voi Yu Ling AI"
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 60 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            className="fixed bottom-24 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-50 h-[70vh] sm:h-[560px] max-h-[560px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#3E3C6E] to-[#FE979B] text-white p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-2xl">
-                🎨
-              </div>
+            <header className="bg-gradient-to-r from-[#3E3C6E] to-[#FE979B] text-white px-4 py-3 flex items-center gap-3">
+              <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-xl">
+                AI
+              </span>
               <div>
-                <p className="font-bold">Yu Ling AI Assistant</p>
-                <p className="text-xs opacity-80">Powered by Gemini</p>
+                <p className="font-semibold text-sm leading-none">
+                  Yu Ling AI Assistant
+                </p>
+                <p className="text-xs opacity-75 mt-0.5">Powered by Gemini</p>
               </div>
-            </div>
+            </header>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-              {messages.map((msg) => (
+            {/* Message list */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50">
+              {state.messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
-                      msg.sender === "user"
-                        ? "bg-gradient-to-r from-[#FE979B] to-[#FEAE97] text-white"
-                        : "bg-white shadow text-gray-800"
+                  <p
+                    className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-gradient-to-br from-[#FE979B] to-[#FEAE97] text-white"
+                        : "bg-white shadow-sm text-gray-700"
                     }`}
                   >
-                    {msg.text}
-                  </div>
+                    {msg.content}
+                  </p>
                 </div>
               ))}
 
-              {/* Loading dots */}
-              {isLoading && (
+              {/* Pulsing typing indicator */}
+              {state.busy && (
                 <div className="flex justify-start">
-                  <div className="bg-white rounded-2xl px-4 py-3 shadow flex gap-1">
-                    {[0, 0.15, 0.3].map((delay, i) => (
-                      <div
+                  <div className="bg-white rounded-2xl p-3 shadow-sm flex items-center gap-1.5">
+                    {[0, 0.2, 0.4].map((delay, i) => (
+                      <span
                         key={i}
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                        className="w-2 h-2 rounded-full bg-pink-400 animate-pulse"
                         style={{ animationDelay: `${delay}s` }}
                       />
                     ))}
                   </div>
                 </div>
               )}
-              <div ref={bottomRef} />
+              <div ref={anchorRef} />
             </div>
 
-            {/* Input */}
+            {/* Input area */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                sendMessage(input);
+                handleSend(state.draft);
               }}
-              className="p-3 border-t flex gap-2 bg-white"
+              className="px-3 py-2 border-t border-gray-100 flex gap-2 bg-white"
             >
               <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Nhắn tin..."
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE979B] text-gray-900"
+                value={state.draft}
+                onChange={(e) =>
+                  dispatch({ type: "SET_DRAFT", value: e.target.value })
+                }
+                placeholder="Nhan tin voi Yu Ling AI..."
+                disabled={state.busy}
+                className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE979B]/60 text-gray-800 disabled:bg-gray-50"
               />
               <button
                 type="submit"
-                disabled={isLoading || !input.trim()}
-                className="bg-gradient-to-r from-[#FE979B] to-[#FEAE97] text-white px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50"
+                disabled={state.busy || !state.draft.trim()}
+                className="bg-gradient-to-br from-[#FE979B] to-[#FEAE97] text-white px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-opacity"
               >
-                Gửi
+                Gui
               </button>
             </form>
-          </motion.div>
+          </motion.section>
         )}
       </AnimatePresence>
     </>

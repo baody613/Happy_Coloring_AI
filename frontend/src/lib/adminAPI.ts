@@ -57,6 +57,8 @@ export const adminOrderAPI = {
     status?: string;
     limit?: number;
     page?: number;
+    search?: string;
+    isAIProduct?: string;
   }) => {
     const response = await api.get("/admin/orders", { params });
     return response.data;

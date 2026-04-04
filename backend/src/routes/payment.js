@@ -109,7 +109,7 @@ router.post("/create", authenticateUser, async (req, res) => {
     // Prepare order data
     const orderData = {
       orderId: order.id,
-      amount: order.total,
+      amount: order.totalAmount || order.total || 0,
       orderInfo: `Thanh toan don hang ${order.orderNumber || orderId}`,
       ipAddr: ipAddr || req.ip || "127.0.0.1",
     };

@@ -23,55 +23,91 @@ export const getOrderById = async (orderId) => {
 
 // Get all orders with pagination and filters
 export const getAllOrders = async (page = 1, limit = 10, filters = {}) => {
+  const hasFilter =
+    filters.status ||
+    filters.userId ||
+    filters.paymentMethod ||
+    filters.startDate ||
+    filters.endDate ||
+    filters.search ||
+    filters.isAIProduct;
+
   let query = db.collection("orders");
 
   // Apply filters
   if (filters.status) {
     query = query.where("status", "==", filters.status);
   }
-
   if (filters.userId) {
     query = query.where("userId", "==", filters.userId);
   }
-
   if (filters.paymentMethod) {
     query = query.where("paymentMethod", "==", filters.paymentMethod);
   }
-
-  // Date range
   if (filters.startDate) {
     query = query.where("createdAt", ">=", filters.startDate);
   }
-
   if (filters.endDate) {
     query = query.where("createdAt", "<=", filters.endDate);
   }
 
-  // Only apply Firestore orderBy when NOT filtering by userId to avoid
-  // requiring a composite index. For userId queries we sort in JS below.
-  if (!filters.userId) {
+  // Only use Firestore orderBy when there are no equality/range filters
+  // to avoid requiring composite indexes. When filters are active we
+  // fetch all matching docs and sort in JS instead.
+  if (!hasFilter) {
     query = query.orderBy("createdAt", "desc");
   }
 
-  // Get total count
+  // Get total count and all docs (needed for JS-side sorting + pagination)
   const totalSnapshot = await query.get();
-  const total = totalSnapshot.size;
 
-  // Apply pagination
-  const skip = (page - 1) * limit;
-  query = query.offset(skip).limit(limit);
+  let allDocs = totalSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 
-  const snapshot = await query.get();
-  let orders = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  // Apply search filtering in JS
+  if (filters.search) {
+    const q = filters.search.toLowerCase();
+    allDocs = allDocs.filter(
+      (o) =>
+        o.id.toLowerCase().includes(q) ||
+        (o.orderNumber || "").toLowerCase().includes(q) ||
+        (o.shippingAddress?.fullName || "").toLowerCase().includes(q) ||
+        (o.shippingAddress?.phone || "").includes(q),
+    );
+  }
 
-  // Sort in JS when composite index is not guaranteed (userId filter case)
-  if (filters.userId) {
-    orders = orders.sort((a, b) => {
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return bTime - aTime;
+  // Apply AI product filtering in JS
+  if (filters.isAIProduct) {
+    allDocs = allDocs.filter((order) => {
+      if (!Array.isArray(order.items)) return false;
+      return order.items.some(
+        (item) =>
+          Boolean(item?.isAIProduct) ||
+          item?.category === "ai-products" ||
+          item?.category === "Sản Phẩm AI",
+      );
     });
   }
+
+  const total = allDocs.length;
+
+  // Sort by createdAt descending in JS when filters are active
+  if (hasFilter) {
+    allDocs.sort((a, b) => {
+      const toMs = (v) => {
+        if (!v) return 0;
+        if (typeof v.toDate === "function") return v.toDate().getTime();
+        return new Date(v).getTime();
+      };
+      return toMs(b.createdAt) - toMs(a.createdAt);
+    });
+  }
+
+  // Apply pagination in JS
+  const skip = (page - 1) * limit;
+  const orders = allDocs.slice(skip, skip + limit);
 
   return {
     orders,
@@ -79,7 +115,7 @@ export const getAllOrders = async (page = 1, limit = 10, filters = {}) => {
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limit) || 1,
     },
   };
 };
