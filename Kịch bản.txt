@@ -46,6 +46,14 @@ CÔNG NGHỆ SỬ DỤNG
     người dùng, kết quả generate AI.
   • Firebase Storage → lưu file ảnh (sản phẩm + ảnh AI tạo ra).
 
+► CẤU TRÚC PROJECT (Controllers, Services, Entities):
+  + Backend:
+    - Entities: 5 đối tượng dữ liệu chính (Users, Products, Orders, Generations, Settings) lưu trên Firestore.
+    - Controllers: 14 file Routes tiếp nhận và điều hướng API (Auth, AI, Thanh toán...).
+    - Services: 6 file xử lý logic nghiệp vụ lõi.
+    - Actions: Hàng chục API thao tác thực thi (CRUD, tạo link VNPay/MoMo, sinh ảnh).
+  + Frontend (Next.js): Hàng chục Server/Client Actions, Hooks và Utils để gọi API.
+
 ─────────────────────────────────────────────────────────────────
 LUỒNG HOÀN CHỈNH CỦA TRANG WEB
 ─────────────────────────────────────────────────────────────────
