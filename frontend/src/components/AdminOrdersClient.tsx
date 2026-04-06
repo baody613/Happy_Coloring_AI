@@ -128,6 +128,7 @@ export default function AdminOrdersClient() {
     }
     loadOrders(1, filterStatus, search);
     loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
 
   const loadStats = async () => {
@@ -690,11 +691,14 @@ export default function AdminOrdersClient() {
                         className="flex items-center gap-3 bg-gray-50 rounded-xl p-3"
                       >
                         {item.imageUrl && (
-                          <img
-                            src={item.imageUrl}
-                            alt={item.title}
-                            className="w-12 h-12 object-cover rounded-lg shrink-0"
-                          />
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={item.imageUrl}
+                              alt={item.title}
+                              className="w-12 h-12 object-cover rounded-lg shrink-0"
+                            />
+                          </>
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-semibold text-gray-800 truncate">

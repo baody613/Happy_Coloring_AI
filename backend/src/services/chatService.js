@@ -61,8 +61,8 @@ export const handleChatMessage = async (message, history = []) => {
       },
       // Lịch sử hội thoại trước (để AI nhớ ngữ cảnh)
       ...history.map((h) => ({
-        role: h.sender === "user" ? "user" : "model",
-        parts: [{ text: h.text }],
+        role: h.role === "user" ? "user" : "model",
+        parts: [{ text: h.content }],
       })),
       // Tin nhắn mới nhất
       { role: "user", parts: [{ text: message }] },

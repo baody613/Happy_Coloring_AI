@@ -20,50 +20,81 @@ const GOOGLE_API_KEY = process.env.GOOGLE_AI_API_KEY;
 // Danh sách model AI được dùng để tạo ảnh (thử lần lượt nếu lỗi)
 const GOOGLE_IMAGE_MODELS = ["models/gemini-2.5-flash-image"];
 
+// Danh sách model Hugging Face (fallback khi Google thất bại)
+const HF_IMAGE_MODELS = [
+  "black-forest-labs/FLUX.1-schnell",
+  "stabilityai/stable-diffusion-xl-base-1.0",
+];
+
 // ============================================================
 // PROMPT TEMPLATE – Hướng dẫn chi tiết gửi tới AI
 // {{USER_PROMPT}}, {{STYLE}}, {{COMPLEXITY}} sẽ được thay thế
 // bằng dữ liệu thật khi gọi buildLineArtPrompt()
 // ============================================================
-const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illustrator.
-Create exactly one printable paint-by-numbers sheet.
+// Số màu theo từng độ phức tạp (khớp với button UI)
+const COMPLEXITY_CONFIG = {
+  easy: {
+    label: "Easy",
+    colors: "12 to 20",
+    detail: "simple bold shapes, very large paint regions, minimal detail",
+  },
+  medium: {
+    label: "Medium",
+    colors: "20 to 36",
+    detail: "moderate detail, medium-sized paint regions, balanced composition",
+  },
+  hard: {
+    label: "Hard",
+    colors: "36 to 50",
+    detail:
+      "highly detailed, many small intricate regions, complex composition",
+  },
+};
 
-User idea:
+// ============================================================
+// PROMPT TEMPLATE – Hướng dẫn chi tiết gửi tới AI
+// {{USER_PROMPT}}, {{STYLE}}, {{COLOR_COUNT}}, {{DETAIL}} sẽ được thay thế
+// bằng dữ liệu thật khi gọi buildLineArtPrompt()
+// ============================================================
+const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illustrator. Your ONLY task is to draw EXACTLY the subject described below as a printable paint-by-numbers worksheet. Never substitute or ignore the subject.
+
+=== SUBJECT TO DRAW (mandatory, do not change) ===
 "{{USER_PROMPT}}"
 
-Style: {{STYLE}}
-Complexity: {{COMPLEXITY}}
+=== PARAMETERS ===
+- Art style: {{STYLE}}
+- Number of distinct colors to use: {{COLOR_COUNT}} colors
+- Detail level: {{DETAIL}}
 
-Reference layout target:
-- Main artwork is centered inside a clean rectangular frame.
-- A horizontal color palette strip must be placed BELOW the artwork.
+=== MANDATORY LAYOUT (pixel-perfect) ===
+- Top 75% of canvas: the main line-art drawing inside a thin rectangular border.
+- Bottom 25% of canvas: a horizontal row of colored number swatches (the palette).
+- A thin horizontal divider line separates the drawing from the palette.
 
-Hard requirements:
-- Black-and-white line-art for the main painting area (no grayscale shading in the drawing).
-- Clean, crisp outlines with closed regions suitable for painting.
-- Large, readable numbers inside paint regions.
-- Every closed region must have a number, and repeated color regions must reuse the same number.
-- Show a numbered palette under the drawing using COLOR SWATCHES (colored blocks/circles), not color names.
-- Palette format: each swatch shows only its number and visual color.
-- Do NOT print color names anywhere.
-- Palette numbers must match exactly the numbers used in paint regions.
-- Keep the subject faithful to the user idea and visually similar in composition to the reference style.
-- No watermark, no logo, no signature, no decorative border effects.
-- Do not create a 18+ adult content, violent, or disturbing image. Keep it family-friendly.
+=== STEP-BY-STEP DRAWING RULES ===
+Step 1 – Draw the subject "{{USER_PROMPT}}" using only BLACK outlines on a WHITE background.
+Step 2 – Divide the drawing into CLOSED regions. Every region must be fully enclosed by outlines.
+Step 3 – Assign a color number (1, 2, 3 … up to {{COLOR_COUNT}}) to each region. Regions that will be the same color share the same number.
+Step 4 – Print each region's number as a LARGE BOLD digit centered INSIDE that region. Every single region MUST have a visible number inside it. Do NOT leave any region without a number.
+Step 5 – In the palette strip below, draw one colored swatch per number: a filled colored circle or square next to its number digit. Show all {{COLOR_COUNT}} colors.
 
-Output quality target:
-- High clarity, print-ready, easy for users to follow number-to-color mapping while painting.`;
+=== STRICT PROHIBITIONS ===
+- NO grayscale shading or gradients in the drawing area.
+- NO color fills inside regions (keep regions white with only the number inside).
+- Do not color in the picture. All regions must remain white/uncolored inside the drawing area.
+- NO color names written anywhere.
+- NO watermarks, logos, or signatures.
+- NO adult, violent, or disturbing content.
 
-/**
- * Thay thế các placeholder trong template bằng giá trị thực tế
- * @param {string} userPrompt - Mô tả của người dùng
- * @param {string} style      - Phong cách: "realistic", "cartoon", v.v.
- * @param {string} complexity - Độ phức tạp: "easy" | "medium" | "hard"
- */
+=== QUALITY TARGET ===
+High resolution (1024×1024), print-ready, clean and crisp so users can easily paint by following the numbers.`;
+
 function buildLineArtPrompt(userPrompt, style, complexity) {
-  return LINE_ART_PROMPT_TEMPLATE.replace("{{USER_PROMPT}}", userPrompt)
+  const cfg = COMPLEXITY_CONFIG[complexity] || COMPLEXITY_CONFIG.medium;
+  return LINE_ART_PROMPT_TEMPLATE.replace(/{{USER_PROMPT}}/g, userPrompt)
     .replace("{{STYLE}}", style)
-    .replace("{{COMPLEXITY}}", complexity);
+    .replace(/{{COLOR_COUNT}}/g, cfg.colors)
+    .replace("{{DETAIL}}", cfg.detail);
 }
 
 // ============================================================
@@ -171,10 +202,23 @@ async function generatePaintByNumbers(generationId, prompt, style, complexity) {
     // Bước 1: Xây dựng prompt hoàn chỉnh từ template
     const lineArtPrompt = buildLineArtPrompt(prompt.trim(), style, complexity);
 
-    console.log("Generating with Google AI Studio image model...");
+    let imageBuffer;
 
-    // Bước 2: Gọi Google AI Studio → nhận dữ liệu ảnh dạng Buffer nhị phân
-    const imageBuffer = await generateWithGoogleImage(lineArtPrompt);
+    // Bước 2: Thử Google AI trước, nếu thất bại dùng Hugging Face
+    try {
+      console.log("Generating with Google AI Studio image model...");
+      imageBuffer = await generateWithGoogleImage(lineArtPrompt);
+    } catch (googleError) {
+      console.warn(
+        "Google AI failed, falling back to Hugging Face:",
+        googleError.message,
+      );
+      imageBuffer = await generateWithHuggingFace(
+        prompt.trim(),
+        style,
+        complexity,
+      );
+    }
 
     // Bước 3: Upload Buffer lên Firebase Storage, lấy URL truy cập công khai
     const fileName = `generation-${generationId}-lineart.png`;
@@ -273,6 +317,117 @@ async function generateWithGoogleImage(prompt) {
     lastError?.response?.data?.error?.message ||
       lastError?.message ||
       "Google image generation failed",
+  );
+}
+
+// ============================================================
+// HÀM HELPER: translatePromptToEnglish
+// Dùng MyMemory API (miễn phí, không cần key) để dịch prompt
+// tiếng Việt (hoặc bất kỳ ngôn ngữ nào) sang tiếng Anh trước
+// khi gửi cho Hugging Face (chỉ hiểu tiếng Anh).
+// ============================================================
+async function translatePromptToEnglish(prompt) {
+  try {
+    const encoded = encodeURIComponent(prompt);
+    const res = await axios.get(
+      `https://api.mymemory.translated.net/get?q=${encoded}&langpair=vi|en`,
+      { timeout: 10000 },
+    );
+    const translated = res.data?.responseData?.translatedText?.trim();
+    if (translated && translated !== prompt) {
+      console.log(`Translated prompt: "${prompt}" → "${translated}"`);
+      return translated;
+    }
+  } catch (err) {
+    console.warn("Translation failed, using original prompt:", err.message);
+  }
+  return prompt;
+}
+
+// ============================================================
+// HÀM HELPER: generateWithHuggingFace
+// Fallback khi Google AI thất bại (ví dụ: quota 429).
+// Gọi Hugging Face Inference API với model sinh ảnh miễn phí.
+// Trả về Buffer nhị phân ảnh PNG.
+// ============================================================
+async function generateWithHuggingFace(userPrompt, style, complexity) {
+  const HF_TOKEN = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
+  if (!HF_TOKEN) {
+    throw new Error("HF_TOKEN is missing in backend environment");
+  }
+
+  // Dịch prompt sang tiếng Anh (FLUX.1-schnell chỉ hiểu tiếng Anh)
+  const englishPrompt = await translatePromptToEnglish(userPrompt);
+
+  // FLUX là diffusion model: chỉ hiểu keyword ngắn, không đọc instruction.
+  // Kỹ thuật đúng: subject đặt ĐẦU với weight cao, rồi mới đến style keywords.
+  // negative_prompt không được FLUX.1-schnell hỗ trợ nên không dùng.
+  const cfg = COMPLEXITY_CONFIG[complexity] || COMPLEXITY_CONFIG.medium;
+  const styleKeyword = style !== "realistic" ? `${style} art style, ` : "";
+
+  const hfPrompt = [
+    // Subject đặt đầu tiên = trọng số cao nhất với diffusion model
+    englishPrompt,
+    styleKeyword,
+    // Paint-by-numbers visual keywords (diffusion model hiểu theo hình ảnh)
+    "paint by numbers coloring book page",
+    "black ink line art on white paper",
+    "thick bold black outlines",
+    "every region has a bold number printed inside",
+    "numbered regions 1 2 3 4 5 6 7 8",
+    "numbered color palette swatches at bottom of page",
+    "clean white background",
+    "no color fill in regions",
+    "printable worksheet",
+    // Số màu theo complexity
+    `${cfg.colors} distinct color regions`,
+    cfg.detail,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  console.log(`HF prompt: ${hfPrompt}`);
+
+  let lastError;
+  for (const model of HF_IMAGE_MODELS) {
+    try {
+      console.log(`Trying Hugging Face model: ${model}`);
+      const response = await axios.post(
+        `https://router.huggingface.co/hf-inference/models/${model}`,
+        {
+          inputs: hfPrompt,
+          parameters: {
+            num_inference_steps: 8,
+            guidance_scale: 9.0,
+            width: 1024,
+            height: 1024,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+            "Content-Type": "application/json",
+            Accept: "image/png",
+          },
+          responseType: "arraybuffer",
+          timeout: 120000,
+        },
+      );
+      console.log(`✅ Hugging Face model ${model} succeeded`);
+      return Buffer.from(response.data);
+    } catch (error) {
+      lastError = error;
+      const msg = error.response?.data
+        ? Buffer.from(error.response.data).toString()
+        : error.message;
+      console.error(`HF model ${model} failed:`, msg);
+    }
+  }
+
+  throw new Error(
+    `All Hugging Face models failed. Last error: ${
+      lastError?.message || "unknown"
+    }`,
   );
 }
 

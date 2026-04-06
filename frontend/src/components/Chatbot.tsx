@@ -25,7 +25,8 @@ type ChatAction =
 const WELCOME: ChatMessage = {
   id: "init",
   role: "bot",
-  content: "Xin chao! Toi la tro ly AI Yu Ling Store. Ban can toi giup gi?",
+  content:
+    "Xin chào! 👋 Tôi là trợ lý AI của Yu Ling Store. Bạn cần tôi giúp gì?",
 };
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
@@ -74,15 +75,18 @@ export default function Chatbot() {
     dispatch({ type: "PUSH_USER", text });
     try {
       const history = state.messages.filter((m) => m.id !== "init");
-      const { data } = await api.post("/chat", { message: text.trim(), history });
+      const { data } = await api.post("/chat", {
+        message: text.trim(),
+        history,
+      });
       dispatch({
         type: "PUSH_BOT",
-        text: data.success ? data.data.text : "Loi ket noi, thu lai nhe!",
+        text: data.success ? data.data.text : "Lỗi kết nối, thử lại nhé!",
       });
     } catch {
       dispatch({
         type: "PUSH_BOT",
-        text: "Khong the ket noi AI luc nay. Thu lai sau!",
+        text: "Không thể kết nối AI lúc này. Thử lại sau!",
       });
     }
   };
@@ -95,7 +99,7 @@ export default function Chatbot() {
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#3E3C6E] to-[#FE979B] shadow-xl flex items-center justify-center text-white text-2xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        aria-label={state.open ? "Dong chat" : "Mo chat"}
+        aria-label={state.open ? "Đóng chat" : "Mở chat"}
       >
         {state.open ? "X" : "Chat"}
       </motion.button>
@@ -105,7 +109,7 @@ export default function Chatbot() {
         {state.open && (
           <motion.section
             role="dialog"
-            aria-label="Chat voi Yu Ling AI"
+            aria-label="Chat với Yu Ling AI"
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 60 }}
@@ -174,7 +178,7 @@ export default function Chatbot() {
                 onChange={(e) =>
                   dispatch({ type: "SET_DRAFT", value: e.target.value })
                 }
-                placeholder="Nhan tin voi Yu Ling AI..."
+                placeholder="Nhắn tin với Yu Ling AI..."
                 disabled={state.busy}
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE979B]/60 text-gray-800 disabled:bg-gray-50"
               />
@@ -183,7 +187,7 @@ export default function Chatbot() {
                 disabled={state.busy || !state.draft.trim()}
                 className="bg-gradient-to-br from-[#FE979B] to-[#FEAE97] text-white px-4 py-2 rounded-xl text-sm font-medium disabled:opacity-40 transition-opacity"
               >
-                Gui
+                Gửi
               </button>
             </form>
           </motion.section>
