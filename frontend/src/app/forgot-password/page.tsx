@@ -1,111 +1,33 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { passwordResetAPI } from "@/lib/passwordResetAPI";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<"email" | "verify" | "reset">("email");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Đếm ngược thời gian gửi lại mã
-  const startResendTimer = () => {
-    setResendTimer(60);
-    const interval = setInterval(() => {
-      setResendTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleSendCode = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      await passwordResetAPI.sendCode(email);
-      setStep("verify");
-      setError("");
-      startResendTimer();
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      await passwordResetAPI.verifyCode(email, code);
-      setStep("reset");
-      setError("");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Mã xác nhận không chính xác.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (newPassword !== confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp!");
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      await passwordResetAPI.resetPassword(email, code, newPassword);
+      await sendPasswordResetEmail(auth, email);
       setSuccess(true);
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (resendTimer > 0) return;
-
-    setError("");
-    setLoading(true);
-
-    try {
-      await passwordResetAPI.sendCode(email);
-      setError("");
-      startResendTimer();
-      alert("Mã xác nhận mới đã được gửi đến email của bạn!");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Có lỗi xảy ra. Vui lòng thử lại.");
+      const code = err?.code || "";
+      if (code === "auth/user-not-found") {
+        setError("Email không tồn tại trong hệ thống.");
+      } else if (code === "auth/invalid-email") {
+        setError("Email không hợp lệ.");
+      } else {
+        setError("Có lỗi xảy ra. Vui lòng thử lại.");
+      }
     } finally {
       setLoading(false);
     }
@@ -114,28 +36,37 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-        {/* Header */}
         <div>
           <div className="text-center">
-            <span className="text-6xl">
-              {step === "email" ? "🔑" : step === "verify" ? "📧" : "🔐"}
-            </span>
+            <span className="text-6xl">🔑</span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {step === "email" && "Quên Mật Khẩu"}
-            {step === "verify" && "Nhập Mã Xác Nhận"}
-            {step === "reset" && "Đặt Lại Mật Khẩu"}
+            Quên Mật Khẩu
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {step === "email" && "Nhập email để nhận mã xác nhận 6 số"}
-            {step === "verify" && "Mã OTP đã được gửi đến email của bạn"}
-            {step === "reset" && "Nhập mật khẩu mới của bạn"}
+            Nhập email để nhận link đặt lại mật khẩu
           </p>
         </div>
 
-        {/* Step 1: Email Form */}
-        {step === "email" && (
-          <form className="mt-8 space-y-6" onSubmit={handleSendCode}>
+        {success ? (
+          <div className="text-center space-y-4">
+            <div className="text-6xl">📧</div>
+            <p className="text-green-600 font-semibold text-lg">
+              Email đặt lại mật khẩu đã được gửi!
+            </p>
+            <p className="text-gray-600 text-sm">
+              Vui lòng kiểm tra hộp thư <strong>{email}</strong> và làm theo
+              hướng dẫn. Nhớ kiểm tra cả thư mục spam.
+            </p>
+            <Link
+              href="/login"
+              className="block text-sm font-medium text-purple-600 hover:text-purple-500 mt-4"
+            >
+              ← Quay lại đăng nhập
+            </Link>
+          </div>
+        ) : (
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                 {error}
@@ -168,7 +99,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? "Đang gửi mã..." : "Gửi Mã OTP"}
+                {loading ? "Đang gửi..." : "Gửi Link Đặt Lại Mật Khẩu"}
               </button>
             </div>
 
@@ -188,253 +119,6 @@ export default function ForgotPasswordPage() {
                   Đăng ký ngay
                 </Link>
               </p>
-            </div>
-          </form>
-        )}
-
-        {/* Step 2: Verify OTP */}
-        {step === "verify" && (
-          <form className="mt-8 space-y-6" onSubmit={handleVerifyCode}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
-            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
-              📧 Mã OTP 6 số đã được gửi đến: <strong>{email}</strong>
-              <br />
-              <span className="text-xs">
-                Vui lòng kiểm tra hộp thư và spam folder.
-              </span>
-            </div>
-
-            <div>
-              <label
-                htmlFor="code"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Mã OTP (6 số)
-              </label>
-              <input
-                id="code"
-                name="code"
-                type="text"
-                required
-                maxLength={6}
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-center text-2xl tracking-widest"
-                placeholder="000000"
-              />
-              <p className="mt-1 text-xs text-gray-500 text-center">
-                Mã có hiệu lực trong 10 phút
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={loading || code.length !== 6}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? "Đang xác thực..." : "Xác Nhận Mã"}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleResendCode}
-                disabled={resendTimer > 0 || loading}
-                className="w-full py-3 px-4 border border-purple-600 text-purple-600 font-medium rounded-lg hover:bg-purple-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {resendTimer > 0
-                  ? `Gửi lại sau ${resendTimer}s`
-                  : "↻ Gửi Lại Mã"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setStep("email");
-                  setCode("");
-                  setError("");
-                }}
-                className="w-full py-3 px-4 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                ← Đổi Email
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Step 3: Reset Password */}
-        {step === "reset" && (
-          <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg text-sm font-medium">
-                🎉 Đặt lại mật khẩu thành công! Đang chuyển đến trang đăng
-                nhập...
-              </div>
-            )}
-
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-              ✅ Mã OTP đã được xác thực thành công!
-            </div>
-
-            <div>
-              <label
-                htmlFor="newPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Mật Khẩu Mới
-              </label>
-              <div className="relative">
-                <input
-                  id="newPassword"
-                  name="newPassword"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  aria-label={
-                    showPassword ? "Ẩn mật khẩu" : "Hiển thị mật khẩu"
-                  }
-                >
-                  {showPassword ? (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-              <p className="mt-1 text-xs text-gray-500">Tối thiểu 6 ký tự</p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Xác Nhận Mật Khẩu Mới
-              </label>
-              <div className="relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  aria-label={
-                    showConfirmPassword ? "Ẩn mật khẩu" : "Hiển thị mật khẩu"
-                  }
-                >
-                  {showConfirmPassword ? (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={loading || success}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? "Đang đặt lại mật khẩu..." : "Đặt Lại Mật Khẩu"}
-              </button>
-            </div>
-
-            <div className="text-center">
-              <Link
-                href="/login"
-                className="text-sm font-medium text-purple-600 hover:text-purple-500"
-              >
-                Quay lại đăng nhập
-              </Link>
             </div>
           </form>
         )}

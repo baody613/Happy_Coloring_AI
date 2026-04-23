@@ -9,8 +9,6 @@ import { sendSuccess, sendError } from "../utils/helpers.js";
 import usersRouter from "./admin/users.js";
 import productsRouter from "./admin/products.js";
 import ordersRouter from "./admin/orders.js";
-import settingsRouter from "./admin/settings/settings.js";
-
 const router = express.Router();
 
 // Get overall admin statistics
@@ -53,6 +51,5 @@ router.get("/stats", requireAdmin, async (req, res) => {
 router.use("/users", usersRouter);
 router.use("/products", productsRouter);
 router.use("/orders", ordersRouter);
-router.use("/settings", settingsRouter);
 
 export default router;

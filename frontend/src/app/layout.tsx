@@ -7,7 +7,6 @@ const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 const AuthProvider = dynamic(() => import("@/components/AuthProvider"), {
   ssr: false,
 });
-const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
 const Toaster = dynamic(
   () => import("react-hot-toast").then((mod) => mod.Toaster),
   { ssr: false },
@@ -58,7 +57,6 @@ export default function RootLayout({
             <main>{children}</main>
             <Footer />
           </div>
-          <Chatbot />
           <Toaster position="top-right" containerStyle={{ top: 88 }} />
         </AuthProvider>
       </body>

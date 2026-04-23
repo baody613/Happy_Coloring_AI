@@ -15,8 +15,6 @@ import productRoutes from "./routes/products.js";
 import orderRoutes from "./routes/orders.js";
 import userRoutes from "./routes/users.js";
 import adminRoutes from "./routes/admin.js";
-import passwordResetRoutes from "./routes/password-reset.js";
-import chatRoutes from "./routes/chat.js";
 import paymentRoutes from "./routes/payment.js";
 
 dotenv.config();
@@ -146,8 +144,6 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/password-reset", passwordResetRoutes);
-app.use("/api/chat", chatRoutes);
 app.use("/api/payment", paymentRoutes);
 
 // Swagger JSON spec (để import vào Postman nếu cần)

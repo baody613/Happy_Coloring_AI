@@ -32,14 +32,4 @@ export {
   getOrderStatsByDateRange,
 } from "./orderService.js";
 
-export {
-  getAllSettings,
-  getSettingsByCategory,
-  updateSettingsByCategory,
-  updateSystemSettings,
-  updatePaymentSettings,
-  updateEmailSettings,
-  resetSettings,
-  getSettingValue,
-  updateSettingValue,
-} from "./settingsService.js";
+
