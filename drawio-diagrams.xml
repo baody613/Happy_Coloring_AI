@@ -7,139 +7,98 @@
        ================================================================ -->
 
   <!-- ================================================================
-       FIGURE 2.1 — USE CASE DIAGRAM
+       FIGURE 4.1 — USE CASE DIAGRAM (Chapter 4 — Software Requirements)
+       Actors: Customer (User), Administrator (Admin), System (Firebase/AI)
+       Use Cases: UC-01 to UC-16
        ================================================================ -->
-  <diagram name="Fig 2.1 - Use Case Diagram" id="fig21">
+  <diagram name="Fig 4.1 - Use Case Diagram" id="fig41">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <!-- System boundary box -->
-        <mxCell id="sys" value="Happy Coloring AI System" style="swimlane;startSize=30;fontSize=14;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="220" y="60" width="720" height="700" as="geometry"/>
+        <!-- System boundary — plain rectangle, no container -->
+        <mxCell id="sysBound" value="" style="rounded=0;fillColor=none;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="160" y="30" width="840" height="700" as="geometry"/>
+        </mxCell>
+        <mxCell id="sysLabel" value="Happy Coloring AI System" style="text;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="390" y="35" width="280" height="22" as="geometry"/>
         </mxCell>
 
-        <!-- Actors -->
-        <mxCell id="actUser" value="Customer&#xa;(User)" style="shape=mxgraph.flowchart.start_2;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="60" y="280" width="80" height="80" as="geometry"/>
+        <!-- ===== ACTORS (UML stick-figure shape) ===== -->
+        <mxCell id="actUser" value="Customer&#xa;(User)" style="shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="60" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="actAdmin" value="Administrator&#xa;(Admin)" style="shape=mxgraph.flowchart.start_2;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="280" width="80" height="80" as="geometry"/>
+        <mxCell id="actAdmin" value="Administrator&#xa;(Admin)" style="shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="210" width="60" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="actSystem" value="System&#xa;(Firebase / AI)" style="shape=mxgraph.flowchart.start_2;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="540" y="720" width="80" height="80" as="geometry"/>
-        </mxCell>
-
-        <!-- Actor labels -->
-        <mxCell id="lblUser" value="User" style="text;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
-          <mxGeometry x="75" y="365" width="50" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="lblAdmin" value="Admin" style="text;fontSize=13;fontStyle=1;align=center;" vertex="1" parent="1">
-          <mxGeometry x="1030" y="365" width="60" height="20" as="geometry"/>
+        <mxCell id="actSys" value="System&#xa;(Firebase / AI)" style="shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="755" width="60" height="80" as="geometry"/>
         </mxCell>
 
-        <!-- Use cases — User -->
-        <mxCell id="uc01" value="UC-01: Register" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="30" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc02" value="UC-02: Login" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="95" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc03" value="UC-03: Forgot Password" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="160" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc04" value="UC-04: Update Profile" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="225" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc05" value="UC-05: Browse Gallery" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="290" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc06" value="UC-06: Product Detail" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="355" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc07" value="UC-07: Favourites" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="420" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc08" value="UC-08: Shopping Cart" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="485" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc09" value="UC-09: Checkout / Order" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="60" y="550" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc10" value="UC-10: Order History" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="260" y="600" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc11" value="UC-11: AI Art Generation" style="ellipse;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="sys">
-          <mxGeometry x="260" y="530" width="160" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc12" value="UC-12: Contact Us" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="260" y="460" width="160" height="45" as="geometry"/>
-        </mxCell>
+        <!-- ===== USER USE CASES — left column (x=185) ===== -->
+        <mxCell id="uc01" value="UC-01: Register" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="57" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc02" value="UC-02: Login" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="110" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc03" value="UC-03: Forgot Password" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="163" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc04" value="UC-04: Update Profile" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="216" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc05" value="UC-05: Browse Gallery" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="269" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc06" value="UC-06: Product Detail" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="322" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc07" value="UC-07: Favourites" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="375" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc08" value="UC-08: Shopping Cart" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="428" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc09" value="UC-09: Checkout / Order" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="481" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc10" value="UC-10: Order History" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="534" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc11" value="UC-11: AI Art Generation" style="ellipse;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="185" y="587" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc12" value="UC-12: Contact Us" style="ellipse;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1"><mxGeometry x="185" y="640" width="165" height="40" as="geometry"/></mxCell>
 
-        <!-- Use cases — Admin -->
-        <mxCell id="uc13" value="UC-13: Admin Dashboard" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="30" width="180" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc14" value="UC-14: Product Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="95" width="180" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc15" value="UC-15: Order Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="160" width="180" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="uc16" value="UC-16: User Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="225" width="180" height="45" as="geometry"/>
-        </mxCell>
+        <!-- ===== ADMIN USE CASES — right column (x=815) ===== -->
+        <mxCell id="uc13" value="UC-13: Admin Dashboard" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1"><mxGeometry x="815" y="130" width="170" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc14" value="UC-14: Product Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1"><mxGeometry x="815" y="190" width="170" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc15" value="UC-15: Order Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1"><mxGeometry x="815" y="250" width="170" height="40" as="geometry"/></mxCell>
+        <mxCell id="uc16" value="UC-16: User Management" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1"><mxGeometry x="815" y="310" width="170" height="40" as="geometry"/></mxCell>
 
-        <!-- System use cases -->
-        <mxCell id="suc1" value="JWT Authentication" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="400" width="180" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="suc2" value="AI Image Generation" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="460" width="180" height="45" as="geometry"/>
-        </mxCell>
-        <mxCell id="suc3" value="Email Notification" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="sys">
-          <mxGeometry x="500" y="520" width="180" height="45" as="geometry"/>
-        </mxCell>
+        <!-- ===== SYSTEM USE CASES — bottom centre ===== -->
+        <mxCell id="suc1" value="JWT Authentication" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1"><mxGeometry x="290" y="670" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="suc2" value="AI Image Generation" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1"><mxGeometry x="500" y="670" width="165" height="40" as="geometry"/></mxCell>
+        <mxCell id="suc3" value="Email Notification" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1"><mxGeometry x="710" y="670" width="165" height="40" as="geometry"/></mxCell>
 
-        <!-- Edges: User → UCs -->
-        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc01" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc02" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc03" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc04" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc05" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc06" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc07" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc08" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc09" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actUser" target="uc12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- ===== EDGES: Customer → User UCs (plain association lines) ===== -->
+        <mxCell id="e01" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc01" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e02" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc02" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e03" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc03" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e04" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc04" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e05" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc05" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e06" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc06" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e07" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc07" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e08" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc08" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e09" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc09" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" style="endArrow=none;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actUser" target="uc12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
 
-        <!-- Edges: Admin → UCs -->
-        <mxCell id="ea1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actAdmin" target="uc13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="ea2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actAdmin" target="uc14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="ea3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actAdmin" target="uc15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="ea4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actAdmin" target="uc16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- ===== EDGES: Admin → Admin UCs ===== -->
+        <mxCell id="ea1" style="endArrow=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actAdmin" target="uc13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea2" style="endArrow=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actAdmin" target="uc14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea3" style="endArrow=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actAdmin" target="uc15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="ea4" style="endArrow=none;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="actAdmin" target="uc16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
 
-        <!-- Edges: System → UCs -->
-        <mxCell id="es1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actSystem" target="suc1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="es2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actSystem" target="suc2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="es3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="actSystem" target="suc3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- ===== EDGES: System actor → System UCs ===== -->
+        <mxCell id="es1" style="endArrow=none;" edge="1" source="actSys" target="suc1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="es2" style="endArrow=none;" edge="1" source="actSys" target="suc2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="es3" style="endArrow=none;" edge="1" source="actSys" target="suc3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
 
-        <!-- include: UC-11 includes AI generation -->
-        <mxCell id="inc1" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;fontSize=10;" edge="1" source="uc11" target="suc2" parent="sys"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="inc2" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;fontSize=10;" edge="1" source="uc02" target="suc1" parent="sys"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="inc3" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;fontSize=10;" edge="1" source="uc03" target="suc3" parent="sys"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- ===== <<include>> dependencies (dashed open arrows) ===== -->
+        <mxCell id="inc1" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;endFill=0;fontSize=9;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="uc02" target="suc1" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="inc2" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;endFill=0;fontSize=9;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="uc11" target="suc2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="inc3" value="&lt;&lt;include&gt;&gt;" style="dashed;endArrow=open;endFill=0;fontSize=9;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="uc03" target="suc3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
 
       </root>
     </mxGraphModel>
   </diagram>
 
   <!-- ================================================================
-       FIGURE 3.1 — SYSTEM ARCHITECTURE DIAGRAM (3-TIER)
+       FIGURE 6.1 — SYSTEM ARCHITECTURE DIAGRAM (3-TIER)
        ================================================================ -->
-  <diagram name="Fig 3.1 - System Architecture" id="fig31">
+  <diagram name="Fig 6.1 - System Architecture" id="fig61">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
@@ -238,9 +197,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 3.2 — AUTHENTICATION SEQUENCE DIAGRAM
+       FIGURE 6.2 — AUTHENTICATION SEQUENCE DIAGRAM
        ================================================================ -->
-  <diagram name="Fig 3.2 - Auth Sequence" id="fig32">
+  <diagram name="Fig 6.2 - Auth Sequence" id="fig62">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1169" pageHeight="827">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -318,9 +277,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 3.3 — AI GENERATION SEQUENCE DIAGRAM
+       FIGURE 6.3 — AI GENERATION SEQUENCE DIAGRAM
        ================================================================ -->
-  <diagram name="Fig 3.3 - AI Generation Sequence" id="fig33">
+  <diagram name="Fig 6.3 - AI Generation Sequence" id="fig63">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1400" pageHeight="900">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -400,9 +359,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 4.1 — FRONTEND TECHNOLOGY STACK
+       FIGURE 3.1 — FRONTEND TECHNOLOGY STACK
        ================================================================ -->
-  <diagram name="Fig 4.1 - Frontend Tech Stack" id="fig41">
+  <diagram name="Fig 3.1 - Frontend Tech Stack" id="fig31">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1000" pageHeight="700">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -444,9 +403,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 4.2 — CLOUD INFRASTRUCTURE DIAGRAM
+       FIGURE 3.2 — CLOUD INFRASTRUCTURE DIAGRAM
        ================================================================ -->
-  <diagram name="Fig 4.2 - Cloud Infrastructure" id="fig42">
+  <diagram name="Fig 3.2 - Cloud Infrastructure" id="fig32">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1100" pageHeight="700">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -494,9 +453,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 5.1 — FIRESTORE DATA MODEL (4 COLLECTIONS)
+       FIGURE 4.2 — FIRESTORE DATA MODEL (4 COLLECTIONS)
        ================================================================ -->
-  <diagram name="Fig 5.1 - Firestore Data Model" id="fig51">
+  <diagram name="Fig 4.2 - Firestore Data Model" id="fig42">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1300" pageHeight="750">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -571,9 +530,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 6.3 — AXIOS INTERCEPTOR FLOW
+       FIGURE 6.6 — AXIOS INTERCEPTOR FLOW
        ================================================================ -->
-  <diagram name="Fig 6.3 - Axios Interceptor Flow" id="fig63">
+  <diagram name="Fig 6.6 - Axios Interceptor Flow" id="fig66">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="900" pageHeight="700">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -622,9 +581,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 7.1 — TWO-LAYER AUTHORISATION DIAGRAM
+       FIGURE 6.17 — TWO-LAYER AUTHORISATION DIAGRAM
        ================================================================ -->
-  <diagram name="Fig 7.1 - Authorisation Layers" id="fig71">
+  <diagram name="Fig 6.17 - Authorisation Layers" id="fig617">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1000" pageHeight="600">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -666,9 +625,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 8.1 — ERROR PROPAGATION FLOW
+       FIGURE 6.18 — ERROR PROPAGATION FLOW
        ================================================================ -->
-  <diagram name="Fig 8.1 - Error Propagation Flow" id="fig81">
+  <diagram name="Fig 6.18 - Error Propagation Flow" id="fig618">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1100" pageHeight="700">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>
@@ -736,9 +695,9 @@
   </diagram>
 
   <!-- ================================================================
-       FIGURE 10.1 — CI/CD PIPELINE DIAGRAM
+       FIGURE 6.27 — CI/CD PIPELINE DIAGRAM
        ================================================================ -->
-  <diagram name="Fig 10.1 - CI/CD Pipeline" id="fig101">
+  <diagram name="Fig 6.27 - CI/CD Pipeline" id="fig627">
     <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1100" pageHeight="600">
       <root>
         <mxCell id="0"/><mxCell id="1" parent="0"/>

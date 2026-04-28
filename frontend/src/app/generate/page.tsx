@@ -539,21 +539,21 @@ const complexities = [
     label: "Dễ",
     icon: "⭐",
     price: 200,
-    description: "12-20 màu - Phù hợp người mới",
+    description: "1-20 màu - Phù hợp người mới",
   },
   {
     value: "medium",
     label: "Trung Bình",
     icon: "⭐⭐",
     price: 270,
-    description: "20-36 màu - Cân bằng",
+    description: "1-36 màu - Cân bằng",
   },
   {
     value: "hard",
     label: "Khó",
     icon: "⭐⭐⭐",
     price: 350,
-    description: "36+ màu - Chi tiết cao",
+    description: "1-52 màu - Chi tiết cao",
   },
 ];
 

@@ -143,9 +143,9 @@ The frontend of the Happy Coloring AI system is built using the following techno
 
 **Rationale for Zustand over Redux:** Zustand is significantly smaller (8 KB vs Redux Toolkit 40 KB+), requires no boilerplate actions or reducers, and includes a built-in `persist` middleware for localStorage synchronisation (Dai, 2021).
 
-> **Figure 4.1** — Frontend technology stack diagram showing component relationships
+> **Figure 3.1** — Frontend technology stack diagram showing component relationships
 >
-> `[INSERT FIGURE 4.1 HERE]`
+> `[INSERT FIGURE 3.1 HERE]`
 >
 > **Explanation:** This diagram illustrates the layered structure of the frontend technology stack, from the Vercel CDN hosting layer at the top, through the Next.js framework, down to the state management (Zustand), HTTP client (Axios), and Firebase Auth SDK layers at the bottom.
 
@@ -182,9 +182,9 @@ The system is deployed across three cloud platforms, each serving a distinct inf
 | **Gemini 2.5 Flash Image** | Google DeepMind | AI image generation |
 | **MyMemory Translation** | Translated.net | Free Vietnamese→English translation |
 
-> **Figure 4.2** — Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
+> **Figure 3.2** — Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
 >
-> `[INSERT FIGURE 4.2 HERE]`
+> `[INSERT FIGURE 3.2 HERE]`
 >
 > **Explanation:** This diagram illustrates the deployment topology of the Happy Coloring AI system, showing how the Vercel-hosted frontend, Render-hosted backend, Firebase platform services, and Google Gemini AI API are interconnected. GitHub acts as the shared source code repository triggering CI/CD pipelines for both Vercel and Render.
 
@@ -223,9 +223,9 @@ Existing paint-by-numbers platforms, such as Pictorem and PaintYourNumbers, offe
 | UC-11 | AI Artwork Generation | Describe artwork in Vietnamese and select complexity |
 | UC-12 | Contact Us | Send a message via the contact form |
 
-> **Figure 2.1** — Use Case Diagram showing interactions between User, Admin, and System
+> **Figure 4.1** — Use Case Diagram showing interactions between User, Admin, and System
 >
-> `[INSERT FIGURE 2.1 HERE]`
+> `[INSERT FIGURE 4.1 HERE]`
 >
 > **Explanation:** This use case diagram maps all 16 use cases (UC-01 through UC-16) to their respective actors: Customer, Administrator, and System. Include relationships are shown between UC-02 and JWT Authentication, UC-11 and AI Image Generation, and UC-03 and Email Notification.
 
@@ -254,9 +254,9 @@ Existing paint-by-numbers platforms, such as Pictorem and PaintYourNumbers, offe
 
 Cloud Firestore is a NoSQL document database. According to Google Firebase documentation (Google, 2024b), data is organised in a Collection → Document → Fields hierarchy. The system uses four top-level collections.
 
-> **Figure 5.1** — Firestore data model overview showing 4 collections and their relationships
+> **Figure 4.2** — Firestore data model overview showing 4 collections and their relationships
 >
-> `[INSERT FIGURE 5.1 HERE]`
+> `[INSERT FIGURE 4.2 HERE]`
 >
 > **Explanation:** This entity-relationship diagram illustrates the four Firestore collections — users, products, orders, and generations — and the foreign-key relationships between them (userId in orders and generations referencing users; productId in order items referencing products).
 
@@ -400,9 +400,9 @@ The system follows a **three-tier, decoupled Client-Server Architecture**:
 - **Server Tier:** A Node.js + Express RESTful API server hosted on Render Cloud. All business logic, data validation, and external API calls are handled in this tier.
 - **Data / Service Tier:** Firebase Auth, Cloud Firestore, Firebase Storage, and Google Gemini AI API, all managed by Google Cloud.
 
-> **Figure 3.1** — System Architecture Diagram (three-tier overview)
+> **Figure 6.1** — System Architecture Diagram (three-tier overview)
 >
-> `[INSERT FIGURE 3.1 HERE]`
+> `[INSERT FIGURE 6.1 HERE]`
 >
 > **Explanation:** This three-tier architecture diagram shows the Client Tier (Next.js + Zustand on Vercel), the Server Tier (Node.js + Express middleware pipeline on Render), and the Data/Service Tier (Firebase Auth, Firestore, Storage, and Gemini AI on Google Cloud). Bidirectional arrows between tiers are labelled with the communication protocol used (HTTPS/REST API between tiers 1 and 2; Firebase Admin SDK and Axios HTTP between tiers 2 and 3).
 
@@ -421,9 +421,9 @@ The authentication flow operates as follows:
 5. The backend's `authenticateUser` middleware calls `auth.verifyIdToken(token)` via the Firebase Admin SDK, which validates the RS256 signature without a database lookup.
 6. The decoded token payload `{ uid, email }` is attached to `req.user` for use in route handlers.
 
-> **Figure 3.2** — Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
+> **Figure 6.2** — Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
 >
-> `[INSERT FIGURE 3.2 HERE]`
+> `[INSERT FIGURE 6.2 HERE]`
 >
 > **Explanation:** This sequence diagram shows the complete authentication flow across five participants: User (Browser), Firebase Auth SDK (client-side), Backend (Express + Admin SDK), Firebase Auth Server (Google), and Firestore. Steps 1–6 cover credential submission and JWT issuance; steps 7–12 cover an authenticated API request, backend verification, and data response.
 
@@ -447,9 +447,9 @@ The generation flow proceeds through five steps:
 
 **Rationale for polling over WebSocket:** Render's free tier does not support persistent WebSocket connections. Polling every 5 seconds with a maximum of 60 attempts is efficient and incurs minimal cost — one Firestore document read per request.
 
-> **Figure 3.3** — AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
+> **Figure 6.3** — AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
 >
-> `[INSERT FIGURE 3.3 HERE]`
+> `[INSERT FIGURE 6.3 HERE]`
 >
 > **Explanation:** This sequence diagram illustrates the complete asynchronous AI generation flow across six participants: Frontend (Next.js), Backend (Express), MyMemory Translation API, Gemini 2.5 Flash Image, Firebase Storage, and Firestore. The diagram distinguishes between the immediate 202 Accepted response (step 3) and the background async processing block (steps 4–10), as well as the frontend polling loop (steps 11–12).
 
@@ -461,9 +461,9 @@ The generation flow proceeds through five steps:
 
 **Key files:** `frontend/src/app/register/page.tsx`, `backend/src/routes/auth.js`
 
-> **Figure 6.1** — Screenshot of the Registration page
+> **Figure 6.4** — Screenshot of the Registration page
 >
-> `[INSERT FIGURE 6.1 HERE]`
+> `[INSERT FIGURE 6.4 HERE]`
 >
 > **Explanation:** This screenshot shows the registration form with input fields for email address, password, and display name, along with client-side validation feedback and the submit button.
 
@@ -496,9 +496,9 @@ The `/api/auth/register` route supports a dual-mode design: if a Bearer token is
 
 **Key files:** `frontend/src/app/login/page.tsx`, `frontend/src/store/authStore.ts`
 
-> **Figure 6.2** — Screenshot of the Login page
+> **Figure 6.5** — Screenshot of the Login page
 >
-> `[INSERT FIGURE 6.2 HERE]`
+> `[INSERT FIGURE 6.5 HERE]`
 >
 > **Explanation:** This screenshot shows the login form with email and password fields, a "Remember Me" checkbox, and a "Forgot Password" link.
 
@@ -514,9 +514,9 @@ The backend has no login route. All authentication is handled client-side throug
 - **Request interceptor:** Always calls `auth.currentUser.getIdToken(true)` before each request to obtain a fresh token.
 - **Response interceptor:** On a `401 Unauthorized` response, silently retries once with a fresh token. If the retry also returns `401`, the session is cleared and the user is redirected to `/login`.
 
-> **Figure 6.3** — Axios interceptor flow: request token injection and automatic 401 retry logic
+> **Figure 6.6** — Axios interceptor flow: request token injection and automatic 401 retry logic
 >
-> `[INSERT FIGURE 6.3 HERE]`
+> `[INSERT FIGURE 6.6 HERE]`
 >
 > **Explanation:** This flowchart shows the Axios interceptor pipeline. The request interceptor always fetches a fresh JWT before injecting it into the Authorization header. The response interceptor handles 401 errors by attempting a single silent token refresh and retry; if the retry also fails, the user is logged out and redirected to the login page.
 
@@ -535,9 +535,9 @@ The backend has no login route. All authentication is handled client-side throug
 
 **Key file:** `frontend/src/app/forgot-password/page.tsx`
 
-> **Figure 6.4** — Screenshot of the Forgot Password page (email input and success state)
+> **Figure 6.7** — Screenshot of the Forgot Password page (email input and success state)
 >
-> `[INSERT FIGURE 6.4 HERE]`
+> `[INSERT FIGURE 6.7 HERE]`
 >
 > **Explanation:** This screenshot shows the forgot password page in two states: the initial email input state and the post-submission success confirmation state displaying the message that a reset link has been sent.
 
@@ -557,9 +557,9 @@ The password reset flow uses Firebase's built-in email delivery:
 
 **API Endpoint:** `GET /api/products`
 
-> **Figure 6.5** — Screenshot of the Gallery page with filter options and masonry product grid
+> **Figure 6.8** — Screenshot of the Gallery page with filter options and masonry product grid
 >
-> `[INSERT FIGURE 6.5 HERE]`
+> `[INSERT FIGURE 6.8 HERE]`
 >
 > **Explanation:** This screenshot shows the product gallery page with the filter panel (category dropdown, difficulty radio buttons, price range inputs, sort options) and the masonry grid layout displaying product cards with hover effects.
 
@@ -586,9 +586,9 @@ The API supports the following query parameters for filtering and sorting:
 
 The favourites feature is implemented entirely on the client side using localStorage via Zustand's `persist` middleware. No backend API is required.
 
-> **Figure 6.6** — Screenshot of the Profile page "Favourites" tab
+> **Figure 6.9** — Screenshot of the Profile page "Favourites" tab
 >
-> `[INSERT FIGURE 6.6 HERE]`
+> `[INSERT FIGURE 6.9 HERE]`
 >
 > **Explanation:** This screenshot shows the Favourites tab on the Profile page, displaying a grid of the user's saved products with remove buttons.
 
@@ -602,9 +602,9 @@ The Zustand store uses a multi-user keying structure: `favoritesByUser: Record<s
 
 The cart is stored client-side in localStorage via Zustand `persist` middleware.
 
-> **Figure 6.7** — Screenshot of the Shopping Cart page
+> **Figure 6.10** — Screenshot of the Shopping Cart page
 >
-> `[INSERT FIGURE 6.7 HERE]`
+> `[INSERT FIGURE 6.10 HERE]`
 >
 > **Explanation:** This screenshot shows the shopping cart page with product line items, quantity controls, item selection checkboxes, subtotal calculation, and the proceed to checkout button.
 
@@ -627,15 +627,15 @@ The cart is stored client-side in localStorage via Zustand `persist` middleware.
 
 **API Endpoint:** `POST /api/orders`
 
-> **Figure 6.8** — Screenshot of the Checkout page with shipping form
+> **Figure 6.11** — Screenshot of the Checkout page with shipping form
 >
-> `[INSERT FIGURE 6.8 HERE]`
+> `[INSERT FIGURE 6.11 HERE]`
 >
 > **Explanation:** This screenshot shows the checkout page with the shipping address form (full name, phone number, address, city), payment method selection (COD), order summary panel, and the place order button.
 
-> **Figure 6.9** — Screenshot of the Order Success confirmation page
+> **Figure 6.12** — Screenshot of the Order Success confirmation page
 >
-> `[INSERT FIGURE 6.9 HERE]`
+> `[INSERT FIGURE 6.12 HERE]`
 >
 > **Explanation:** This screenshot shows the order success page displaying the generated order number, a summary of the placed order, and a "Continue Shopping" button.
 
@@ -659,15 +659,15 @@ The order placement flow:
 - `POST /api/generate/paint-by-numbers` — initiate generation
 - `GET /api/generate/status/:generationId` — poll for status
 
-> **Figure 6.10** — Screenshot of the AI Generate page: prompt input area and complexity selector
+> **Figure 6.13** — Screenshot of the AI Generate page: prompt input area and complexity selector
 >
-> `[INSERT FIGURE 6.10 HERE]`
+> `[INSERT FIGURE 6.13 HERE]`
 >
 > **Explanation:** This screenshot shows the AI Generate page with the Vietnamese text input textarea (500-character limit with live counter), three complexity selector buttons (Easy/16 colours, Medium/28 colours, Hard/44 colours), and the Generate button with loading state.
 
-> **Figure 6.11** — Example of a completed AI-generated paint-by-numbers image
+> **Figure 6.14** — Example of a completed AI-generated paint-by-numbers image
 >
-> `[INSERT FIGURE 6.11 HERE]`
+> `[INSERT FIGURE 6.14 HERE]`
 >
 > **Explanation:** This figure shows a sample output image produced by the Gemini 2.5 Flash Image model, displaying a line-art style painting divided into numbered regions and accompanied by a colour palette reference strip at the bottom.
 
@@ -699,9 +699,9 @@ The order placement flow:
 
 **API Endpoint:** `GET /api/admin/stats`
 
-> **Figure 6.12** — Screenshot of the Admin Dashboard with statistics cards
+> **Figure 6.15** — Screenshot of the Admin Dashboard with statistics cards
 >
-> `[INSERT FIGURE 6.12 HERE]`
+> `[INSERT FIGURE 6.15 HERE]`
 >
 > **Explanation:** This screenshot shows the Admin Dashboard page displaying four statistics cards (Total Revenue, Total Orders, Total Products, Total Users) and an order status breakdown panel showing counts for pending, processing, shipping, and delivered orders.
 
@@ -713,9 +713,9 @@ The backend aggregates statistics concurrently using `Promise.all()` across thre
 
 **Key files:** `frontend/src/app/admin/products/page.tsx`, `backend/src/routes/admin/products.js`
 
-> **Figure 6.13** — Screenshot of the Admin Products page with product list and add/edit modal
+> **Figure 6.16** — Screenshot of the Admin Products page with product list and add/edit modal
 >
-> `[INSERT FIGURE 6.13 HERE]`
+> `[INSERT FIGURE 6.16 HERE]`
 >
 > **Explanation:** This screenshot shows the admin product management page with the paginated product data table (columns: title, category, price, status, actions) and the add/edit product modal overlay with form fields for all product attributes.
 
@@ -741,9 +741,9 @@ Admin authorisation is enforced at two independent layers:
 - **Client-side guard (`adminConfig.ts`):** Checks the user's email against the `ADMIN_EMAILS` list and redirects non-admin users after login.
 - **Server-side middleware (`requireAdmin`):** Returns HTTP `403 Forbidden` if the authenticated user's email is not in the `ADMIN_EMAILS` environment variable.
 
-> **Figure 7.1** — Two-layer authorisation diagram: client-side redirect guard and server-side middleware guard
+> **Figure 6.17** — Two-layer authorisation diagram: client-side redirect guard and server-side middleware guard
 >
-> `[INSERT FIGURE 7.1 HERE]`
+> `[INSERT FIGURE 6.17 HERE]`
 >
 > **Explanation:** This diagram illustrates the two-layer admin authorisation mechanism. Layer 1 (client-side, adminConfig.ts) prevents UI navigation by non-admin users. Layer 2 (server-side, requireAdmin middleware) enforces the restriction at the API level, returning 403 Forbidden even if the frontend guard is bypassed.
 
@@ -782,9 +782,9 @@ According to RFC 9110 (Fielding et al., 2022), HTTP status codes are grouped as 
 | 4xx | 400–499 | Client-side error |
 | 5xx | 500–599 | Server-side error |
 
-> **Figure 8.1** — Error propagation flow diagram: source → backend response → frontend user message
+> **Figure 6.18** — Error propagation flow diagram: source → backend response → frontend user message
 >
-> `[INSERT FIGURE 8.1 HERE]`
+> `[INSERT FIGURE 6.18 HERE]`
 >
 > **Explanation:** This flowchart illustrates how errors originating from four sources (Firebase Auth, Google Gemini API, Firestore, and Joi validation) propagate through the backend HTTP response layer and are ultimately presented to the user as specific toast notifications or redirect actions on the frontend.
 
@@ -854,9 +854,9 @@ The homepage is structured in six sections following the AIDA design pattern (At
 5. **Why Choose Yu Ling Store:** Four feature cards with hover float effect.
 6. **Final CTA:** Purple-to-pink gradient banner with two action buttons.
 
-> **Figure 9.1** — Annotated screenshot of the full Homepage showing all 6 sections
+> **Figure 6.19** — Annotated screenshot of the full Homepage showing all 6 sections
 >
-> `[INSERT FIGURE 9.1 HERE]`
+> `[INSERT FIGURE 6.19 HERE]`
 >
 > **Explanation:** This annotated screenshot shows all six sections of the homepage with section labels overlaid: Hero, Featured Products, About Us, 3 Simple Steps, Why Choose Us, and Final CTA.
 
@@ -870,9 +870,9 @@ The homepage is structured in six sections following the AIDA design pattern (At
 - Heart/favourite toggle button on each product card with instant state update.
 - Pagination via "Load More" button.
 
-> **Figure 9.2** — Screenshot of the Gallery page with filters applied and masonry grid
+> **Figure 6.20** — Screenshot of the Gallery page with filters applied and masonry grid
 >
-> `[INSERT FIGURE 9.2 HERE]`
+> `[INSERT FIGURE 6.20 HERE]`
 >
 > **Explanation:** This screenshot shows the gallery page with active filter selections applied and the resulting filtered product grid.
 
@@ -885,9 +885,9 @@ The homepage is structured in six sections following the AIDA design pattern (At
 - Loading animation with progress messages during generation.
 - Result display area with an "Add to Cart" button once the image is ready.
 
-> **Figure 9.3** — Screenshot of the Generate page: input state and result display state
+> **Figure 6.21** — Screenshot of the Generate page: input state and result display state
 >
-> `[INSERT FIGURE 9.3 HERE]`
+> `[INSERT FIGURE 6.21 HERE]`
 >
 > **Explanation:** This composite screenshot shows the Generate page in two states side by side: the left panel shows the input state with the prompt textarea and complexity buttons; the right panel shows the result state with the completed generated image and Add to Cart button.
 
@@ -901,9 +901,9 @@ The homepage is structured in six sections following the AIDA design pattern (At
 | **Favourites** | Grid of favourited products from `favoriteStore` |
 | **My Orders** | List of the user's orders with status badges |
 
-> **Figure 9.4** — Screenshot of the Profile page showing the three tabs
+> **Figure 6.22** — Screenshot of the Profile page showing the three tabs
 >
-> `[INSERT FIGURE 9.4 HERE]`
+> `[INSERT FIGURE 6.22 HERE]`
 >
 > **Explanation:** This screenshot shows the user profile page with the three-tab interface. The My Info tab is active, displaying the editable personal information form.
 
@@ -920,21 +920,21 @@ The admin panel provides four management areas:
 
 Access is protected by the two-layer authorisation mechanism described in Section 6.3.1.
 
-> **Figure 9.5** — Screenshot of the Admin Dashboard with statistics cards
+> **Figure 6.23** — Screenshot of the Admin Dashboard with statistics cards
 >
-> `[INSERT FIGURE 9.5 HERE]`
+> `[INSERT FIGURE 6.23 HERE]`
 >
 > **Explanation:** This screenshot shows the admin dashboard with four statistics summary cards and the order status breakdown panel.
 
-> **Figure 9.6** — Screenshot of the Admin Orders management table with status filter
+> **Figure 6.24** — Screenshot of the Admin Orders management table with status filter
 >
-> `[INSERT FIGURE 9.6 HERE]`
+> `[INSERT FIGURE 6.24 HERE]`
 >
 > **Explanation:** This screenshot shows the admin orders page with the status filter tabs and the order data table.
 
-> **Figure 9.7** — Screenshot of the Admin Products page with the add/edit modal
+> **Figure 6.25** — Screenshot of the Admin Products page with the add/edit modal
 >
-> `[INSERT FIGURE 9.7 HERE]`
+> `[INSERT FIGURE 6.25 HERE]`
 >
 > **Explanation:** This screenshot shows the admin products page with an open product add/edit modal, including the image upload area and all product attribute fields.
 
@@ -947,9 +947,9 @@ Access is protected by the two-layer authorisation mechanism described in Sectio
 - Right column: validated contact form with fields for Full Name, Email, Subject (dropdown), and Message (minimum 20 characters with live character counter).
 - FAQ section with six common questions and concise answers.
 
-> **Figure 9.8** — Screenshot of the Contact page showing the info panel and contact form
+> **Figure 6.26** — Screenshot of the Contact page showing the info panel and contact form
 >
-> `[INSERT FIGURE 9.8 HERE]`
+> `[INSERT FIGURE 6.26 HERE]`
 >
 > **Explanation:** This screenshot shows the contact page with the contact information panel on the left and the validated contact form on the right.
 
@@ -972,9 +972,9 @@ Access is protected by the two-layer authorisation mechanism described in Sectio
 
 **Backend (Render):** A `git push` to the `main` branch triggers the Render deploy hook. Render runs `npm install` and `npm start` to launch the Node.js service.
 
-> **Figure 10.1** — CI/CD pipeline diagram: GitHub → Vercel (frontend) and GitHub → Render (backend)
+> **Figure 6.27** — CI/CD pipeline diagram: GitHub → Vercel (frontend) and GitHub → Render (backend)
 >
-> `[INSERT FIGURE 10.1 HERE]`
+> `[INSERT FIGURE 6.27 HERE]`
 >
 > **Explanation:** This diagram shows the CI/CD pipeline for both the frontend and backend. The developer pushes to the GitHub mono-repository. Frontend changes trigger Vercel's webhook, which builds and deploys the Next.js application. Backend changes trigger Render's deploy hook, which starts the Node.js server. Environment variables are managed separately in the Vercel and Render dashboards.
 
