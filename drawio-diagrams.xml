@@ -140,99 +140,97 @@
        FIGURE 3.1 — SYSTEM ARCHITECTURE DIAGRAM (3-TIER)
        ================================================================ -->
   <diagram name="Fig 3.1 - System Architecture" id="fig31">
-    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" pageWidth="1169" pageHeight="827">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
       <root>
-        <mxCell id="0"/><mxCell id="1" parent="0"/>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
 
-        <!-- Tier 1: Client -->
-        <mxCell id="tier1" value="CLIENT TIER" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="60" width="1000" height="120" as="geometry"/>
+        <!-- ===== TIER 1: CLIENT (all children parent="1", absolute coords) ===== -->
+        <mxCell id="t1bg" value="CLIENT TIER  (Vercel Hosting)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;swimlaneLine=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="50" width="1060" height="140" as="geometry"/>
         </mxCell>
-        <mxCell id="browser" value="Browser" style="shape=mxgraph.cisco.computers_and_peripherals.pc;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="tier1">
-          <mxGeometry x="50" y="40" width="60" height="60" as="geometry"/>
+        <mxCell id="t1_browser" value="Web Browser" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="t1bg">
+          <mxGeometry x="30" y="50" width="130" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="nextjs" value="Next.js 14&#xa;App Router&#xa;TypeScript + Tailwind" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="tier1">
-          <mxGeometry x="200" y="35" width="180" height="60" as="geometry"/>
+        <mxCell id="t1_nextjs" value="Next.js 14&#xa;(App Router + TypeScript)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="t1bg">
+          <mxGeometry x="230" y="50" width="180" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="zustand" value="Zustand Store&#xa;(Auth / Cart / Favorites)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="tier1">
-          <mxGeometry x="420" y="35" width="180" height="60" as="geometry"/>
+        <mxCell id="t1_zustand" value="Zustand Store&#xa;(Auth / Cart / Favorites)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="t1bg">
+          <mxGeometry x="480" y="50" width="170" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="vercel" value="Vercel CDN&#xa;Global Edge Network" style="rounded=1;fillColor=#f0a30a;strokeColor=#BD7000;fontColor=#000000;fontSize=11;fontStyle=1;" vertex="1" parent="tier1">
-          <mxGeometry x="650" y="35" width="150" height="60" as="geometry"/>
+        <mxCell id="t1_tailwind" value="Tailwind CSS 3.4&#xa;+ Framer Motion" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="t1bg">
+          <mxGeometry x="720" y="50" width="150" height="55" as="geometry"/>
         </mxCell>
-        <mxCell id="e_br_nxt" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="browser" target="nextjs" parent="tier1"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e_nxt_zus" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="nextjs" target="zustand" parent="tier1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t1_vercel" value="Vercel CDN&#xa;(Global Edge Network)" style="rounded=1;fillColor=#f0a30a;strokeColor=#BD7000;fontColor=#000000;fontSize=11;fontStyle=1;" vertex="1" parent="t1bg">
+          <mxGeometry x="910" y="50" width="120" height="55" as="geometry"/>
+        </mxCell>
+        <!-- intra-tier arrows -->
+        <mxCell id="t1e1" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="t1_browser" target="t1_nextjs" parent="t1bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t1e2" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="t1_nextjs" target="t1_zustand" parent="t1bg"><mxGeometry relative="1" as="geometry"/></mxCell>
 
-        <!-- Arrow tier1 → tier2 -->
-        <mxCell id="arr1" value="HTTPS / REST API&#xa;Authorization: Bearer JWT" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;strokeColor=#666;fontSize=10;fontStyle=2;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points"><mxPoint x="580" y="180"/><mxPoint x="580" y="230"/></Array>
-          </mxGeometry>
-          <mxCell style="edgeLabel;fontSize=10;" vertex="1" connectable="0" parent="arr1"><mxGeometry relative="0.5" as="geometry"/></mxCell>
+        <!-- ===== TIER 2: SERVER ===== -->
+        <mxCell id="t2bg" value="SERVER TIER  (Render Cloud)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="260" width="1060" height="155" as="geometry"/>
         </mxCell>
-        <mxCell id="arr1real" value="HTTPS / REST API    Bearer JWT" style="text;fontSize=11;fontStyle=2;align=center;" vertex="1" parent="1">
-          <mxGeometry x="430" y="195" width="300" height="30" as="geometry"/>
+        <mxCell id="t2_express" value="Node.js 18 + Express&#xa;RESTful API Server" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="t2bg">
+          <mxGeometry x="30" y="50" width="175" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="arr1line" style="endArrow=block;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint x="580" y="185" as="sourcePoint"/><mxPoint x="580" y="230" as="targetPoint"/></mxGeometry>
+        <!-- middleware group -->
+        <mxCell id="t2_mwgroup" value="Middleware Pipeline" style="swimlane;startSize=25;fillColor=#EEF4FF;strokeColor=#99b0d4;fontSize=10;fontStyle=2;" vertex="1" parent="t2bg">
+          <mxGeometry x="240" y="35" width="490" height="100" as="geometry"/>
         </mxCell>
-
-        <!-- Tier 2: Server -->
-        <mxCell id="tier2" value="SERVER TIER" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="240" width="1000" height="180" as="geometry"/>
+        <mxCell id="t2_cors" value="CORS&#xa;+ Helmet" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="t2_mwgroup">
+          <mxGeometry x="10" y="35" width="100" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="express" value="Node.js + Express&#xa;RESTful API Server" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="tier2">
-          <mxGeometry x="50" y="40" width="180" height="60" as="geometry"/>
+        <mxCell id="t2_rl" value="Rate Limit&#xa;100 req/15min" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="t2_mwgroup">
+          <mxGeometry x="130" y="35" width="110" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="helmet" value="Helmet&#xa;(HTTP Headers)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="tier2">
-          <mxGeometry x="260" y="40" width="120" height="50" as="geometry"/>
+        <mxCell id="t2_jwt" value="JWT Auth&#xa;(Admin SDK)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="t2_mwgroup">
+          <mxGeometry x="260" y="35" width="100" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="cors" value="CORS&#xa;(Whitelist)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="tier2">
-          <mxGeometry x="400" y="40" width="100" height="50" as="geometry"/>
+        <mxCell id="t2_joi" value="Joi&#xa;Validation" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="t2_mwgroup">
+          <mxGeometry x="375" y="35" width="100" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="ratelimit" value="Rate Limit&#xa;100 req/15min" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="tier2">
-          <mxGeometry x="520" y="40" width="120" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="jwtmw" value="JWT Verify&#xa;(Firebase Admin)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="tier2">
-          <mxGeometry x="660" y="40" width="120" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="joi" value="Joi&#xa;Validation" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="tier2">
-          <mxGeometry x="800" y="40" width="100" height="50" as="geometry"/>
-        </mxCell>
-        <mxCell id="render" value="Render Cloud&#xa;(Hosting)" style="rounded=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="tier2">
-          <mxGeometry x="730" y="110" width="160" height="50" as="geometry"/>
-        </mxCell>
-        <!-- middleware label -->
-        <mxCell id="mwlbl" value="Middleware Pipeline:" style="text;fontSize=10;fontStyle=2;" vertex="1" parent="tier2">
-          <mxGeometry x="250" y="15" width="150" height="20" as="geometry"/>
+        <mxCell id="t2_mwe1" style="endArrow=block;endFill=1;" edge="1" source="t2_cors" target="t2_rl" parent="t2_mwgroup"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t2_mwe2" style="endArrow=block;endFill=1;" edge="1" source="t2_rl" target="t2_jwt" parent="t2_mwgroup"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t2_mwe3" style="endArrow=block;endFill=1;" edge="1" source="t2_jwt" target="t2_joi" parent="t2_mwgroup"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- express → mwgroup -->
+        <mxCell id="t2e_exp_mw" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="t2_express" target="t2_mwgroup" parent="t2bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t2_render" value="Render.com&#xa;(Hosting)" style="rounded=1;fillColor=#0050ef;strokeColor=#001DBC;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="t2bg">
+          <mxGeometry x="870" y="55" width="150" height="60" as="geometry"/>
         </mxCell>
 
-        <!-- Arrow tier2 → tier3 -->
-        <mxCell id="arr2line" style="endArrow=block;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1">
-          <mxGeometry relative="1" as="geometry"><mxPoint x="580" y="425" as="sourcePoint"/><mxPoint x="580" y="470" as="targetPoint"/></mxGeometry>
+        <!-- ===== TIER 3: DATA / SERVICE ===== -->
+        <mxCell id="t3bg" value="DATA / SERVICE TIER  (Google Cloud)" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="490" width="1060" height="145" as="geometry"/>
         </mxCell>
-        <mxCell id="arr2lbl" value="Firebase Admin SDK" style="text;fontSize=11;fontStyle=2;align=center;" vertex="1" parent="1">
-          <mxGeometry x="430" y="433" width="300" height="30" as="geometry"/>
+        <mxCell id="t3_fbauth" value="Firebase Auth&#xa;Identity / JWT Issuance" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="t3bg">
+          <mxGeometry x="30" y="45" width="175" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3_firestore" value="Cloud Firestore&#xa;NoSQL DB&#xa;(users/products/orders)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="t3bg">
+          <mxGeometry x="240" y="35" width="175" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3_storage" value="Firebase Storage&#xa;Image Files (.png)" style="shape=cylinder3;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="t3bg">
+          <mxGeometry x="460" y="35" width="155" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3_gemini" value="Gemini 2.5 Flash&#xa;Google AI Studio&#xa;(Image Generation)" style="rounded=1;fillColor=#9673a6;strokeColor=#6d4f7c;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="t3bg">
+          <mxGeometry x="660" y="40" width="175" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3_mymemory" value="MyMemory API&#xa;VI &#x2192; EN Translation" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="t3bg">
+          <mxGeometry x="880" y="45" width="155" height="65" as="geometry"/>
         </mxCell>
 
-        <!-- Tier 3: Data/Service -->
-        <mxCell id="tier3" value="DATA / SERVICE TIER" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="480" width="1000" height="150" as="geometry"/>
+        <!-- ===== INTER-TIER ARROWS (connect swimlane containers, parent="1") ===== -->
+        <mxCell id="arr_t1_t2" value="HTTPS / REST API  |  Authorization: Bearer JWT" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#444444;strokeWidth=2;fontSize=11;fontStyle=3;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="t1bg" target="t2bg" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="fbauth" value="Firebase Auth&#xa;Identity Provider&#xa;JWT Issuance" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="tier3">
-          <mxGeometry x="30" y="40" width="160" height="80" as="geometry"/>
+
+        <mxCell id="arr_t2_t3a" value="Firebase Admin SDK" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#444444;strokeWidth=2;fontSize=10;fontStyle=3;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" source="t2bg" target="t3bg" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="firestore" value="Cloud Firestore&#xa;NoSQL Database&#xa;users/products/orders&#xa;/generations" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="tier3">
-          <mxGeometry x="220" y="30" width="160" height="90" as="geometry"/>
-        </mxCell>
-        <mxCell id="storage" value="Firebase Storage&#xa;Image Files&#xa;(PNG, public URL)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="tier3">
-          <mxGeometry x="410" y="40" width="160" height="80" as="geometry"/>
-        </mxCell>
-        <mxCell id="gemini" value="Gemini 2.5 Flash Image&#xa;Google DeepMind&#xa;AI Image Generation" style="rounded=1;fillColor=#9673a6;strokeColor=#6d4f7c;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="tier3">
-          <mxGeometry x="610" y="30" width="180" height="90" as="geometry"/>
-        </mxCell>
-        <mxCell id="mymemory" value="MyMemory API&#xa;VI→EN Translation&#xa;(Free, no key)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="tier3">
-          <mxGeometry x="820" y="40" width="150" height="80" as="geometry"/>
+
+        <mxCell id="arr_t2_t3b" value="Gemini API (Axios)" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;startArrow=block;startFill=1;strokeColor=#6d4f7c;strokeWidth=2;fontSize=10;fontStyle=3;fontColor=#6d4f7c;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" source="t2bg" target="t3bg" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
         </mxCell>
 
       </root>

@@ -1,1383 +1,1100 @@
-<div align="center">
+﻿<div align="center">
 
 # FINAL YEAR PROJECT REPORT
-### Greenwich Template
 
-**Project Title:** Happy Coloring AI
-**Student:** [Full Name]
+**Project Title:** Happy Coloring AI — AI-Integrated Paint-by-Numbers E-Commerce Platform
+
+**Student Name:** [Full Name]
+
 **Student ID:** [ID Number]
+
 **Major:** Information Technology
+
 **Supervisor:** [Supervisor's Name]
-**Academic Year:** 2025 - 2026
+
+**Academic Year:** 2025 – 2026
+
+**Institution:** Greenwich University Vietnam
 
 </div>
 
 ---
 
 ## ACKNOWLEDGEMENTS
-[Insert your acknowledgements here]
+
+The author would like to express sincere gratitude to the supervisor for the continuous guidance and feedback throughout the development of this project. Appreciation also goes to the faculty of the Information Technology department at Greenwich University Vietnam for providing the academic foundation required to complete this work.
 
 ---
 
 ## TABLE OF CONTENTS
-- [Chapter 1 Introduction](#chapter-1-introduction)
-- [Chapter 2 Literature Review](#chapter-2-literature-review)
-- [Chapter 3 Technology and Tools](#chapter-3-technology-and-tools)
-- [Chapter 4 Software Product Requirements](#chapter-4-software-product-requirements)
-- [Chapter 5 Review of Software Development Methodologies](#chapter-5-review-of-software-development-methodologies)
-- [Chapter 6 Design and Implementation of your demo product](#chapter-6-design-and-implementation-of-your-demo-product)
-- [Chapter 7 Conclusions](#chapter-7-conclusions)
+
+- [Chapter 1 — Introduction](#chapter-1--introduction)
+- [Chapter 2 — Literature Review](#chapter-2--literature-review)
+- [Chapter 3 — Technology and Tools](#chapter-3--technology-and-tools)
+- [Chapter 4 — Software Product Requirements](#chapter-4--software-product-requirements)
+- [Chapter 5 — Review of Software Development Methodologies](#chapter-5--review-of-software-development-methodologies)
+- [Chapter 6 — Design and Implementation](#chapter-6--design-and-implementation)
+- [Chapter 7 — Conclusions](#chapter-7--conclusions)
 - [References](#references)
+- [Appendices](#appendices)
 
 ---
 
-## Chapter 1 Introduction
+## Chapter 1 — Introduction
 
-### 1.1 Introduction about the project subject
+### 1.1 Introduction to the Project Subject
 
 Paint-by-numbers is an art activity that helps users relax, focus, and develop aesthetic sensibility without requiring professional drawing skills. The global paint-by-numbers market is projected to reach USD 1.2 billion by 2028, growing at a CAGR of 6.1% (Grand View Research, 2023).
 
 However, traditional paint-by-numbers products have a fundamental limitation: buyers can only choose from pre-designed templates and cannot create artwork from their own ideas. The emergence of generative image AI models such as Google Gemini opens the possibility of fully personalising products on demand.
 
-This project builds an AI-integrated e-commerce platform that allows users to both purchase ready-made paint-by-numbers products and generate custom numbered templates from natural language descriptions.
-
----
+This project builds an AI-integrated e-commerce platform — **Happy Coloring AI** — that allows users to both purchase ready-made paint-by-numbers products and generate custom numbered templates from natural language descriptions in Vietnamese.
 
 > **Figure 1.1** — Screenshot of the Happy Coloring AI homepage (hero section)
 >
 > `[INSERT FIGURE 1.1 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 1.1** — screenshot of the happy coloring ai homepage (hero section). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
+>
+> **Explanation:** This figure shows the hero section of the Happy Coloring AI homepage, including the animated title "Color with Pure Elegance", two call-to-action buttons (Generate AI Art and Explore Gallery), and the full-width banner image with hover zoom effect.
 
 ---
 
-### 1.2 Project objectives
+### 1.2 Project Objectives
 
-### 1.3 Project plan
-(See Appendix A)
+The objectives of this project are as follows:
 
-### 1.4 Project outcomes
+- Build a fully functional online store supporting product browsing, shopping cart management, checkout, and order tracking.
+- Integrate AI image generation using Google Gemini to allow users to create custom paint-by-numbers artwork from Vietnamese text descriptions.
+- Build a complete administration panel supporting product, order, and user management.
+- Deploy the entire system to a production cloud environment with automated CI/CD pipelines.
+- Implement security best practices aligned with the OWASP Top 10 guidelines.
 
+### 1.3 Project Plan
 
-- Build a fully functional online store (product browsing, cart, checkout, order management)
-- Integrate AI image generation for paint-by-numbers artwork from Vietnamese text descriptions
-- Build an administration system for store management
-- Deploy the system to a cloud environment with automated CI/CD
+A detailed project schedule is provided in Appendix 2 — Schedule of Work.
 
-### 1.5 Project evaluation
-This project presents a functional custom-generated e-commerce system that executes AI prompts efficiently and correctly.
+### 1.4 Project Outcomes
+
+The following deliverables were achieved upon completion of the project:
+
+- A fully deployed e-commerce platform accessible at `https://happy-coloring-ai.vercel.app`
+- A RESTful backend API deployed at `https://paint-by-numbers-back-end.onrender.com`
+- An AI-powered artwork generation feature supporting three levels of complexity
+- An administration system with full CRUD operations for products, orders, and users
+- Automated CI/CD pipelines for both frontend (Vercel) and backend (Render)
+
+### 1.5 Project Evaluation
+
+This project presents a functional AI-integrated e-commerce system. The AI generation feature successfully produces paint-by-numbers line art from Vietnamese natural language input via the Google Gemini 2.5 Flash Image model. The system is deployed and accessible publicly. All stated objectives were met within the academic timeline.
 
 ### 1.6 Project Scope
 
-| In Scope                                     | Out of Scope                         |
-| -------------------------------------------- | ------------------------------------ |
-| User registration, login, profile management | Online payment gateway (VNPay, MoMo) |
-| Product browsing, filtering, sorting         | Real-time chat feature               |
-| Shopping cart, order placement (COD)         | OTP phone verification               |
-| Product favourites                           | Advanced system settings panel       |
-| AI artwork generation from text prompt       |                                      |
-| Admin statistics dashboard                   |                                      |
+The following table defines what is included and excluded from the scope of this project.
+
+| In Scope | Out of Scope |
+| --- | --- |
+| User registration, login, and profile management | Online payment gateway (VNPay, MoMo) |
+| Product browsing, filtering, and sorting | Real-time chat feature |
+| Shopping cart and order placement (COD) | OTP phone number verification |
+| Product favourites | Advanced system settings panel |
+| AI artwork generation from text prompt | |
+| Admin statistics dashboard | |
+| Admin product, order, and user management | |
 
 ---
 
-## Chapter 4 Software Product Requirements
-
-### 4.1 Review/overview of other similar products
-(Original comparison lacking; stakeholders detailed below)
-
-#### Stakeholders
-
-| Stakeholder               | Role                                                 |
-| ------------------------- | ---------------------------------------------------- |
-| **Customer (User)**       | Browse products, place orders, generate AI artwork   |
-| **Administrator (Admin)** | Manage products, orders, and users                   |
-| **System**                | Authentication, security, automated image generation |
-
-### 4.2 Use Case Diagrams/User Stories
-
-#### User Functions
-
-| ID    | Feature               | Description                                          |
-| ----- | --------------------- | ---------------------------------------------------- |
-| UC-01 | User Registration     | Create account with email and password               |
-| UC-02 | Login                 | Firebase authentication with "Remember Me" support   |
-| UC-03 | Forgot Password       | Send password-reset email via Firebase               |
-| UC-04 | Profile Update        | Edit name, phone number, address, date of birth      |
-| UC-05 | Product Gallery       | Browse products with filtering and sorting           |
-| UC-06 | Product Detail        | View full information for a single product           |
-| UC-07 | Favourites            | Add/remove products from a personal favourites list  |
-| UC-08 | Shopping Cart         | Add, remove, update item quantities                  |
-| UC-09 | Checkout              | Fill in shipping information and select COD payment  |
-| UC-10 | Order History         | View list and status of past orders                  |
-| UC-11 | AI Artwork Generation | Describe artwork in Vietnamese and select complexity |
-| UC-12 | Contact Us            | Send a message via the contact form                  |
-
----
-
-> **Figure 2.1** — Use Case Diagram showing interactions between User, Admin, and System
->
-> `[INSERT FIGURE 2.1 HERE — Use Case Diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 2.1** — use case diagram showing interactions between user, admin, and system. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-#### Administrator Functions
-
-| ID    | Feature            | Description                                  |
-| ----- | ------------------ | -------------------------------------------- |
-| UC-13 | Admin Dashboard    | Aggregate statistics: revenue, orders, users |
-| UC-14 | Product Management | Create, edit, delete products; upload images |
-| UC-15 | Order Management   | View, filter, and update order status        |
-| UC-16 | User Management    | Search users and disable accounts            |
-
-### 2.3. Non-Functional Requirements
-
-| Category            | Requirement                                                 |
-| ------------------- | ----------------------------------------------------------- |
-| **Performance**     | Page load time < 3 seconds for product listings             |
-| **Security**        | JWT authentication, HTTPS, rate limiting (100 req / 15 min) |
-| **Scalability**     | RESTful, stateless backend architecture                     |
-| **Availability**    | Frontend 99.9% uptime (Vercel); backend on Render free tier |
-| **Maintainability** | Decoupled frontend/backend; TypeScript for type safety      |
-
----
-
-
-## Chapter 5 Review of Software Development Methodologies
-
-### 5.1 Waterfall
-### 5.2 Spiral
-### 5.3 RAD (Prototyping)
-### 5.4 Agile
-### 5.5 Selection of software development methodology
-**Agile Methodology** was selected to ensure continuous feedback handling and rapid feature prototyping.
-
-## Chapter 6 Design and Implementation of your demo product
-
-### 6.1 Product Analysis and Design
-
-### 3.1. Architecture Overview
-
-The system follows a **Decoupled Client-Server Architecture** with a separate frontend and backend:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT TIER                          │
-│  Browser → Next.js 14 (App Router) → Vercel CDN            │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ HTTPS / REST API
-┌─────────────────────────▼───────────────────────────────────┐
-│                       SERVER TIER                           │
-│  Node.js + Express → Render Cloud                           │
-│  Middleware: Helmet, CORS, Rate Limit, JWT Verify           │
-└─────────────────────────┬───────────────────────────────────┘
-                          │ Firebase Admin SDK
-┌─────────────────────────▼───────────────────────────────────┐
-│                      DATA / SERVICE TIER                    │
-│  Firebase Auth │ Firestore (NoSQL) │ Firebase Storage       │
-│                    Google Gemini AI API                     │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-> **Figure 3.1** — System Architecture Diagram (three-tier overview)
->
-> `[INSERT FIGURE 3.1 HERE — Architecture diagram, e.g. drawn in draw.io]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 3.1** — system architecture diagram (three-tier overview). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 3.2. Authentication Flow
-
-```
-User → Firebase Auth SDK (Client)
-     → getIdToken() → JWT
-     → Authorization: Bearer <JWT>
-     → Backend: auth.verifyIdToken(JWT) [Firebase Admin SDK]
-     → req.user = { uid, email, isAdmin }
-```
-
-This design leverages Firebase Authentication as an Identity Provider; the backend does not store passwords or session data. According to Firebase Documentation (Google, 2024a), each ID Token is valid for 1 hour and is automatically refreshed by the Firebase SDK.
-
----
-
-> **Figure 3.2** — Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
->
-> `[INSERT FIGURE 3.2 HERE — Authentication sequence diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 3.2** — authentication sequence diagram: firebase auth sdk → jwt issuance → backend middleware verification. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 3.3. AI Image Generation Flow (Asynchronous Pattern)
-
-The AI generation feature uses a **Fire-and-Forget with Polling** design pattern:
-
-```
-Frontend           Backend                  External Services
-   │                  │                           │
-   ├─POST /generate──►│                           │
-   │◄─202 + jobId─────┤                           │
-   │                  ├─translatePrompt──────────►│ MyMemory API
-   │                  │◄─englishPrompt────────────┤
-   │                  ├─generateImage────────────►│ Gemini API
-   │                  │ (async, ~30–90s)           │
-   │                  │◄─base64 image─────────────┤
-   │                  ├─uploadStorage─────────────►│ Firebase Storage
-   │                  │◄─publicUrl────────────────┤
-   │                  ├─updateFirestore(completed) │
-   │                  │                           │
-   ├─GET /status/:id──►│ [every 5 seconds]         │
-   │◄─{status,imageUrl}┤                           │
-```
-
-**Why polling instead of WebSocket?** Render's free tier does not support persistent WebSocket connections. Polling every 5 seconds with a maximum of 60 attempts (5-minute timeout) is efficient and incurs minimal cost — only one Firestore document read per request.
-
----
-
-> **Figure 3.3** — AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
->
-> `[INSERT FIGURE 3.3 HERE — Full AI generation sequence diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 3.3** — ai generation sequence diagram: prompt input → translation → gemini call → storage upload → firestore update → polling. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-
-## Chapter 2 Literature Review
+## Chapter 2 — Literature Review
 
 ### 2.1 The Global Paint-by-Numbers Market
+
+Paint-by-numbers has evolved from a leisure hobby into a commercially significant product category. According to Grand View Research (2023), the global market is projected to reach USD 1.2 billion by 2028, driven by growing consumer interest in stress-relieving creative activities and the rise of home-based entertainment. The traditional model, however, is constrained by fixed template designs that limit personalisation.
+
 ### 2.2 Generative AI in Art Production
 
-## Chapter 3 Technology and Tools
+Generative AI models capable of producing images from text descriptions — commonly referred to as text-to-image models — have undergone rapid advancement since 2021. Google's Gemini model family (Google, 2024c), OpenAI's DALL·E series, and Stability AI's Stable Diffusion are among the leading systems. These models enable on-demand, personalised visual content creation at scale. Applying this technology to paint-by-numbers template production is a novel use case that directly addresses the personalisation limitation of traditional products.
 
-### 3.1 Chapter 3.1: Frontend Framework (Next.js, React)
+### 2.3 E-Commerce Platform Architectures
 
-| Technology          | Version | Purpose                                        |
-| ------------------- | ------- | ---------------------------------------------- |
-| **Next.js**         | 14.2.33 | React framework with App Router, SSR/SSG       |
-| **TypeScript**      | 5.x     | Static typing, reduced runtime errors          |
-| **Tailwind CSS**    | 3.4.0   | Utility-first CSS framework                    |
-| **Zustand**         | 4.4.7   | State management (auth, cart, favourites)      |
-| **Framer Motion**   | 10.18.0 | UI animations and transitions                  |
-| **Axios**           | 1.6.2   | HTTP client with request/response interceptors |
-| **Firebase SDK**    | 11.10.0 | Firebase Auth client-side SDK                  |
-| **react-hot-toast** | 2.4.1   | Toast notification UI                          |
+Modern e-commerce systems commonly adopt a decoupled architecture separating the frontend presentation layer from the backend business logic layer. Next.js, a React-based framework supporting Server-Side Rendering and Static Site Generation, is widely used for frontend development of e-commerce platforms due to its SEO benefits and performance optimisation capabilities (Next.js, 2024). Backend services are typically built with Node.js and Express, providing a lightweight and scalable RESTful API layer.
 
-**Why Next.js 14?** Next.js supports Server-Side Rendering, improving SEO for product pages. The App Router (introduced in Next.js 13) enables collocated layouts and loading states. Vercel — the company behind Next.js — provides free hosting with automated CI/CD from GitHub (Vercel, 2024).
+### 2.4 Firebase as a Backend-as-a-Service Platform
 
-**Why Zustand over Redux?** Zustand is significantly smaller (8 KB vs Redux Toolkit 40 KB+), requires no boilerplate actions or reducers, and includes a built-in `persist` middleware for localStorage synchronisation (Dai, 2021).
+Firebase, operated by Google Cloud, provides a suite of backend infrastructure services including authentication, a NoSQL document database (Cloud Firestore), and file storage. Firebase Authentication provides identity management with JSON Web Token issuance, eliminating the need for the application to manage password storage (Google, 2024a). This significantly reduces security risk and development effort for authentication-related features.
 
 ---
+
+## Chapter 3 — Technology and Tools
+
+### 3.1 Frontend Framework
+
+The frontend of the Happy Coloring AI system is built using the following technologies.
+
+| Technology | Version | Purpose |
+| --- | --- | --- |
+| **Next.js** | 14.2.33 | React framework with App Router, SSR/SSG |
+| **TypeScript** | 5.x | Static typing, reduced runtime errors |
+| **Tailwind CSS** | 3.4.0 | Utility-first CSS framework |
+| **Zustand** | 4.4.7 | State management (auth, cart, favourites) |
+| **Framer Motion** | 10.18.0 | UI animations and transitions |
+| **Axios** | 1.6.2 | HTTP client with request/response interceptors |
+| **Firebase SDK** | 11.10.0 | Firebase Auth client-side SDK |
+| **react-hot-toast** | 2.4.1 | Toast notification UI |
+
+**Rationale for Next.js 14:** Next.js supports Server-Side Rendering, improving SEO for product pages. The App Router (introduced in Next.js 13) enables collocated layouts and loading states. Vercel — the company behind Next.js — provides free hosting with automated CI/CD from GitHub (Vercel, 2024).
+
+**Rationale for Zustand over Redux:** Zustand is significantly smaller (8 KB vs Redux Toolkit 40 KB+), requires no boilerplate actions or reducers, and includes a built-in `persist` middleware for localStorage synchronisation (Dai, 2021).
 
 > **Figure 4.1** — Frontend technology stack diagram showing component relationships
 >
-> `[INSERT FIGURE 4.1 HERE — Frontend tech stack diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 4.1** — frontend technology stack diagram showing component relationships. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 3.2 Chapter 3.2: Backend Framework (Node.js, Express)
-
-| Technology             | Version | Purpose                                        |
-| ---------------------- | ------- | ---------------------------------------------- |
-| **Node.js**            | 18+     | Server-side JavaScript runtime                 |
-| **Express**            | 4.18.2  | Web framework for RESTful routing              |
-| **Firebase Admin SDK** | 10.3.0  | JWT verification, Firestore and Storage access |
-| **Helmet**             | 7.1.0   | HTTP security headers                          |
-| **CORS**               | 2.8.5   | Cross-Origin Resource Sharing                  |
-| **express-rate-limit** | 7.1.5   | Request rate limiting per IP                   |
-| **Joi**                | 17.11.0 | Input schema validation                        |
-| **Morgan**             | 1.10.0  | HTTP request logging                           |
-| **Axios**              | 1.6.2   | Outbound calls to Gemini and MyMemory APIs     |
-| **Swagger UI**         | 5.0.1   | Auto-generated API documentation               |
-
-### 3.3 Chapter 3.3: Cloud Infrastructure (Firebase, Vercel, Render)
-
-| Service                     | Provider        | Purpose                             |
-| --------------------------- | --------------- | ----------------------------------- |
-| **Firebase Authentication** | Google Cloud    | User identity management            |
-| **Cloud Firestore**         | Google Cloud    | NoSQL document database             |
-| **Firebase Storage**        | Google Cloud    | Image file storage                  |
-| **Vercel**                  | Vercel Inc.     | Frontend hosting with global CDN    |
-| **Render**                  | Render Inc.     | Backend Node.js hosting             |
-| **Gemini 2.5 Flash Image**  | Google DeepMind | AI image generation                 |
-| **MyMemory Translation**    | Translated.net  | Free Vietnamese→English translation |
+> `[INSERT FIGURE 4.1 HERE]`
+>
+> **Explanation:** This diagram illustrates the layered structure of the frontend technology stack, from the Vercel CDN hosting layer at the top, through the Next.js framework, down to the state management (Zustand), HTTP client (Axios), and Firebase Auth SDK layers at the bottom.
 
 ---
+
+### 3.2 Backend Framework
+
+The backend API server is built using the following technologies.
+
+| Technology | Version | Purpose |
+| --- | --- | --- |
+| **Node.js** | 18+ | Server-side JavaScript runtime |
+| **Express** | 4.18.2 | Web framework for RESTful routing |
+| **Firebase Admin SDK** | 10.3.0 | JWT verification, Firestore and Storage access |
+| **Helmet** | 7.1.0 | HTTP security headers |
+| **CORS** | 2.8.5 | Cross-Origin Resource Sharing |
+| **express-rate-limit** | 7.1.5 | Request rate limiting per IP |
+| **Joi** | 17.11.0 | Input schema validation |
+| **Morgan** | 1.10.0 | HTTP request logging |
+| **Axios** | 1.6.2 | Outbound calls to Gemini and MyMemory APIs |
+| **Swagger UI** | 5.0.1 | Auto-generated API documentation |
+
+### 3.3 Cloud Infrastructure
+
+The system is deployed across three cloud platforms, each serving a distinct infrastructure role.
+
+| Service | Provider | Purpose |
+| --- | --- | --- |
+| **Firebase Authentication** | Google Cloud | User identity management and JWT issuance |
+| **Cloud Firestore** | Google Cloud | NoSQL document database |
+| **Firebase Storage** | Google Cloud | Image file storage (PNG files) |
+| **Vercel** | Vercel Inc. | Frontend hosting with global CDN |
+| **Render** | Render Inc. | Backend Node.js hosting |
+| **Gemini 2.5 Flash Image** | Google DeepMind | AI image generation |
+| **MyMemory Translation** | Translated.net | Free Vietnamese→English translation |
 
 > **Figure 4.2** — Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
 >
-> `[INSERT FIGURE 4.2 HERE — Cloud infrastructure / deployment overview diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 4.2** — cloud infrastructure diagram: vercel ↔ render ↔ firebase ↔ google ai. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+> `[INSERT FIGURE 4.2 HERE]`
+>
+> **Explanation:** This diagram illustrates the deployment topology of the Happy Coloring AI system, showing how the Vercel-hosted frontend, Render-hosted backend, Firebase platform services, and Google Gemini AI API are interconnected. GitHub acts as the shared source code repository triggering CI/CD pipelines for both Vercel and Render.
 
+---
+
+## Chapter 4 — Software Product Requirements
+
+### 4.1 Overview of Similar Products
+
+Existing paint-by-numbers platforms, such as Pictorem and PaintYourNumbers, offer only pre-designed template catalogues with no personalisation capability. No existing commercial platform provides AI-driven, on-demand generation of paint-by-numbers templates from natural language input. This gap represents the primary differentiation of Happy Coloring AI.
+
+#### Stakeholders
+
+| Stakeholder | Role |
+| --- | --- |
+| **Customer (User)** | Browse products, place orders, generate AI artwork |
+| **Administrator (Admin)** | Manage products, orders, and users |
+| **System** | Authentication, security, automated image generation |
+
+### 4.2 Use Case Diagrams and User Stories
+
+#### 4.2.1 Customer Use Cases
+
+| ID | Feature | Description |
+| --- | --- | --- |
+| UC-01 | User Registration | Create account with email and password |
+| UC-02 | Login | Firebase authentication with "Remember Me" support |
+| UC-03 | Forgot Password | Send password-reset email via Firebase |
+| UC-04 | Profile Update | Edit name, phone number, address, date of birth |
+| UC-05 | Product Gallery | Browse products with filtering and sorting |
+| UC-06 | Product Detail | View full information for a single product |
+| UC-07 | Favourites | Add/remove products from a personal favourites list |
+| UC-08 | Shopping Cart | Add, remove, update item quantities |
+| UC-09 | Checkout | Fill in shipping information and select COD payment |
+| UC-10 | Order History | View list and status of past orders |
+| UC-11 | AI Artwork Generation | Describe artwork in Vietnamese and select complexity |
+| UC-12 | Contact Us | Send a message via the contact form |
+
+> **Figure 2.1** — Use Case Diagram showing interactions between User, Admin, and System
+>
+> `[INSERT FIGURE 2.1 HERE]`
+>
+> **Explanation:** This use case diagram maps all 16 use cases (UC-01 through UC-16) to their respective actors: Customer, Administrator, and System. Include relationships are shown between UC-02 and JWT Authentication, UC-11 and AI Image Generation, and UC-03 and Email Notification.
 
 ---
 
-### 4.4 ERD Database Design
-The database relies on NoSQL structure (Firestore Collections)
+#### 4.2.2 Administrator Use Cases
 
-### 4.5 Sitemap
-- `/` : Homepage
-- `/gallery` : Products
-- `/generate` : AI Interface
-- `/cart`, `/checkout`, `/login`, `/admin`
+| ID | Feature | Description |
+| --- | --- | --- |
+| UC-13 | Admin Dashboard | Aggregate statistics: revenue, orders, users |
+| UC-14 | Product Management | Create, edit, delete products; upload images |
+| UC-15 | Order Management | View, filter, and update order status |
+| UC-16 | User Management | Search users and disable accounts |
 
-Cloud Firestore is a NoSQL document database. According to Google Firebase documentation (Google, 2024b), data is organised in a Collection → Document → Fields hierarchy.
+### 4.3 Non-Functional Requirements
 
----
+| Category | Requirement |
+| --- | --- |
+| **Performance** | Page load time < 3 seconds for product listings |
+| **Security** | JWT authentication, HTTPS, rate limiting (100 req / 15 min) |
+| **Scalability** | RESTful, stateless backend architecture |
+| **Availability** | Frontend 99.9% uptime (Vercel); backend on Render free tier |
+| **Maintainability** | Decoupled frontend/backend; TypeScript for type safety |
+
+### 4.4 Database Design (Firestore Collections)
+
+Cloud Firestore is a NoSQL document database. According to Google Firebase documentation (Google, 2024b), data is organised in a Collection → Document → Fields hierarchy. The system uses four top-level collections.
 
 > **Figure 5.1** — Firestore data model overview showing 4 collections and their relationships
 >
-> `[INSERT FIGURE 5.1 HERE — Firestore entity-relationship / collections diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 5.1** — firestore data model overview showing 4 collections and their relationships. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 5.1. Collection `users`
-
-```
-users/{uid}
-├── uid            : string   — Firebase Auth UID (primary key)
-├── email          : string   — user's email address (unique)
-├── displayName    : string   — display name
-├── role           : string   — "user" | "admin"
-├── phoneNumber    : string   — phone number (optional)
-├── address        : string   — shipping address (optional)
-├── dateOfBirth    : string   — ISO 8601 date (optional)
-├── createdAt      : string   — ISO 8601 timestamp
-└── updatedAt      : string   — ISO 8601 timestamp
-```
-
-### 5.2. Collection `products`
-
-```
-products/{productId}
-├── title          : string   — product name
-├── description    : string   — full description
-├── price          : number   — price in VND
-├── category       : string   — category name ("Flowers & Nature", ...)
-├── difficulty     : string   — "easy" | "medium" | "hard"
-├── dimensions     : string   — canvas size ("30x40 cm")
-├── colors         : number   — number of paint colours
-├── imageUrl       : string   — main image URL (Firebase Storage)
-├── thumbnailUrl   : string   — thumbnail URL
-├── status         : string   — "active" | "inactive"
-├── sales          : number   — total units sold (aggregated from orders)
-├── createdAt      : string   — ISO 8601 timestamp
-└── updatedAt      : string   — ISO 8601 timestamp
-```
-
-### 5.3. Collection `orders`
-
-```
-orders/{orderId}
-├── orderNumber    : string   — order code "ORD-XXXXXXXX-XXXX"
-├── userId         : string   — UID of the customer
-├── items[]        : array    — list of ordered products
-│   ├── productId  : string
-│   ├── title      : string
-│   ├── price      : number
-│   ├── quantity   : number
-│   └── isAIProduct: boolean
-├── shippingAddress:
-│   ├── fullName   : string
-│   ├── phone      : string
-│   ├── address    : string
-│   └── city       : string
-├── totalAmount    : number   — total price in VND
-├── paymentMethod  : string   — "cod" | "bank_transfer"
-├── status         : string   — "pending"|"processing"|"shipping"|"delivered"|"cancelled"
-├── paymentStatus  : string   — "pending" | "paid" | "failed"
-├── note           : string   — delivery note (optional)
-├── createdAt      : string
-└── updatedAt      : string
-```
-
-### 5.4. Collection `generations`
-
-```
-generations/{generationId}
-├── id             : string   — Firestore document ID
-├── userId         : string   — UID of the creator
-├── prompt         : string   — original description (in Vietnamese)
-├── style          : string   — art style ("realistic", "anime", ...)
-├── complexity     : string   — "easy" | "medium" | "hard"
-├── status         : string   — "processing" | "completed" | "failed"
-├── imageUrl       : string   — result image URL (after completion)
-├── error          : string   — error message (if failed)
-├── createdAt      : string   — generation start time
-├── completedAt    : string   — completion time
-└── failedAt       : string   — failure time
-```
+> `[INSERT FIGURE 5.1 HERE]`
+>
+> **Explanation:** This entity-relationship diagram illustrates the four Firestore collections — users, products, orders, and generations — and the foreign-key relationships between them (userId in orders and generations referencing users; productId in order items referencing products).
 
 ---
 
-### 6.2 Features include with screenshots
+#### 4.4.1 Collection `users`
+
+Each document in this collection represents a registered user account and is keyed by the Firebase Authentication UID.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `uid` | string | Firebase Auth UID (primary key) |
+| `email` | string | User's email address (unique) |
+| `displayName` | string | Display name |
+| `role` | string | `"user"` or `"admin"` |
+| `phoneNumber` | string? | Phone number (optional) |
+| `address` | string? | Shipping address (optional) |
+| `dateOfBirth` | string? | ISO 8601 date (optional) |
+| `createdAt` | string | ISO 8601 timestamp |
+| `updatedAt` | string | ISO 8601 timestamp |
+
+#### 4.4.2 Collection `products`
+
+Each document represents a paint-by-numbers product available in the store.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | string | Product name |
+| `description` | string | Full description |
+| `price` | number | Price in VND |
+| `category` | string | Category name (e.g. "Flowers & Nature") |
+| `difficulty` | string | `"easy"`, `"medium"`, or `"hard"` |
+| `dimensions` | string | Canvas size (e.g. "30x40 cm") |
+| `colors` | number | Number of paint colours |
+| `imageUrl` | string | Main image URL (Firebase Storage) |
+| `thumbnailUrl` | string | Thumbnail URL |
+| `status` | string | `"active"` or `"inactive"` |
+| `sales` | number | Total units sold (aggregated from orders) |
+| `createdAt` | string | ISO 8601 timestamp |
+| `updatedAt` | string | ISO 8601 timestamp |
+
+#### 4.4.3 Collection `orders`
+
+Each document represents a customer order.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `orderNumber` | string | Human-readable order code (e.g. `ORD-M6JZTW12-K3P7`) |
+| `userId` | string | UID of the customer (FK → users) |
+| `items[]` | array | List of ordered products |
+| `shippingAddress` | object | fullName, phone, address, city |
+| `totalAmount` | number | Total price in VND |
+| `paymentMethod` | string | `"cod"` or `"bank_transfer"` |
+| `status` | string | `"pending"` / `"processing"` / `"shipping"` / `"delivered"` / `"cancelled"` |
+| `paymentStatus` | string | `"pending"` / `"paid"` / `"failed"` |
+| `note` | string? | Delivery note (optional) |
+| `createdAt` | string | ISO 8601 timestamp |
+| `updatedAt` | string | ISO 8601 timestamp |
+
+#### 4.4.4 Collection `generations`
+
+Each document represents a single AI image generation job.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Firestore document ID |
+| `userId` | string | UID of the creator (FK → users) |
+| `prompt` | string | Original description (Vietnamese) |
+| `style` | string | Art style (e.g. "realistic", "anime") |
+| `complexity` | string | `"easy"`, `"medium"`, or `"hard"` |
+| `status` | string | `"processing"` / `"completed"` / `"failed"` |
+| `imageUrl` | string | Result image URL (after completion) |
+| `error` | string? | Error message (if failed) |
+| `createdAt` | string | Generation start time |
+| `completedAt` | string? | Completion time |
+| `failedAt` | string? | Failure time |
+
+### 4.5 Sitemap
+
+The application consists of the following top-level routes:
+
+| Path | Description |
+| --- | --- |
+| `/` | Homepage (landing page) |
+| `/gallery` | Product gallery with filters |
+| `/products/[id]` | Product detail page |
+| `/generate` | AI artwork generation interface |
+| `/cart` | Shopping cart |
+| `/checkout` | Order placement form |
+| `/order-success` | Order confirmation |
+| `/login` | Login page |
+| `/register` | Registration page |
+| `/forgot-password` | Password reset page |
+| `/profile` | User profile with tabs |
+| `/contact` | Contact form and information |
+| `/admin` | Admin dashboard (protected) |
+| `/admin/products` | Admin product management |
+| `/admin/orders` | Admin order management |
+| `/admin/users` | Admin user management |
 
 ---
 
-### 6.1. USER REGISTRATION (UC-01)
+## Chapter 5 — Review of Software Development Methodologies
 
-**Files:** `frontend/src/app/register/page.tsx`, `backend/src/routes/auth.js`
+### 5.1 Waterfall
+
+The Waterfall methodology follows a strictly sequential process: Requirements → Design → Implementation → Testing → Deployment. Each phase must be fully completed before the next begins. This approach is well-suited to projects with completely stable and unchanging requirements. However, it is unsuitable for this project, as requirements for the AI generation feature evolved iteratively based on testing results.
+
+### 5.2 Spiral
+
+The Spiral model emphasises risk analysis at each iteration cycle. It is well-suited to large, high-risk projects requiring formal risk management at each stage. For a single-developer academic project of moderate complexity, the overhead of formal risk assessment at each spiral cycle is disproportionate.
+
+### 5.3 RAD (Rapid Application Development / Prototyping)
+
+RAD focuses on building rapid prototypes to gather user feedback quickly. While this accelerates the early discovery phase, it can lead to poorly structured codebases if not combined with a disciplined architectural approach.
+
+### 5.4 Agile
+
+Agile methodology is an iterative, incremental development approach built on short development cycles called sprints. Each sprint delivers a working software increment. Continuous feedback and adaptation are central principles (Beck et al., 2001). Agile supports flexible scope management and is widely adopted in both academic and commercial software projects.
+
+### 5.5 Selected Methodology
+
+**Agile methodology** was selected for this project for the following reasons:
+
+- Requirements for the AI generation pipeline were refined iteratively based on testing Gemini API outputs.
+- Incremental delivery allowed individual features (authentication, product catalogue, AI generation) to be built, tested, and deployed independently.
+- The decoupled frontend/backend architecture maps naturally to sprint-based parallel development.
+- Lightweight Agile practices (sprint planning, backlog management) are proportionate to the project's scope and team size.
 
 ---
+
+## Chapter 6 — Design and Implementation
+
+### 6.1 System Architecture and Design
+
+#### 6.1.1 Architecture Overview
+
+The system follows a **three-tier, decoupled Client-Server Architecture**:
+
+- **Client Tier:** A Next.js 14 single-page application hosted on Vercel's global CDN. The frontend communicates with the backend exclusively through HTTPS REST API calls.
+- **Server Tier:** A Node.js + Express RESTful API server hosted on Render Cloud. All business logic, data validation, and external API calls are handled in this tier.
+- **Data / Service Tier:** Firebase Auth, Cloud Firestore, Firebase Storage, and Google Gemini AI API, all managed by Google Cloud.
+
+> **Figure 3.1** — System Architecture Diagram (three-tier overview)
+>
+> `[INSERT FIGURE 3.1 HERE]`
+>
+> **Explanation:** This three-tier architecture diagram shows the Client Tier (Next.js + Zustand on Vercel), the Server Tier (Node.js + Express middleware pipeline on Render), and the Data/Service Tier (Firebase Auth, Firestore, Storage, and Gemini AI on Google Cloud). Bidirectional arrows between tiers are labelled with the communication protocol used (HTTPS/REST API between tiers 1 and 2; Firebase Admin SDK and Axios HTTP between tiers 2 and 3).
+
+---
+
+#### 6.1.2 Authentication Flow
+
+The system delegates all authentication to Firebase Authentication. The backend does not store passwords or issue tokens; it only verifies tokens issued by Firebase.
+
+The authentication flow operates as follows:
+
+1. The user submits credentials via the Firebase Auth SDK (`signInWithEmailAndPassword`).
+2. Firebase validates the credentials and returns a Firebase User object.
+3. The client calls `getIdToken()` to obtain a signed JWT (RS256, valid for 1 hour).
+4. All subsequent API requests include the JWT in the `Authorization: Bearer <token>` header.
+5. The backend's `authenticateUser` middleware calls `auth.verifyIdToken(token)` via the Firebase Admin SDK, which validates the RS256 signature without a database lookup.
+6. The decoded token payload `{ uid, email }` is attached to `req.user` for use in route handlers.
+
+> **Figure 3.2** — Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
+>
+> `[INSERT FIGURE 3.2 HERE]`
+>
+> **Explanation:** This sequence diagram shows the complete authentication flow across five participants: User (Browser), Firebase Auth SDK (client-side), Backend (Express + Admin SDK), Firebase Auth Server (Google), and Firestore. Steps 1–6 cover credential submission and JWT issuance; steps 7–12 cover an authenticated API request, backend verification, and data response.
+
+---
+
+#### 6.1.3 AI Image Generation Flow
+
+The AI generation feature uses an **asynchronous Fire-and-Forget with Polling** design pattern. This is necessary because the Gemini API image generation process takes approximately 30–90 seconds, which exceeds the HTTP timeout threshold for synchronous requests.
+
+The generation flow proceeds through five steps:
+
+**Step 1 — Translation:** The user's Vietnamese prompt is translated to English via the MyMemory API (10-second timeout; falls back to the original text if translation fails).
+
+**Step 2 — Prompt Construction:** The translated prompt is inserted into a structured template specifying line art drawing rules, colour count, numbering sequence, and detail level appropriate to the selected complexity level.
+
+**Step 3 — Gemini API Call:** The constructed prompt is sent to the Gemini 2.5 Flash Image model via HTTPS POST. The response contains a base64-encoded PNG image in `candidates[0].content.parts[n].inlineData.data`.
+
+**Step 4 — Firebase Storage Upload:** The decoded image buffer is uploaded to Firebase Storage under the `generations/` path and made publicly accessible.
+
+**Step 5 — Firestore Update and Frontend Polling:** The Firestore generation document is updated with `status: "completed"` and the public image URL. The frontend polls `GET /api/generate/status/:id` every 5 seconds (maximum 60 attempts / 5 minutes) until the status transitions to `"completed"` or `"failed"`.
+
+**Rationale for polling over WebSocket:** Render's free tier does not support persistent WebSocket connections. Polling every 5 seconds with a maximum of 60 attempts is efficient and incurs minimal cost — one Firestore document read per request.
+
+> **Figure 3.3** — AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
+>
+> `[INSERT FIGURE 3.3 HERE]`
+>
+> **Explanation:** This sequence diagram illustrates the complete asynchronous AI generation flow across six participants: Frontend (Next.js), Backend (Express), MyMemory Translation API, Gemini 2.5 Flash Image, Firebase Storage, and Firestore. The diagram distinguishes between the immediate 202 Accepted response (step 3) and the background async processing block (steps 4–10), as well as the frontend polling loop (steps 11–12).
+
+---
+
+### 6.2 Feature Implementation
+
+#### 6.2.1 User Registration (UC-01)
+
+**Key files:** `frontend/src/app/register/page.tsx`, `backend/src/routes/auth.js`
 
 > **Figure 6.1** — Screenshot of the Registration page
 >
 > `[INSERT FIGURE 6.1 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.1** — screenshot of the registration page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the registration form with input fields for email address, password, and display name, along with client-side validation feedback and the submit button.
 
+The registration process executes in ten steps:
 
----
+1. User submits email, password, and display name via the registration form.
+2. Frontend validates input (email format, password minimum 6 characters).
+3. `createUserWithEmailAndPassword(auth, email, password)` — Firebase SDK creates the account.
+4. `updateProfile(user, { displayName })` — sets the display name in Firebase Auth.
+5. `user.getIdToken()` — obtains the JWT for the newly created account.
+6. `POST /api/auth/register` with Bearer token and body `{ email, displayName }`.
+7. Backend calls `verifyIdToken(token)` to confirm the user exists in Firebase Auth.
+8. Backend creates a Firestore document `users/{uid}` with `role: "user"`.
+9. Backend returns `201 Created`.
+10. Frontend redirects the user to the homepage.
 
-**Execution Flow:**
+The `/api/auth/register` route supports a dual-mode design: if a Bearer token is present, the user was already created by the Firebase SDK and the backend only creates the Firestore document. If no token is present, the backend creates the Firebase Auth user first.
 
-```
-Step 1:  User fills in email, password, and display name
-Step 2:  Frontend validates (email format, password ≥ 6 characters)
-Step 3:  createUserWithEmailAndPassword(auth, email, password) — Firebase SDK
-Step 4:  updateProfile(user, { displayName }) — set display name in Firebase Auth
-Step 5:  user.getIdToken() — obtain JWT
-Step 6:  POST /api/auth/register + Bearer token + body { email, displayName }
-Step 7:  Backend verifyIdToken(token) → confirms user exists in Firebase Auth
-Step 8:  Creates Firestore document users/{uid} with role: "user"
-Step 9:  Returns 201 Created
-Step 10: Redirect user to homepage
-```
-
-**Dual-mode design:** The `/api/auth/register` route supports two flows:
-
-- **Flow A (Bearer token present):** User was already created by the Firebase SDK → backend only creates the Firestore document
-- **Flow B (no token):** Backend creates the Firebase Auth user first, then the Firestore document
-
-**Error Codes:**
-
-| Code                        | Source        | Cause                              | User-facing Message                      |
-| --------------------------- | ------------- | ---------------------------------- | ---------------------------------------- |
-| `auth/email-already-in-use` | Firebase Auth | Email already registered           | "This email is already in use"           |
-| `auth/weak-password`        | Firebase Auth | Password shorter than 6 characters | "Password must be at least 6 characters" |
-| `auth/invalid-email`        | Firebase Auth | Malformed email address            | "Invalid email address"                  |
-| `400 Bad Request`           | Backend       | Missing email field in body        | `{ error: "Email is required" }`         |
-| `500 Internal Server Error` | Backend       | Firestore write failure            | `{ error: "Internal server error" }`     |
+| Error Code | Source | Cause | User-facing Message |
+| --- | --- | --- | --- |
+| `auth/email-already-in-use` | Firebase Auth | Email already registered | "This email is already in use" |
+| `auth/weak-password` | Firebase Auth | Password shorter than 6 characters | "Password must be at least 6 characters" |
+| `auth/invalid-email` | Firebase Auth | Malformed email address | "Invalid email address" |
+| `400 Bad Request` | Backend | Missing email field in body | "Email is required" |
+| `500 Internal Server Error` | Backend | Firestore write failure | "Internal server error" |
 
 ---
 
-### 6.2. LOGIN (UC-02)
+#### 6.2.2 Login (UC-02)
 
-**Files:** `frontend/src/app/login/page.tsx`, `frontend/src/store/authStore.ts`
-
----
+**Key files:** `frontend/src/app/login/page.tsx`, `frontend/src/store/authStore.ts`
 
 > **Figure 6.2** — Screenshot of the Login page
 >
 > `[INSERT FIGURE 6.2 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.2** — screenshot of the login page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the login form with email and password fields, a "Remember Me" checkbox, and a "Forgot Password" link.
 
+The backend has no login route. All authentication is handled client-side through the Firebase Auth SDK. The login flow is as follows:
 
----
+1. `signInWithEmailAndPassword(auth, email, password)` — Firebase SDK authenticates the user.
+2. `user.getIdToken()` — obtains the JWT (valid for 1 hour).
+3. Token storage is determined by the "Remember Me" selection: `true` stores the token in `localStorage`; `false` stores it in `sessionStorage`.
+4. `isAdmin(email)` checks the `ADMIN_EMAILS` list from `adminConfig.ts` and redirects accordingly.
+
+**Automatic token refresh** is handled by Axios interceptors in `api.ts`:
+
+- **Request interceptor:** Always calls `auth.currentUser.getIdToken(true)` before each request to obtain a fresh token.
+- **Response interceptor:** On a `401 Unauthorized` response, silently retries once with a fresh token. If the retry also returns `401`, the session is cleared and the user is redirected to `/login`.
 
 > **Figure 6.3** — Axios interceptor flow: request token injection and automatic 401 retry logic
 >
-> `[INSERT FIGURE 6.3 HERE — Interceptor flow diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.3** — axios interceptor flow: request token injection and automatic 401 retry logic. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+> `[INSERT FIGURE 6.3 HERE]`
+>
+> **Explanation:** This flowchart shows the Axios interceptor pipeline. The request interceptor always fetches a fresh JWT before injecting it into the Authorization header. The response interceptor handles 401 errors by attempting a single silent token refresh and retry; if the retry also fails, the user is logged out and redirected to the login page.
 
-
----
-
-**Important note:** The backend has **no login route**. All authentication is handled client-side through the Firebase Auth SDK. This is an intentional design decision to prevent the backend from issuing tokens outside of Firebase's control.
-
-**Execution Flow:**
-
-```
-Step 1: signInWithEmailAndPassword(auth, email, password) — Firebase SDK
-Step 2: user.getIdToken() — obtain JWT (valid for 1 hour)
-Step 3: Store token:
-         rememberMe = true  → localStorage["authToken"]
-         rememberMe = false → sessionStorage["authToken"]
-Step 4: Check isAdmin(email) — reads ADMIN_EMAILS from adminConfig.ts
-         isAdmin → redirect /admin
-         user    → redirect /
-```
-
-**Automatic token refresh (api.ts interceptors):**
-
-```javascript
-// Request Interceptor: always fetch the latest token before each request
-fetchFreshToken() → auth.currentUser.getIdToken(true) → Bearer <token>
-
-// Response Interceptor: on 401 → silently retry once with a fresh token
-if (error.response.status === 401 && !retried) {
-    retried = true
-    refreshToken() → retry original request
-} else {
-    clearTokens() → redirect "/login"
-}
-```
-
-**Error Codes:**
-
-| Code                      | Source        | Cause                                  | User-facing Message                  |
-| ------------------------- | ------------- | -------------------------------------- | ------------------------------------ |
-| `auth/user-not-found`     | Firebase Auth | Email not registered                   | "Incorrect email or password"        |
-| `auth/wrong-password`     | Firebase Auth | Wrong password                         | "Incorrect email or password"        |
-| `auth/invalid-credential` | Firebase Auth | Invalid credentials (Firebase SDK v9+) | "Incorrect email or password"        |
-| `auth/too-many-requests`  | Firebase Auth | Too many consecutive failed attempts   | "Account temporarily locked"         |
-| `auth/user-disabled`      | Firebase Auth | Account disabled by admin              | "This account has been suspended"    |
-| `401 Unauthorized`        | Backend API   | Token expired mid-session              | Auto-refresh → if still 401 → logout |
+| Error Code | Source | Cause | User-facing Message |
+| --- | --- | --- | --- |
+| `auth/user-not-found` | Firebase Auth | Email not registered | "Incorrect email or password" |
+| `auth/wrong-password` | Firebase Auth | Wrong password | "Incorrect email or password" |
+| `auth/invalid-credential` | Firebase Auth | Invalid credentials (SDK v9+) | "Incorrect email or password" |
+| `auth/too-many-requests` | Firebase Auth | Too many failed attempts | "Account temporarily locked" |
+| `auth/user-disabled` | Firebase Auth | Account disabled by admin | "This account has been suspended" |
+| `401 Unauthorized` | Backend API | Token expired mid-session | Auto-refresh → if still 401 → logout |
 
 ---
 
-### 6.3. FORGOT PASSWORD (UC-03)
+#### 6.2.3 Forgot Password (UC-03)
 
-**File:** `frontend/src/app/forgot-password/page.tsx`
-
----
+**Key file:** `frontend/src/app/forgot-password/page.tsx`
 
 > **Figure 6.4** — Screenshot of the Forgot Password page (email input and success state)
 >
 > `[INSERT FIGURE 6.4 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.4** — screenshot of the forgot password page (email input and success state). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the forgot password page in two states: the initial email input state and the post-submission success confirmation state displaying the message that a reset link has been sent.
 
+The password reset flow uses Firebase's built-in email delivery:
 
----
-
-**Execution Flow:**
-
-```
-Step 1: User enters their email address
-Step 2: sendPasswordResetEmail(auth, email) — Firebase Auth SDK
-Step 3: Firebase sends an automated email containing a reset link
-Step 4: User clicks the link → Firebase handles the password update
-Step 5: Display success confirmation screen
-```
-
-**Error Codes:**
-
-| Code                     | Cause                   | Message                                   |
-| ------------------------ | ----------------------- | ----------------------------------------- |
-| `auth/user-not-found`    | Email not registered    | "This email does not exist in the system" |
-| `auth/invalid-email`     | Malformed email         | "Invalid email address"                   |
-| `auth/too-many-requests` | Too many reset requests | "Please wait and try again later"         |
+1. User enters their email address.
+2. `sendPasswordResetEmail(auth, email)` — Firebase Auth SDK sends the reset email.
+3. Firebase delivers an email containing a secure reset link to the user's inbox.
+4. The user clicks the link and Firebase handles the password update directly.
+5. A success confirmation screen is displayed on the frontend.
 
 ---
 
-### 6.4. PRODUCT GALLERY (UC-05)
+#### 6.2.4 Product Gallery (UC-05)
 
-**Files:** `frontend/src/app/gallery/page.tsx`, `backend/src/routes/products.js`, `backend/src/services/productService.js`
+**Key files:** `frontend/src/app/gallery/page.tsx`, `backend/src/routes/products.js`, `backend/src/services/productService.js`
 
-**API:** `GET /api/products`
-
----
+**API Endpoint:** `GET /api/products`
 
 > **Figure 6.5** — Screenshot of the Gallery page with filter options and masonry product grid
 >
 > `[INSERT FIGURE 6.5 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.5** — screenshot of the gallery page with filter options and masonry product grid. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the product gallery page with the filter panel (category dropdown, difficulty radio buttons, price range inputs, sort options) and the masonry grid layout displaying product cards with hover effects.
 
+The API supports the following query parameters for filtering and sorting:
 
----
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `category` | string | Filter by category |
+| `difficulty` | string | `"easy"` / `"medium"` / `"hard"` |
+| `minPrice` | number | Minimum price (VND) |
+| `maxPrice` | number | Maximum price (VND) |
+| `sortBy` | string | `"price"` / `"sales"` / `"createdAt"` |
+| `sortOrder` | string | `"asc"` / `"desc"` |
+| `page` | number | Current page (default: 1) |
+| `limit` | number | Items per page (default: 20) |
 
-**Query Parameters:**
-
-| Parameter    | Type   | Description                     |
-| ------------ | ------ | ------------------------------- |
-| `category`   | string | Filter by category              |
-| `difficulty` | string | "easy" / "medium" / "hard"      |
-| `minPrice`   | number | Minimum price (VND)             |
-| `maxPrice`   | number | Maximum price (VND)             |
-| `sortBy`     | string | "price" / "sales" / "createdAt" |
-| `sortOrder`  | string | "asc" / "desc"                  |
-| `page`       | number | Current page (default: 1)       |
-| `limit`      | number | Items per page (default: 20)    |
-
-**Pagination and Sorting Strategy:**
-
-Firestore does not efficiently support multi-field ordering without Composite Indexes. To avoid index management overhead, the system adopts the strategy: **query Firestore with basic filters → sort and paginate in JavaScript memory**. This is a deliberate trade-off: simpler operations (no manual index creation) at the cost of fetching more documents initially — acceptable for a moderate dataset size.
-
-**Error Codes:**
-
-| Code  | Cause                      | Behaviour                                                      |
-| ----- | -------------------------- | -------------------------------------------------------------- |
-| `500` | Firestore connection error | Returns `{ products: [], pagination: {...} }` — does not crash |
+**Pagination strategy:** Firestore does not efficiently support multi-field ordering without Composite Indexes. To avoid index management overhead, the system queries Firestore with basic filters and performs sorting and pagination in JavaScript memory. This is a deliberate trade-off: simpler operations at the cost of fetching more documents initially, which is acceptable for a moderate dataset size.
 
 ---
 
-### 6.5. FAVOURITES (UC-07)
+#### 6.2.5 Favourites (UC-07)
 
-**File:** `frontend/src/store/favoriteStore.ts`
+**Key file:** `frontend/src/store/favoriteStore.ts`
 
-**Design:** Entirely client-side storage (localStorage via Zustand `persist`); **no backend API required**.
-
----
+The favourites feature is implemented entirely on the client side using localStorage via Zustand's `persist` middleware. No backend API is required.
 
 > **Figure 6.6** — Screenshot of the Profile page "Favourites" tab
 >
 > `[INSERT FIGURE 6.6 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.6** — screenshot of the profile page "favourites" tab. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the Favourites tab on the Profile page, displaying a grid of the user's saved products with remove buttons.
 
-
----
-
-**Zustand Store Structure:**
-
-```typescript
-{
-  favoritesByUser: Record<string, Product[]>,  // { [uid]: [...products] }
-  favorites: Product[],                         // active user's favourites
-  currentUserId: string | null,
-}
-```
-
-**Why multi-user keying?** If multiple users log in on the same device, their favourites remain isolated. `setCurrentUser(uid)` reads `favoritesByUser[uid]` and loads it into `favorites[]`.
-
-```
-setCurrentUser(uid) → favorites = favoritesByUser[uid] ?? []
-addFavorite(product) → favoritesByUser[uid].push(product) → persist to localStorage
-removeFavorite(id)   → favoritesByUser[uid].filter(p => p.id !== id)
-```
+The Zustand store uses a multi-user keying structure: `favoritesByUser: Record<string, Product[]>`. This ensures that if multiple users log in on the same device, each user's favourites remain isolated. `setCurrentUser(uid)` reads `favoritesByUser[uid]` and loads it into the active `favorites[]` array.
 
 ---
 
-### 6.6. SHOPPING CART (UC-08)
+#### 6.2.6 Shopping Cart (UC-08)
 
-**Files:** `frontend/src/store/cartStore.ts`, `frontend/src/app/cart/page.tsx`
+**Key files:** `frontend/src/store/cartStore.ts`, `frontend/src/app/cart/page.tsx`
 
-**Design:** Client-side storage (localStorage) via Zustand `persist` middleware.
-
----
+The cart is stored client-side in localStorage via Zustand `persist` middleware.
 
 > **Figure 6.7** — Screenshot of the Shopping Cart page
 >
 > `[INSERT FIGURE 6.7 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.7** — screenshot of the shopping cart page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the shopping cart page with product line items, quantity controls, item selection checkboxes, subtotal calculation, and the proceed to checkout button.
 
-
----
-
-**Store Actions:**
-
-| Action                       | Description                                        |
-| ---------------------------- | -------------------------------------------------- |
+| Action | Description |
+| --- | --- |
 | `addItem(product, quantity)` | Add product; increment quantity if already present |
-| `removeItem(productId)`      | Remove product from cart                           |
-| `updateQuantity(id, qty)`    | Update item quantity                               |
-| `toggleSelectItem(id)`       | Toggle selection for checkout                      |
-| `selectAllItems()`           | Select all items                                   |
-| `moveToSavedForLater(id)`    | Move item to saved-for-later list                  |
-| `getSelectedTotal()`         | Compute total for selected items                   |
-| `clearCart()`                | Remove all items from cart                         |
+| `removeItem(productId)` | Remove product from cart |
+| `updateQuantity(id, qty)` | Update item quantity |
+| `toggleSelectItem(id)` | Toggle selection for checkout |
+| `selectAllItems()` | Select all items |
+| `moveToSavedForLater(id)` | Move item to saved-for-later list |
+| `getSelectedTotal()` | Compute total for selected items |
+| `clearCart()` | Remove all items from cart |
 
 ---
 
-### 6.7. CHECKOUT AND ORDER PLACEMENT (UC-09)
+#### 6.2.7 Checkout and Order Placement (UC-09)
 
-**Files:** `frontend/src/app/checkout/page.tsx`, `backend/src/routes/orders.js`, `backend/src/services/orderService.js`
+**Key files:** `frontend/src/app/checkout/page.tsx`, `backend/src/routes/orders.js`, `backend/src/services/orderService.js`
 
-**API:** `POST /api/orders`
-
----
+**API Endpoint:** `POST /api/orders`
 
 > **Figure 6.8** — Screenshot of the Checkout page with shipping form
 >
 > `[INSERT FIGURE 6.8 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.8** — screenshot of the checkout page with shipping form. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
+>
+> **Explanation:** This screenshot shows the checkout page with the shipping address form (full name, phone number, address, city), payment method selection (COD), order summary panel, and the place order button.
 
 > **Figure 6.9** — Screenshot of the Order Success confirmation page
 >
 > `[INSERT FIGURE 6.9 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.9** — screenshot of the order success confirmation page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the order success page displaying the generated order number, a summary of the placed order, and a "Continue Shopping" button.
 
+The order placement flow:
 
----
-
-**Joi Validation Schema:**
-
-```javascript
-createOrderSchema = {
-  items: array of { productId, title, price, quantity },  // required
-  shippingAddress: {
-    fullName: string.required(),
-    phone:    string.required(),
-    address:  string.required(),
-    city:     string.required()
-  },
-  totalAmount:   number.required(),
-  paymentMethod: "cod" | "bank_transfer",
-  note:          string.optional()
-}
-```
-
-**Order Number Generation:**
-
-```javascript
-generateOrderNumber() {
-  timestamp = Date.now().toString(36).toUpperCase()     // Base-36 encoded timestamp
-  random    = Math.random().toString(36).slice(2, 6).toUpperCase()
-  return `ORD-${timestamp}-${random}`
-  // Example output: "ORD-M6JZTW12-K3P7"
-}
-```
-
-**Full Order Placement Flow:**
-
-```
-Frontend: validate form → POST /api/orders (with Bearer token)
-Backend:
-  1. authenticateUser     → extract userId from JWT
-  2. validate(schema)     → Joi validates request body
-  3. createOrder(userId)  → generateOrderNumber()
-  4. Write to Firestore orders/{id} with status: "pending"
-  5. Return 201 Created + order object
-Frontend:
-  6. Save lastOrder to localStorage
-  7. clearCart()          → empty the shopping cart
-  8. Redirect to /order-success
-```
-
-**Error Codes:**
-
-| Code                        | Cause                                              |
-| --------------------------- | -------------------------------------------------- |
-| `400 Bad Request`           | Joi validation failure (missing or invalid fields) |
-| `401 Unauthorized`          | No Bearer token provided                           |
-| `500 Internal Server Error` | Firestore write failure                            |
+1. Frontend validates the shipping form and calls `POST /api/orders` with Bearer token.
+2. Backend calls `authenticateUser` to extract `userId` from the JWT.
+3. Joi validates the request body against `createOrderSchema`.
+4. `generateOrderNumber()` produces a unique order code (format: `ORD-<base36timestamp>-<random4>`).
+5. Order is written to Firestore `orders/{id}` with `status: "pending"`.
+6. Backend returns `201 Created` with the order object.
+7. Frontend saves `lastOrder` to `localStorage`, clears the cart, and redirects to `/order-success`.
 
 ---
 
-### 6.8. AI ARTWORK GENERATION (UC-11) — Core Feature
+#### 6.2.8 AI Artwork Generation (UC-11)
 
-**Files:** `frontend/src/app/generate/page.tsx`, `backend/src/routes/generate.js`
+**Key files:** `frontend/src/app/generate/page.tsx`, `backend/src/routes/generate.js`
 
-**APIs:**
-
+**API Endpoints:**
 - `POST /api/generate/paint-by-numbers` — initiate generation
-- `GET /api/generate/status/:generationId` — poll status
+- `GET /api/generate/status/:generationId` — poll for status
 
----
-
-> **Figure 6.10** — Screenshot of the AI Generate page: prompt input area, complexity selector buttons
+> **Figure 6.10** — Screenshot of the AI Generate page: prompt input area and complexity selector
 >
 > `[INSERT FIGURE 6.10 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.10** — screenshot of the ai generate page: prompt input area, complexity selector buttons. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-> **Figure 6.11** — Example of a completed AI-generated paint-by-numbers image showing numbered regions and colour palette strip at the bottom
 >
-> `[INSERT FIGURE 6.11 HERE — Sample generated output image]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.11** — example of a completed ai-generated paint-by-numbers image showing numbered regions and colour palette strip at the bottom. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+> **Explanation:** This screenshot shows the AI Generate page with the Vietnamese text input textarea (500-character limit with live counter), three complexity selector buttons (Easy/16 colours, Medium/28 colours, Hard/44 colours), and the Generate button with loading state.
 
+> **Figure 6.11** — Example of a completed AI-generated paint-by-numbers image
+>
+> `[INSERT FIGURE 6.11 HERE]`
+>
+> **Explanation:** This figure shows a sample output image produced by the Gemini 2.5 Flash Image model, displaying a line-art style painting divided into numbered regions and accompanied by a colour palette reference strip at the bottom.
 
----
+**Complexity levels:**
 
-#### 6.8.1. Complexity Configuration
+| Level | Max Colours | Description |
+| --- | --- | --- |
+| `easy` | 16 | Simple bold shapes, large paint regions, minimal detail |
+| `medium` | 28 | Moderate detail, medium-sized regions, balanced composition |
+| `hard` | 44 | Highly detailed, many small intricate regions, complex composition |
 
-| Level    | Max Colours | Detail Description                                                 |
-| -------- | ----------- | ------------------------------------------------------------------ |
-| `easy`   | 16          | Simple bold shapes, large paint regions, minimal detail            |
-| `medium` | 28          | Moderate detail, medium-sized regions, balanced composition        |
-| `hard`   | 44          | Highly detailed, many small intricate regions, complex composition |
+**Error codes:**
 
-#### 6.8.2. Full Processing Pipeline
-
-**Step 1 — Translation (`translatePromptToEnglish`)**
-
-```
-Input:  "con mèo ngồi dưới cây hoa anh đào"  (Vietnamese)
-→ GET  https://api.mymemory.translated.net/get?q=...&langpair=vi|en
-→ Output: "a cat sitting under cherry blossom tree"  (English)
-Timeout: 10 seconds — on failure, use original Vietnamese text as fallback
-```
-
-**Step 2 — Prompt Construction (`buildLineArtPrompt`)**
-
-The prompt template has two sections:
-
-- **Static instructions:** drawing rules, style guidance, prohibition of colour fills inside regions, palette strip layout
-- **Dynamic placeholders:** `{{USER_PROMPT}}`, `{{STYLE}}`, `{{COLOR_MAX}}`, `{{SEQ_NUMBERS}}`, `{{DETAIL}}`
-
-For `medium` complexity, the prompt specifies: 28 colours, number sequence `1, 2, 3, ... 28`, and moderate detail instructions.
-
-**Step 3 — Gemini API Call (`generateWithGoogleImage`)**
-
-```
-Endpoint: POST https://generativelanguage.googleapis.com/v1beta/
-          models/gemini-2.5-flash-image:generateContent?key={API_KEY}
-
-Payload:
-{
-  "contents": [{ "parts": [{ "text": "<lineArtPrompt>" }] }],
-  "generationConfig": { "responseModalities": ["TEXT", "IMAGE"] }
-}
-
-Timeout: 120 seconds
-Parse result: candidates[0].content.parts → find part where inlineData.data exists
-→ Buffer.from(base64String, "base64")
-```
-
-**Step 4 — Upload to Firebase Storage (`uploadToStorage`)**
-
-```javascript
-bucket.file(`generations/${fileName}`).save(buffer, {
-  metadata: { contentType: "image/png" }
-})
-file.makePublic()
-→ https://storage.googleapis.com/{bucketName}/generations/{fileName}
-```
-
-**Step 5 — Firestore Update and Frontend Polling**
-
-```
-Backend updates Firestore: generations/{id}.status = "completed", imageUrl = publicUrl
-Frontend polls:            setInterval(5000ms) → GET /api/generate/status/:id
-Termination conditions:
-  status = "completed" → render image
-  status = "failed"    → display error message
-  After 60 polls (5 min) → timeout, display "Request timed out"
-```
-
-**Error Codes:**
-
-| Code                 | Source    | Cause                                                                |
-| -------------------- | --------- | -------------------------------------------------------------------- |
-| `400`                | Backend   | Missing prompt or prompt exceeds 500 characters                      |
-| `401`                | Backend   | User not authenticated                                               |
-| `403`                | Backend   | Requesting status of another user's generation                       |
-| `404`                | Backend   | generationId not found in Firestore                                  |
-| `500`                | Backend   | Gemini API failure, Firebase Storage error, or Firestore write error |
-| `RESOURCE_EXHAUSTED` | Google AI | Free-tier quota exceeded (60 req/min)                                |
-| `INVALID_ARGUMENT`   | Google AI | Prompt violates content safety policy                                |
+| Code | Source | Cause |
+| --- | --- | --- |
+| `400` | Backend | Missing prompt or prompt exceeds 500 characters |
+| `401` | Backend | User not authenticated |
+| `403` | Backend | Requesting status of another user's generation |
+| `404` | Backend | generationId not found in Firestore |
+| `500` | Backend | Gemini API failure, Storage error, or Firestore write error |
+| `RESOURCE_EXHAUSTED` | Google AI | Free-tier quota exceeded (60 req/min) |
+| `INVALID_ARGUMENT` | Google AI | Prompt violates content safety policy |
 
 ---
 
-### 6.9. ADMIN DASHBOARD (UC-13)
+#### 6.2.9 Admin Dashboard (UC-13)
 
-**Files:** `frontend/src/app/admin/page.tsx`, `backend/src/routes/admin.js`
+**Key files:** `frontend/src/app/admin/page.tsx`, `backend/src/routes/admin.js`
 
-**API:** `GET /api/admin/stats`
+**API Endpoint:** `GET /api/admin/stats`
 
----
-
-> **Figure 6.12** — Screenshot of the Admin Dashboard with statistics cards and order status breakdown
+> **Figure 6.12** — Screenshot of the Admin Dashboard with statistics cards
 >
 > `[INSERT FIGURE 6.12 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.12** — screenshot of the admin dashboard with statistics cards and order status breakdown. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the Admin Dashboard page displaying four statistics cards (Total Revenue, Total Orders, Total Products, Total Users) and an order status breakdown panel showing counts for pending, processing, shipping, and delivered orders.
 
-
----
-
-**Statistics Aggregation:**
-
-The backend calls three service functions concurrently using `Promise.all()`:
-
-```javascript
-const [productStats, orderStats, userStats] = await Promise.all([
-  getProductStats(), // count active/inactive products
-  getOrderStats(), // total orders and paid revenue (paymentStatus = "paid")
-  getUserStats(), // total users and new registrations by month
-]);
-```
-
-**Response Payload:**
-
-```json
-{
-  "totalOrders": 42,
-  "totalProducts": 15,
-  "totalUsers": 128,
-  "totalRevenue": 12450000,
-  "pendingOrders": 8,
-  "processingOrders": 5,
-  "shippingOrders": 3,
-  "deliveredOrders": 26
-}
-```
-
-**Error Codes:**
-
-| Code  | Cause                          |
-| ----- | ------------------------------ |
-| `401` | No Bearer token provided       |
-| `403` | Email not in ADMIN_EMAILS list |
+The backend aggregates statistics concurrently using `Promise.all()` across three service calls: `getProductStats()`, `getOrderStats()`, and `getUserStats()`. This minimises total response time by parallelising independent Firestore queries.
 
 ---
 
-### 6.10. ADMIN PRODUCT MANAGEMENT (UC-14)
+#### 6.2.10 Admin Product Management (UC-14)
 
-**Files:** `frontend/src/app/admin/products/page.tsx`, `backend/src/routes/admin/products.js`
+**Key files:** `frontend/src/app/admin/products/page.tsx`, `backend/src/routes/admin/products.js`
 
----
-
-> **Figure 6.13** — Screenshot of the Admin Products page with product list table and add/edit modal
+> **Figure 6.13** — Screenshot of the Admin Products page with product list and add/edit modal
 >
 > `[INSERT FIGURE 6.13 HERE]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 6.13** — screenshot of the admin products page with product list table and add/edit modal. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+>
+> **Explanation:** This screenshot shows the admin product management page with the paginated product data table (columns: title, category, price, status, actions) and the add/edit product modal overlay with form fields for all product attributes.
 
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/admin/products` | List all products (including inactive) |
+| `POST` | `/api/products` | Create a new product |
+| `PUT` | `/api/products/:id` | Update product details |
+| `DELETE` | `/api/products/:id` | Soft delete — sets `status = "inactive"` |
 
----
-
-**REST Endpoints:**
-
-| Method   | Path                  | Description                              |
-| -------- | --------------------- | ---------------------------------------- |
-| `GET`    | `/api/admin/products` | List all products (including inactive)   |
-| `POST`   | `/api/products`       | Create a new product                     |
-| `PUT`    | `/api/products/:id`   | Update product details                   |
-| `DELETE` | `/api/products/:id`   | Soft delete — sets `status = "inactive"` |
-
-**Image Upload:** The frontend uses the Firebase Storage Client SDK to upload images directly (bypassing the backend) and receives a `downloadURL`. This URL is submitted alongside product data when creating or updating a product.
+Product image upload is handled directly by the Firebase Storage Client SDK on the frontend, bypassing the backend. The resulting `downloadURL` is submitted with the product data.
 
 ---
 
-### 6.3 Product Implementation (Security & API Flow)
+### 6.3 Security Implementation
 
-### 7.1. Authentication and Authorisation
+#### 6.3.1 Authentication and Authorisation
 
-The system uses **JSON Web Tokens (JWT)** issued by Firebase Authentication. Each token contains:
+The system uses JSON Web Tokens (JWT) issued by Firebase Authentication. Each token contains the user's `uid`, `email`, and expiry timestamp (`exp`, valid for 1 hour), and is signed with RS256 to prevent forgery. The backend validates every protected request using `auth.verifyIdToken(token)`, which verifies the signature without a database lookup (Rescorla, 2015).
 
-- `uid`: Firebase User ID
-- `email`: user's email address
-- `exp`: expiry timestamp (1 hour from issuance)
-- RS256 digital signature to prevent forgery
+Admin authorisation is enforced at two independent layers:
 
-The backend validates every protected request using `auth.verifyIdToken(token)` from the Firebase Admin SDK, which verifies the JWT signature without any database lookup (Rescorla, 2015).
-
-**Admin authorisation** is enforced at two independent layers:
-
-- **Client-side:** `adminConfig.ts` — automatically redirects admin users after login
-- **Server-side:** `requireAdmin` middleware — returns HTTP 403 if email is not in ADMIN_EMAILS
-
----
+- **Client-side guard (`adminConfig.ts`):** Checks the user's email against the `ADMIN_EMAILS` list and redirects non-admin users after login.
+- **Server-side middleware (`requireAdmin`):** Returns HTTP `403 Forbidden` if the authenticated user's email is not in the `ADMIN_EMAILS` environment variable.
 
 > **Figure 7.1** — Two-layer authorisation diagram: client-side redirect guard and server-side middleware guard
 >
-> `[INSERT FIGURE 7.1 HERE — Authorisation layers diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 7.1** — two-layer authorisation diagram: client-side redirect guard and server-side middleware guard. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 7.2. OWASP Top 10 Mitigations
-
-| OWASP Vulnerability                                  | Mitigation Applied                                                                     |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **A01 — Broken Access Control**                      | JWT verification on all protected routes; ownership checks (`userId === req.user.uid`) |
-| **A02 — Cryptographic Failures**                     | HTTPS enforced end-to-end; passwords never stored (Firebase manages credentials)       |
-| **A03 — Injection**                                  | Joi schema validation on all inputs; Firestore uses parameterised queries (no raw SQL) |
-| **A05 — Security Misconfiguration**                  | Helmet.js automatically sets 12 HTTP security response headers                         |
-| **A07 — Identification and Authentication Failures** | Firebase Auth account lock-out after repeated failed login attempts                    |
-| **A09 — Security Logging and Monitoring**            | Morgan HTTP request logger enabled on all routes                                       |
-
-### 7.3. Rate Limiting
-
-```javascript
-rateLimit({
-  windowMs: 15 * 60 * 1000, // 15-minute window
-  max: 100, // max 100 requests per IP per window
-  message: "Too many requests, please try again later",
-});
-```
-
-`app.set("trust proxy", 1)` is set to correctly extract the client's real IP address when running behind Render's reverse proxy (Express.js, 2024).
-
-### 7.4. CORS Configuration
-
-```javascript
-const allowedOrigins = new Set([
-  "http://localhost:3002",
-  "https://happy-coloring-ai.vercel.app",
-  "https://paint-by-numbers-ai-607c4.web.app",
-  // + values from env CORS_ORIGIN and FRONTEND_URL
-]);
-// All *.vercel.app subdomains are permitted for Vercel Preview deployments
-```
-
----
-
-## 8. HTTP ERROR CODE REFERENCE
-
-### 8.1. HTTP Status Code Groups
-
-According to RFC 9110 (Fielding et al., 2022):
-
-| Group | Range   | Meaning           |
-| ----- | ------- | ----------------- |
-| 2xx   | 200–299 | Success           |
-| 4xx   | 400–499 | Client-side error |
-| 5xx   | 500–599 | Server-side error |
-
----
-
-> **Figure 8.1** — Error propagation flow diagram: source (Firebase / Gemini / Firestore) → backend response → frontend user message
+> `[INSERT FIGURE 7.1 HERE]`
 >
-> `[INSERT FIGURE 8.1 HERE — Error flow diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 8.1** — error propagation flow diagram: source (firebase / gemini / firestore) → backend response → frontend user message. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
+> **Explanation:** This diagram illustrates the two-layer admin authorisation mechanism. Layer 1 (client-side, adminConfig.ts) prevents UI navigation by non-admin users. Layer 2 (server-side, requireAdmin middleware) enforces the restriction at the API level, returning 403 Forbidden even if the frontend guard is bypassed.
 
 ---
 
-### 8.2. System-Specific HTTP Error Codes
+#### 6.3.2 OWASP Top 10 Mitigations
 
-#### 2xx — Success
+| OWASP Vulnerability | Mitigation Applied |
+| --- | --- |
+| **A01 — Broken Access Control** | JWT verification on all protected routes; ownership checks (`userId === req.user.uid`) |
+| **A02 — Cryptographic Failures** | HTTPS enforced end-to-end; passwords never stored (Firebase manages credentials) |
+| **A03 — Injection** | Joi schema validation on all inputs; Firestore uses parameterised queries (no raw SQL) |
+| **A05 — Security Misconfiguration** | Helmet.js automatically sets 12 HTTP security response headers |
+| **A07 — Identification and Authentication Failures** | Firebase Auth account lock-out after repeated failed login attempts |
+| **A09 — Security Logging and Monitoring** | Morgan HTTP request logger enabled on all routes |
 
-| Code           | Name     | When It Occurs                                                        |
-| -------------- | -------- | --------------------------------------------------------------------- |
-| `200 OK`       | OK       | Reading products, viewing orders, fetching profile                    |
-| `201 Created`  | Created  | Account registered; order placed successfully                         |
+#### 6.3.3 Rate Limiting
+
+The backend applies a rate limit of 100 requests per IP address per 15-minute window across all routes. `app.set("trust proxy", 1)` is configured to correctly extract the real client IP when running behind Render's reverse proxy (Express.js, 2024).
+
+#### 6.3.4 CORS Configuration
+
+The CORS policy permits requests only from explicitly whitelisted origins: `localhost:3002` (development), the production Vercel domain, and the Firebase Hosting fallback domain. All `*.vercel.app` subdomains are permitted to support Vercel Preview deployments. Additional origins can be added via the `CORS_ORIGIN` and `FRONTEND_URL` environment variables.
+
+---
+
+### 6.4 HTTP Error Code Reference
+
+#### 6.4.1 HTTP Status Code Groups
+
+According to RFC 9110 (Fielding et al., 2022), HTTP status codes are grouped as follows:
+
+| Group | Range | Meaning |
+| --- | --- | --- |
+| 2xx | 200–299 | Success |
+| 4xx | 400–499 | Client-side error |
+| 5xx | 500–599 | Server-side error |
+
+> **Figure 8.1** — Error propagation flow diagram: source → backend response → frontend user message
+>
+> `[INSERT FIGURE 8.1 HERE]`
+>
+> **Explanation:** This flowchart illustrates how errors originating from four sources (Firebase Auth, Google Gemini API, Firestore, and Joi validation) propagate through the backend HTTP response layer and are ultimately presented to the user as specific toast notifications or redirect actions on the frontend.
+
+---
+
+#### 6.4.2 System HTTP Error Code Reference
+
+**2xx — Success**
+
+| Code | Name | When It Occurs |
+| --- | --- | --- |
+| `200 OK` | OK | Reading products, viewing orders, fetching profile |
+| `201 Created` | Created | Account registered; order placed successfully |
 | `202 Accepted` | Accepted | AI generation started — request accepted, processing not yet complete |
 
-#### 4xx — Client Errors
+**4xx — Client Errors**
 
-| Code                    | Name                | Specific Cause in This System                                                                            | Related Route                                                                                |
-| ----------------------- | ------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `400 Bad Request`       | Invalid data        | Joi validation failure (missing field, wrong type); empty prompt or prompt > 500 chars for AI generation | `/api/auth/register`, `/api/orders`, `/api/generate`                                         |
-| `401 Unauthorized`      | Not authenticated   | Missing `Authorization: Bearer <token>` header; token expired (> 1 hour); token revoked                  | All protected routes                                                                         |
-| `403 Forbidden`         | No permission       | Email not in ADMIN_EMAILS when calling admin route; User A accessing User B's order or generation status | `/api/admin/*`, `/api/orders/:id`, `/api/generate/status/:id`                                |
-| `404 Not Found`         | Resource missing    | Product deleted or wrong ID; order not found; Firestore user profile missing; unknown generationId       | `/api/products/:id`, `/api/orders/:id`, `/api/auth/profile/:uid`, `/api/generate/status/:id` |
-| `429 Too Many Requests` | Rate limit exceeded | More than 100 requests from the same IP within any 15-minute window                                      | All routes                                                                                   |
+| Code | Name | Specific Cause | Related Route |
+| --- | --- | --- | --- |
+| `400 Bad Request` | Invalid data | Joi validation failure; empty or oversized prompt | `/api/auth/register`, `/api/orders`, `/api/generate` |
+| `401 Unauthorized` | Not authenticated | Missing or expired Bearer token | All protected routes |
+| `403 Forbidden` | No permission | Email not in ADMIN_EMAILS; accessing another user's resource | `/api/admin/*`, `/api/orders/:id` |
+| `404 Not Found` | Resource missing | Product deleted; unknown generationId; Firestore document missing | `/api/products/:id`, `/api/generate/status/:id` |
+| `429 Too Many Requests` | Rate limit exceeded | More than 100 requests from same IP in 15 minutes | All routes |
 
-#### 5xx — Server Errors
+**5xx — Server Errors**
 
-| Code                        | Name         | Specific Cause                                                                                                                    | System Behaviour                                                                                                      |
-| --------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `500 Internal Server Error` | Server error | Firestore connection failure; Gemini returns no image data; Firebase Storage upload error; missing or invalid `GOOGLE_AI_API_KEY` | Error is logged server-side; response body: `{ error: "message" }`; generation document updated to `status: "failed"` |
+| Code | Name | Specific Cause | System Behaviour |
+| --- | --- | --- | --- |
+| `500 Internal Server Error` | Server error | Firestore failure; Gemini returns no image; Storage upload error | Error logged server-side; generation document updated to `status: "failed"` |
 
-### 8.3. Firebase Authentication Error Codes
+#### 6.4.3 Firebase Authentication Error Codes
 
-| Firebase Error Code           | When It Occurs                                       | User-Facing Message                                          |
-| ----------------------------- | ---------------------------------------------------- | ------------------------------------------------------------ |
-| `auth/email-already-in-use`   | Registration with an existing email                  | "This email is already in use"                               |
-| `auth/weak-password`          | Password shorter than 6 characters                   | "Password must be at least 6 characters"                     |
-| `auth/invalid-email`          | Malformed email address                              | "Invalid email address"                                      |
-| `auth/user-not-found`         | Login or password reset with unknown email           | "Incorrect email or password"                                |
-| `auth/wrong-password`         | Wrong password entered                               | "Incorrect email or password"                                |
-| `auth/invalid-credential`     | Invalid credentials — Firebase SDK v9+ unified error | "Incorrect email or password"                                |
-| `auth/too-many-requests`      | Too many consecutive failed login attempts           | "Account temporarily locked due to too many failed attempts" |
-| `auth/user-disabled`          | Account disabled by administrator                    | "This account has been suspended"                            |
-| `auth/network-request-failed` | No internet connection                               | "Please check your connection and try again"                 |
+| Firebase Error Code | When It Occurs | User-Facing Message |
+| --- | --- | --- |
+| `auth/email-already-in-use` | Registration with an existing email | "This email is already in use" |
+| `auth/weak-password` | Password shorter than 6 characters | "Password must be at least 6 characters" |
+| `auth/invalid-email` | Malformed email address | "Invalid email address" |
+| `auth/user-not-found` | Login or password reset with unknown email | "Incorrect email or password" |
+| `auth/wrong-password` | Wrong password entered | "Incorrect email or password" |
+| `auth/invalid-credential` | Invalid credentials — Firebase SDK v9+ | "Incorrect email or password" |
+| `auth/too-many-requests` | Too many consecutive failed login attempts | "Account temporarily locked" |
+| `auth/user-disabled` | Account disabled by administrator | "This account has been suspended" |
+| `auth/network-request-failed` | No internet connection | "Please check your connection and try again" |
 
-### 8.4. Google Gemini API Error Codes
+#### 6.4.4 Google Gemini API Error Codes
 
-| Code / Type                 | Cause                                          | System Behaviour                                            |
-| --------------------------- | ---------------------------------------------- | ----------------------------------------------------------- |
-| `RESOURCE_EXHAUSTED`        | Free-tier API quota exceeded (60 req/min)      | Generation set to `status: "failed"`                        |
-| `INVALID_ARGUMENT`          | Prompt violates Google's content safety policy | Generation set to `status: "failed"`                        |
-| `DEADLINE_EXCEEDED`         | Axios timeout after 120 seconds                | `lastError` is thrown; generation set to `status: "failed"` |
-| No `inlineData` in response | AI returned only text, no image                | `throw new Error("No image data returned by <model>")`      |
-
----
-
-### 6.4 Evaluation of your product
-
-#### User Interface Highlights
-
-### 9.1. Homepage (Landing Page — `/`)
-
-The page is structured in 6 sections following the AIDA design pattern (Attention, Interest, Desire, Action):
-
-1. **Hero Section:** Animated wave-effect title "Color with Pure Elegance", two CTA buttons (Generate AI Art / Explore Gallery), full-width banner with hover zoom effect
-2. **Featured Products:** Masonry grid layout, loads the 8 best-selling products from the API, price and title overlay on hover
-3. **About Us:** Two-column layout (introductory text + illustrative image), slide-in animation from both sides on scroll
-4. **3 Simple Steps:** Three cards with step numbers, emoji icons, scroll-triggered fade-in animation
-5. **Why Choose Yu Ling Store:** Four feature cards with hover float effect
-6. **Final CTA:** Purple-to-pink gradient banner with two action buttons
+| Code / Type | Cause | System Behaviour |
+| --- | --- | --- |
+| `RESOURCE_EXHAUSTED` | Free-tier API quota exceeded (60 req/min) | Generation set to `status: "failed"` |
+| `INVALID_ARGUMENT` | Prompt violates Google's content safety policy | Generation set to `status: "failed"` |
+| `DEADLINE_EXCEEDED` | Axios timeout after 120 seconds | Generation set to `status: "failed"` |
+| No `inlineData` in response | AI returned only text, no image | `throw new Error("No image data returned")` |
 
 ---
+
+### 6.5 Product Evaluation
+
+#### 6.5.1 Homepage (`/`)
+
+The homepage is structured in six sections following the AIDA design pattern (Attention, Interest, Desire, Action):
+
+1. **Hero Section:** Animated wave-effect title "Color with Pure Elegance", two CTA buttons, full-width banner with hover zoom effect.
+2. **Featured Products:** Masonry grid layout displaying the eight best-selling products from the API.
+3. **About Us:** Two-column layout with slide-in scroll animation.
+4. **3 Simple Steps:** Three cards with step numbers and scroll-triggered fade-in animation.
+5. **Why Choose Yu Ling Store:** Four feature cards with hover float effect.
+6. **Final CTA:** Purple-to-pink gradient banner with two action buttons.
 
 > **Figure 9.1** — Annotated screenshot of the full Homepage showing all 6 sections
 >
-> `[INSERT FIGURE 9.1 HERE — Full homepage annotated screenshot]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.1** — annotated screenshot of the full homepage showing all 6 sections. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 9.2. Gallery Page (`/gallery`)
-
-- Topbar filter panel: category dropdown, difficulty radio buttons, price range inputs
-- Sort options: Popular / Newest / Price Ascending / Price Descending
-- Masonry grid layout with lazy loading (Intersection Observer API)
-- Heart/favourite toggle button on each product card (instant state update, no page reload)
-- Pagination / "Load More" button
+> `[INSERT FIGURE 9.1 HERE]`
+>
+> **Explanation:** This annotated screenshot shows all six sections of the homepage with section labels overlaid: Hero, Featured Products, About Us, 3 Simple Steps, Why Choose Us, and Final CTA.
 
 ---
+
+#### 6.5.2 Gallery Page (`/gallery`)
+
+- Topbar filter panel: category dropdown, difficulty radio buttons, price range inputs.
+- Sort options: Popular / Newest / Price Ascending / Price Descending.
+- Masonry grid layout with lazy loading (Intersection Observer API).
+- Heart/favourite toggle button on each product card with instant state update.
+- Pagination via "Load More" button.
 
 > **Figure 9.2** — Screenshot of the Gallery page with filters applied and masonry grid
 >
-> `[INSERT FIGURE 9.2 HERE — Gallery page with active filters]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.2** — screenshot of the gallery page with filters applied and masonry grid. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 9.3. AI Generate Page (`/generate`)
-
-- Textarea for entering the artwork description (Vietnamese, max 500 characters with live counter)
-- Three complexity selector buttons displaying colour counts: Easy (16), Medium (28), Hard (44)
-- Loading animation with progress messages during generation
-- Result display area with "Add to Cart" button once the image is ready
-
----
-
-> **Figure 9.3** — Screenshot of the Generate page: left — input state; right — result display state
+> `[INSERT FIGURE 9.2 HERE]`
 >
-> `[INSERT FIGURE 9.3 HERE — Generate page input and result states]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.3** — screenshot of the generate page: left — input state; right — result display state. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
+> **Explanation:** This screenshot shows the gallery page with active filter selections applied and the resulting filtered product grid.
 
 ---
 
-### 9.4. User Profile Page (`/profile`)
+#### 6.5.3 AI Generate Page (`/generate`)
 
-Three tabs:
+- Textarea for the artwork description (Vietnamese, max 500 characters with live counter).
+- Three complexity selector buttons showing colour counts: Easy (16), Medium (28), Hard (44).
+- Loading animation with progress messages during generation.
+- Result display area with an "Add to Cart" button once the image is ready.
 
-| Tab            | Content                                                    |
-| -------------- | ---------------------------------------------------------- |
-| **My Info**    | Editable form: display name, phone, address, date of birth |
-| **Favourites** | Grid of favourited products loaded from `favoriteStore`    |
-| **My Orders**  | List of the user's orders with status badges               |
+> **Figure 9.3** — Screenshot of the Generate page: input state and result display state
+>
+> `[INSERT FIGURE 9.3 HERE]`
+>
+> **Explanation:** This composite screenshot shows the Generate page in two states side by side: the left panel shows the input state with the prompt textarea and complexity buttons; the right panel shows the result state with the completed generated image and Add to Cart button.
 
 ---
+
+#### 6.5.4 User Profile Page (`/profile`)
+
+| Tab | Content |
+| --- | --- |
+| **My Info** | Editable form: display name, phone, address, date of birth |
+| **Favourites** | Grid of favourited products from `favoriteStore` |
+| **My Orders** | List of the user's orders with status badges |
 
 > **Figure 9.4** — Screenshot of the Profile page showing the three tabs
 >
-> `[INSERT FIGURE 9.4 HERE — Profile page with tabs]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.4** — screenshot of the profile page showing the three tabs. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-### 9.5. Admin Dashboard (`/admin`)
-
-- Four statistics cards: Revenue, Orders, Products, Users
-- Order status breakdown chart (pending / processing / shipping / delivered)
-- Navigation links to sub-pages: Orders / Products / Users
-- **Access protection:** admin email account required; non-admin users are redirected by `adminConfig.ts`; backend returns `403` for direct API calls without admin credentials
+> `[INSERT FIGURE 9.4 HERE]`
+>
+> **Explanation:** This screenshot shows the user profile page with the three-tab interface. The My Info tab is active, displaying the editable personal information form.
 
 ---
+
+#### 6.5.5 Admin Panel (`/admin`)
+
+The admin panel provides four management areas:
+
+- **Dashboard:** Statistics cards (revenue, orders, products, users) and order status breakdown.
+- **Products:** Full CRUD with image upload.
+- **Orders:** Order list with status filter and inline status update.
+- **Users:** User search and account management.
+
+Access is protected by the two-layer authorisation mechanism described in Section 6.3.1.
 
 > **Figure 9.5** — Screenshot of the Admin Dashboard with statistics cards
 >
-> `[INSERT FIGURE 9.5 HERE — Admin Dashboard screenshot]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.5** — screenshot of the admin dashboard with statistics cards. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
+> `[INSERT FIGURE 9.5 HERE]`
+>
+> **Explanation:** This screenshot shows the admin dashboard with four statistics summary cards and the order status breakdown panel.
 
 > **Figure 9.6** — Screenshot of the Admin Orders management table with status filter
 >
-> `[INSERT FIGURE 9.6 HERE — Admin Orders management page]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.6** — screenshot of the admin orders management table with status filter. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-> **Figure 9.7** — Screenshot of the Admin Products page with the product add/edit modal
+> `[INSERT FIGURE 9.6 HERE]`
 >
-> `[INSERT FIGURE 9.7 HERE — Admin Products management page]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.7** — screenshot of the admin products page with the product add/edit modal. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+> **Explanation:** This screenshot shows the admin orders page with the status filter tabs and the order data table.
 
-
----
-
-### 9.6. Contact Page (`/contact`)
-
-- Hero banner with gradient background
-- Left column: contact information cards (email, phone, address, working hours) and social media links
-- Right column: validated contact form
-  - Fields: Full Name, Email, Subject (dropdown with 6 options), Message (min 20 characters, live character counter)
-  - Submit button with loading spinner
-  - Post-submission success screen with the submitted email displayed
-- FAQ section: 6 common questions and concise answers
+> **Figure 9.7** — Screenshot of the Admin Products page with the add/edit modal
+>
+> `[INSERT FIGURE 9.7 HERE]`
+>
+> **Explanation:** This screenshot shows the admin products page with an open product add/edit modal, including the image upload area and all product attribute fields.
 
 ---
+
+#### 6.5.6 Contact Page (`/contact`)
+
+- Hero banner with gradient background.
+- Left column: contact information cards (email, phone, address, working hours) and social media links.
+- Right column: validated contact form with fields for Full Name, Email, Subject (dropdown), and Message (minimum 20 characters with live character counter).
+- FAQ section with six common questions and concise answers.
 
 > **Figure 9.8** — Screenshot of the Contact page showing the info panel and contact form
 >
-> `[INSERT FIGURE 9.8 HERE — Contact page screenshot]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 9.8** — screenshot of the contact page showing the info panel and contact form. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
-
----
-
-#### Deployment Procedures
-
-### 10.1. Production Environment
-
-| Component   | URL                                              | Platform     |
-| ----------- | ------------------------------------------------ | ------------ |
-| Frontend    | `https://happy-coloring-ai.vercel.app`           | Vercel       |
-| Backend API | `https://paint-by-numbers-back-end.onrender.com` | Render       |
-| Database    | Firebase Firestore                               | Google Cloud |
-| Storage     | Firebase Storage                                 | Google Cloud |
-
-### 10.2. CI/CD Pipeline
-
-**Frontend (Vercel):**
-
-```
-git push origin main → Vercel webhook → next build → deploy to global CDN
-A unique Preview URL is automatically created for every Pull Request
-```
-
-**Backend (Render):**
-
-```
-git push origin main → Render deploy hook → npm start → service live
-```
-
----
-
-> **Figure 10.1** — CI/CD pipeline diagram: GitHub repository → Vercel (frontend) and GitHub → Render (backend)
+> `[INSERT FIGURE 9.8 HERE]`
 >
-> `[INSERT FIGURE 10.1 HERE — CI/CD pipeline diagram]`
-> 
-> **Explanation:** *This figure visually illustrates > **figure 10.1** — ci/cd pipeline diagram: github repository → vercel (frontend) and github → render (backend). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
-
+> **Explanation:** This screenshot shows the contact page with the contact information panel on the left and the validated contact form on the right.
 
 ---
 
-### 10.3. Environment Variables
+### 6.6 Deployment
+
+#### 6.6.1 Production Environment
+
+| Component | URL | Platform |
+| --- | --- | --- |
+| Frontend | `https://happy-coloring-ai.vercel.app` | Vercel |
+| Backend API | `https://paint-by-numbers-back-end.onrender.com` | Render |
+| Database | Firebase Firestore | Google Cloud |
+| Storage | Firebase Storage | Google Cloud |
+
+#### 6.6.2 CI/CD Pipeline
+
+**Frontend (Vercel):** A `git push` to the `main` branch triggers a Vercel webhook. Vercel runs `next build`, performs TypeScript type checking and Tailwind CSS purging, and deploys the output to the global CDN. A unique preview URL is automatically generated for every Pull Request.
+
+**Backend (Render):** A `git push` to the `main` branch triggers the Render deploy hook. Render runs `npm install` and `npm start` to launch the Node.js service.
+
+> **Figure 10.1** — CI/CD pipeline diagram: GitHub → Vercel (frontend) and GitHub → Render (backend)
+>
+> `[INSERT FIGURE 10.1 HERE]`
+>
+> **Explanation:** This diagram shows the CI/CD pipeline for both the frontend and backend. The developer pushes to the GitHub mono-repository. Frontend changes trigger Vercel's webhook, which builds and deploys the Next.js application. Backend changes trigger Render's deploy hook, which starts the Node.js server. Environment variables are managed separately in the Vercel and Render dashboards.
+
+---
+
+#### 6.6.3 Environment Variables
 
 **Backend (`.env`):**
 
-| Variable                  | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `FIREBASE_PROJECT_ID`     | Firebase project ID                           |
-| `FIREBASE_CLIENT_EMAIL`   | Service account email address                 |
-| `FIREBASE_PRIVATE_KEY`    | Service account private key (PEM format)      |
-| `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket name                  |
-| `GOOGLE_AI_API_KEY`       | Google AI Studio (Gemini) API key             |
-| `ADMIN_EMAILS`            | Comma-separated list of admin email addresses |
-| `CORS_ORIGIN`             | Allowed frontend domain for production        |
+| Variable | Description |
+| --- | --- |
+| `FIREBASE_PROJECT_ID` | Firebase project ID |
+| `FIREBASE_CLIENT_EMAIL` | Service account email address |
+| `FIREBASE_PRIVATE_KEY` | Service account private key (PEM format) |
+| `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket name |
+| `GOOGLE_AI_API_KEY` | Google AI Studio (Gemini) API key |
+| `ADMIN_EMAILS` | Comma-separated list of admin email addresses |
+| `CORS_ORIGIN` | Allowed frontend domain for production |
 
 **Frontend (`.env.local`):**
 
-| Variable                           | Description          |
-| ---------------------------------- | -------------------- |
-| `NEXT_PUBLIC_API_URL`              | Backend API base URL |
-| `NEXT_PUBLIC_FIREBASE_API_KEY`     | Firebase web API key |
+| Variable | Description |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Backend API base URL |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase web API key |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`  | Firebase project ID  |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID |
 
-### 10.4. Render Free Tier Cold Start
+#### 6.6.4 Render Free Tier Cold Start
 
-Render's free tier suspends the service after 15 minutes without incoming traffic. The first request after a suspension period may take 30–50 seconds for the instance to wake up. This is a documented and accepted limitation for development and demo environments (Render, 2024).
-
----
-
-## Chapter 7 Conclusions
-
-### 7.1 What you have learned in this project?
-
-### 7.2 What is the result of this project?
-
-| Objective                       | Result                                                |
-| ------------------------------- | ----------------------------------------------------- |
-| Full-featured e-commerce system | ✅ 21 features implemented                            |
-| AI image generation integration | ✅ Gemini 2.5 Flash Image, 3 complexity levels        |
-| Admin management system         | ✅ Dashboard, full CRUD for products / orders / users |
-| Cloud deployment with CI/CD     | ✅ Vercel + Render + Firebase                         |
-| OWASP security compliance       | ✅ JWT, Helmet, CORS, Rate Limiting, Joi validation   |
-
-### 11.2. Known Limitations
-
-- **Backend cold start:** Render free tier suspends after 15 minutes of inactivity
-- **AI output variability:** Gemini occasionally does not fully comply with the prompt template structure; few-shot prompting could improve consistency
-- **Payment:** Only COD and manual bank transfer are supported; no automated payment gateway integration
-- **Search:** No full-text search capability; current product filtering uses exact-match only
-
-### 7.3 Further development of this project
-
-- Integrate an automated payment gateway (VNPay or MoMo)
-- Add a product ratings and reviews system
-- Improve AI output quality with few-shot prompt examples
-- Replace polling with WebSocket when upgrading to a paid Render plan
-- Add full-text search using Algolia or Typesense
-- Implement automated order status email notifications
+Render's free tier suspends the service after 15 minutes without incoming traffic. The first request after a suspension period may take 30–50 seconds for the instance to resume. This is a documented and accepted limitation for development and demonstration environments (Render, 2024).
 
 ---
 
-## REFERENCES
-[insert refs here]
+## Chapter 7 — Conclusions
 
-## PROJECT PROPOSAL
-[Insert approved proposal]
+### 7.1 What Has Been Learned
 
-## APPENDIX 1
-### SURVEY AND RESULTS
+This project provided practical experience across a broad range of full-stack web development disciplines, including:
 
-## APPENDIX 2
-### SCHEDULE OF WORK
+- Designing and implementing a decoupled three-tier architecture with a React/Next.js frontend and a Node.js/Express backend.
+- Integrating a generative AI API (Google Gemini 2.5 Flash Image) into a production application, including asynchronous job processing and status polling.
+- Applying Firebase Authentication for secure, passwordless identity management using JWT verification.
+- Implementing security controls aligned with the OWASP Top 10 (JWT, Helmet, CORS, rate limiting, Joi validation).
+- Deploying a full-stack application to a cloud environment (Vercel + Render + Firebase) with automated CI/CD pipelines.
 
+### 7.2 Project Results
 
-Dai, P. (2021). _Zustand: Bear necessities for state management in React_. GitHub. https://github.com/pmndrs/zustand
+| Objective | Result |
+| --- | --- |
+| Full-featured e-commerce system | ✅ 21 features implemented |
+| AI image generation integration | ✅ Gemini 2.5 Flash Image, 3 complexity levels |
+| Admin management system | ✅ Dashboard, full CRUD for products / orders / users |
+| Cloud deployment with CI/CD | ✅ Vercel + Render + Firebase |
+| OWASP security compliance | ✅ JWT, Helmet, CORS, Rate Limiting, Joi validation |
 
-Express.js. (2024). _Trust proxy in Express_. Express.js Documentation. https://expressjs.com/en/guide/behind-proxies.html
+### 7.3 Known Limitations
 
-Fielding, R., Nottingham, M. and Reschke, J. (2022). _HTTP Semantics_ (RFC 9110). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc9110
+- **Backend cold start:** Render free tier suspends the service after 15 minutes of inactivity, causing a 30–50 second delay on the first request following a period of inactivity.
+- **AI output variability:** Gemini occasionally does not fully comply with the structured prompt template. Few-shot prompting with example images could improve output consistency.
+- **Payment integration:** Only Cash on Delivery and manual bank transfer are supported. No automated payment gateway is integrated.
+- **Search capability:** Product filtering uses exact-match queries only. Full-text search is not supported.
 
-Google. (2024a). _Firebase Authentication overview_. Firebase Documentation. https://firebase.google.com/docs/auth
+### 7.4 Further Development
 
-Google. (2024b). _Cloud Firestore data model_. Firebase Documentation. https://firebase.google.com/docs/firestore/data-model
+The following enhancements are proposed for future development:
 
-Google. (2024c). _Gemini API reference — generateContent_. Google AI for Developers. https://ai.google.dev/api/generate-content
+- Integrate an automated payment gateway (VNPay or MoMo).
+- Add a product ratings and reviews system.
+- Improve AI output consistency with few-shot prompt engineering.
+- Replace the polling mechanism with WebSockets when upgrading to a paid Render plan.
+- Add full-text search using Algolia or Typesense.
+- Implement automated order status email notifications.
 
-Grand View Research. (2023). _Paint by Numbers Market Size, Share & Trends Analysis Report_. Grand View Research. https://www.grandviewresearch.com/industry-analysis/paint-by-numbers-market
+---
 
-Helme, S. (2023). _Helmet.js — Help secure Express apps with various HTTP headers_. GitHub. https://github.com/helmetjs/helmet
+## References
 
-Lethbridge, T. C. and Laganière, R. (2005). _Object-Oriented Software Engineering: Practical Software Development using UML and Java_ (2nd ed.). McGraw-Hill.
+Dai, P. (2021). *Zustand: Bear necessities for state management in React*. GitHub. https://github.com/pmndrs/zustand
 
-Next.js. (2024). _App Router Introduction_. Vercel / Next.js Documentation. https://nextjs.org/docs/app
+Express.js. (2024). *Trust proxy in Express*. Express.js Documentation. https://expressjs.com/en/guide/behind-proxies.html
 
-OWASP Foundation. (2021). _OWASP Top Ten 2021_. Open Web Application Security Project. https://owasp.org/www-project-top-ten/
+Fielding, R., Nottingham, M. and Reschke, J. (2022). *HTTP Semantics* (RFC 9110). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc9110
 
-Rescorla, E. (2015). _HTTP Over TLS_ (RFC 7235). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc7235
+Google. (2024a). *Firebase Authentication overview*. Firebase Documentation. https://firebase.google.com/docs/auth
 
-Render. (2024). _Free tier limitations_. Render Documentation. https://render.com/docs/free
+Google. (2024b). *Cloud Firestore data model*. Firebase Documentation. https://firebase.google.com/docs/firestore/data-model
 
-Translated.net. (2024). _MyMemory Translation API_. Translated. https://mymemory.translated.net/doc/spec.php
+Google. (2024c). *Gemini API reference — generateContent*. Google AI for Developers. https://ai.google.dev/api/generate-content
 
-Vercel. (2024). _Vercel deployment overview_. Vercel Documentation. https://vercel.com/docs/deployments/overview
+Grand View Research. (2023). *Paint by Numbers Market Size, Share & Trends Analysis Report*. Grand View Research. https://www.grandviewresearch.com/industry-analysis/paint-by-numbers-market
+
+Helme, S. (2023). *Helmet.js — Help secure Express apps with various HTTP headers*. GitHub. https://github.com/helmetjs/helmet
+
+Lethbridge, T. C. and Laganière, R. (2005). *Object-Oriented Software Engineering: Practical Software Development using UML and Java* (2nd ed.). McGraw-Hill.
+
+Next.js. (2024). *App Router Introduction*. Vercel / Next.js Documentation. https://nextjs.org/docs/app
+
+OWASP Foundation. (2021). *OWASP Top Ten 2021*. Open Web Application Security Project. https://owasp.org/www-project-top-ten/
+
+Rescorla, E. (2015). *HTTP Over TLS* (RFC 7235). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc7235
+
+Render. (2024). *Free tier limitations*. Render Documentation. https://render.com/docs/free
+
+Translated.net. (2024). *MyMemory Translation API*. Translated. https://mymemory.translated.net/doc/spec.php
+
+Vercel. (2024). *Vercel deployment overview*. Vercel Documentation. https://vercel.com/docs/deployments/overview
+
+---
+
+## Appendices
+
+### Appendix 1 — Survey and Results
+
+[Insert survey instrument and summarised results here]
+
+### Appendix 2 — Schedule of Work
+
+[Insert Gantt chart or sprint schedule here]
+
+### Appendix 3 — Project Proposal
+
+[Insert approved project proposal here]

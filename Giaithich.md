@@ -3,7 +3,9 @@
 Tài liệu này cung cấp phần giải thích chi tiết (explanation) cho từng hình ảnh/biểu đồ được tham chiếu trong báo cáo (BaoCao.md).
 
 ---
+
 ## Figure 1.1
+
 **Tên hình/mô tả:** Screenshot of the Happy Coloring AI homepage (hero section)
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -16,6 +18,7 @@ This figure visually illustrates the screenshot of the happy coloring ai homepag
 ---
 
 ## Figure 2.1
+
 **Tên hình/mô tả:** Use Case Diagram showing interactions between User, Admin, and System
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -28,11 +31,16 @@ This figure visually illustrates the use case diagram showing interactions betwe
 ---
 
 ## Figure 3.1
+
 **Tên hình/mô tả:** System Architecture Diagram (three-tier overview)
 
 **Hướng dẫn chụp/vẽ chi tiết:**
-**Vị trí:** Công cụ vẽ biểu đồ.
-**Cách chụp/Vẽ:** Sơ đồ khối kiến trúc 3 tầng (Frontend client, Backend REST API, Database & Services).
+**Vị trí:** Công cụ vẽ biểu đồ Draw.io ([app.diagrams.net](https://app.diagrams.net/)).
+**Cách chụp/Vẽ:** Tạo một sơ đồ khối (Block Diagram) chia làm 3 cụm lớn (dùng hình chữ nhật lớn có nét đứt bao quanh):
+
+1. **Client Tier (Vercel):** Đặt các khối Web Browser, Next.js 14 App Router, Zustand State.
+2. **Server Tier (Render Cloud):** Đặt các khối Node.js + Express API, JWT Auth Middleware. Kéo mũi tên kết nối từ Next.js xuống Express (ghi "HTTPS / REST API").
+3. **Data/Service Tier (Google Cloud):** Chia nhỏ làm 2 cụm là _Firebase Platform_ (Auth, Firestore, Storage) và _Google Gemini API_. Kéo mũi tên từ Express qua các dịch vụ này (ghi "Firebase Admin SDK" hoặc "Axios HTTP").
 
 **Giải thích chi tiết (Explanation):**
 This figure visually illustrates the system architecture diagram (three-tier overview). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project. Specifically, it demonstrates how the various components interact with each other and provides a clear visual reference for the concepts discussed in the surrounding text.
@@ -40,6 +48,7 @@ This figure visually illustrates the system architecture diagram (three-tier ove
 ---
 
 ## Figure 3.2
+
 **Tên hình/mô tả:** Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -52,6 +61,7 @@ This figure visually illustrates the authentication sequence diagram: firebase a
 ---
 
 ## Figure 3.3
+
 **Tên hình/mô tả:** AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -64,6 +74,7 @@ This figure visually illustrates the ai generation sequence diagram: prompt inpu
 ---
 
 ## Figure 4.1
+
 **Tên hình/mô tả:** Frontend technology stack diagram showing component relationships
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -76,6 +87,7 @@ This figure visually illustrates the frontend technology stack diagram showing c
 ---
 
 ## Figure 4.2
+
 **Tên hình/mô tả:** Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -88,6 +100,7 @@ This figure visually illustrates the cloud infrastructure diagram: vercel ↔ re
 ---
 
 ## Figure 5.1
+
 **Tên hình/mô tả:** Firestore data model overview showing 4 collections and their relationships
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -100,6 +113,7 @@ This figure visually illustrates the firestore data model overview showing 4 col
 ---
 
 ## Figure 6.1
+
 **Tên hình/mô tả:** Screenshot of the Registration page
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -112,6 +126,7 @@ This figure visually illustrates the screenshot of the registration page. It ser
 ---
 
 ## Figure 6.2
+
 **Tên hình/mô tả:** Screenshot of the Login page
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -124,6 +139,7 @@ This figure visually illustrates the screenshot of the login page. It serves to 
 ---
 
 ## Figure 6.3
+
 **Tên hình/mô tả:** Axios interceptor flow: request token injection and automatic 401 retry logic
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -136,6 +152,7 @@ This figure visually illustrates the axios interceptor flow: request token injec
 ---
 
 ## Figure 6.4
+
 **Tên hình/mô tả:** Screenshot of the Forgot Password page (email input and success state)
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -148,6 +165,7 @@ This figure visually illustrates the screenshot of the forgot password page (ema
 ---
 
 ## Figure 6.5
+
 **Tên hình/mô tả:** Screenshot of the Gallery page with filter options and masonry product grid
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -160,6 +178,7 @@ This figure visually illustrates the screenshot of the gallery page with filter 
 ---
 
 ## Figure 6.6
+
 **Tên hình/mô tả:** Screenshot of the Profile page "Favourites" tab
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -172,6 +191,7 @@ This figure visually illustrates the screenshot of the profile page "favourites"
 ---
 
 ## Figure 6.7
+
 **Tên hình/mô tả:** Screenshot of the Shopping Cart page
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -184,6 +204,7 @@ This figure visually illustrates the screenshot of the shopping cart page. It se
 ---
 
 ## Figure 6.8
+
 **Tên hình/mô tả:** Screenshot of the Checkout page with shipping form
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -196,6 +217,7 @@ This figure visually illustrates the screenshot of the checkout page with shippi
 ---
 
 ## Figure 6.9
+
 **Tên hình/mô tả:** Screenshot of the Order Success confirmation page
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -208,6 +230,7 @@ This figure visually illustrates the screenshot of the order success confirmatio
 ---
 
 ## Figure 6.10
+
 **Tên hình/mô tả:** Screenshot of the AI Generate page: prompt input area, complexity selector buttons
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -220,6 +243,7 @@ This figure visually illustrates the screenshot of the ai generate page: prompt 
 ---
 
 ## Figure 6.11
+
 **Tên hình/mô tả:** Example of a completed AI-generated paint-by-numbers image showing numbered regions and colour palette strip at the bottom
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -232,6 +256,7 @@ This figure visually illustrates the example of a completed ai-generated paint-b
 ---
 
 ## Figure 6.12
+
 **Tên hình/mô tả:** Screenshot of the Admin Dashboard with statistics cards and order status breakdown
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -244,6 +269,7 @@ This figure visually illustrates the screenshot of the admin dashboard with stat
 ---
 
 ## Figure 6.13
+
 **Tên hình/mô tả:** Screenshot of the Admin Products page with product list table and add/edit modal
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -256,6 +282,7 @@ This figure visually illustrates the screenshot of the admin products page with 
 ---
 
 ## Figure 7.1
+
 **Tên hình/mô tả:** Two-layer authorisation diagram: client-side redirect guard and server-side middleware guard
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -268,6 +295,7 @@ This figure visually illustrates the two-layer authorisation diagram: client-sid
 ---
 
 ## Figure 8.1
+
 **Tên hình/mô tả:** Error propagation flow diagram: source (Firebase / Gemini / Firestore) → backend response → frontend user message
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -280,6 +308,7 @@ This figure visually illustrates the error propagation flow diagram: source (fir
 ---
 
 ## Figure 9.1
+
 **Tên hình/mô tả:** Annotated screenshot of the full Homepage showing all 6 sections
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -292,6 +321,7 @@ This figure visually illustrates the annotated screenshot of the full homepage s
 ---
 
 ## Figure 9.2
+
 **Tên hình/mô tả:** Screenshot of the Gallery page with filters applied and masonry grid
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -304,6 +334,7 @@ This figure visually illustrates the screenshot of the gallery page with filters
 ---
 
 ## Figure 9.3
+
 **Tên hình/mô tả:** Screenshot of the Generate page: left — input state; right — result display state
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -316,6 +347,7 @@ This figure visually illustrates the screenshot of the generate page: left — i
 ---
 
 ## Figure 9.4
+
 **Tên hình/mô tả:** Screenshot of the Profile page showing the three tabs
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -328,6 +360,7 @@ This figure visually illustrates the screenshot of the profile page showing the 
 ---
 
 ## Figure 9.5
+
 **Tên hình/mô tả:** Screenshot of the Admin Dashboard with statistics cards
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -340,6 +373,7 @@ This figure visually illustrates the screenshot of the admin dashboard with stat
 ---
 
 ## Figure 9.6
+
 **Tên hình/mô tả:** Screenshot of the Admin Orders management table with status filter
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -352,6 +386,7 @@ This figure visually illustrates the screenshot of the admin orders management t
 ---
 
 ## Figure 9.7
+
 **Tên hình/mô tả:** Screenshot of the Admin Products page with the product add/edit modal
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -364,6 +399,7 @@ This figure visually illustrates the screenshot of the admin products page with 
 ---
 
 ## Figure 9.8
+
 **Tên hình/mô tả:** Screenshot of the Contact page showing the info panel and contact form
 
 **Hướng dẫn chụp/vẽ chi tiết:**
@@ -376,6 +412,7 @@ This figure visually illustrates the screenshot of the contact page showing the 
 ---
 
 ## Figure 10.1
+
 **Tên hình/mô tả:** CI/CD pipeline diagram: GitHub repository → Vercel (frontend) and GitHub → Render (backend)
 
 **Hướng dẫn chụp/vẽ chi tiết:**
