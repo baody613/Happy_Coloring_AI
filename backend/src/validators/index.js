@@ -123,20 +123,9 @@ export const systemSettingsSchema = Joi.object({
 export const paymentSettingsSchema = Joi.object({
   paymentMethods: Joi.object({
     cod: Joi.boolean(),
-    vnpay: Joi.boolean(),
-    momo: Joi.boolean(),
     banking: Joi.boolean(),
   }),
-  vnpayConfig: Joi.object({
-    tmnCode: Joi.string().allow(""),
-    hashSecret: Joi.string().allow(""),
-    url: Joi.string().uri().allow(""),
-  }),
-  momoConfig: Joi.object({
-    partnerCode: Joi.string().allow(""),
-    accessKey: Joi.string().allow(""),
-    secretKey: Joi.string().allow(""),
-  }),
+ 
   bankingInfo: Joi.object({
     bankName: Joi.string().allow(""),
     accountNumber: Joi.string().allow(""),

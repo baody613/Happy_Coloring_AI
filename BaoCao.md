@@ -90,15 +90,15 @@ This project presents a functional AI-integrated e-commerce system. The AI gener
 
 The following table defines what is included and excluded from the scope of this project.
 
-| In Scope | Out of Scope |
-| --- | --- |
+| In Scope                                         | Out of Scope                         |
+| ------------------------------------------------ | ------------------------------------ |
 | User registration, login, and profile management | Online payment gateway (VNPay, MoMo) |
-| Product browsing, filtering, and sorting | Real-time chat feature |
-| Shopping cart and order placement (COD) | OTP phone number verification |
-| Product favourites | Advanced system settings panel |
-| AI artwork generation from text prompt | |
-| Admin statistics dashboard | |
-| Admin product, order, and user management | |
+| Product browsing, filtering, and sorting         | Real-time chat feature               |
+| Shopping cart and order placement (COD)          | OTP phone number verification        |
+| Product favourites                               | Advanced system settings panel       |
+| AI artwork generation from text prompt           |                                      |
+| Admin statistics dashboard                       |                                      |
+| Admin product, order, and user management        |                                      |
 
 ---
 
@@ -128,16 +128,16 @@ Firebase, operated by Google Cloud, provides a suite of backend infrastructure s
 
 The frontend of the Happy Coloring AI system is built using the following technologies.
 
-| Technology | Version | Purpose |
-| --- | --- | --- |
-| **Next.js** | 14.2.33 | React framework with App Router, SSR/SSG |
-| **TypeScript** | 5.x | Static typing, reduced runtime errors |
-| **Tailwind CSS** | 3.4.0 | Utility-first CSS framework |
-| **Zustand** | 4.4.7 | State management (auth, cart, favourites) |
-| **Framer Motion** | 10.18.0 | UI animations and transitions |
-| **Axios** | 1.6.2 | HTTP client with request/response interceptors |
-| **Firebase SDK** | 11.10.0 | Firebase Auth client-side SDK |
-| **react-hot-toast** | 2.4.1 | Toast notification UI |
+| Technology          | Version | Purpose                                        |
+| ------------------- | ------- | ---------------------------------------------- |
+| **Next.js**         | 14.2.33 | React framework with App Router, SSR/SSG       |
+| **TypeScript**      | 5.x     | Static typing, reduced runtime errors          |
+| **Tailwind CSS**    | 3.4.0   | Utility-first CSS framework                    |
+| **Zustand**         | 4.4.7   | State management (auth, cart, favourites)      |
+| **Framer Motion**   | 10.18.0 | UI animations and transitions                  |
+| **Axios**           | 1.6.2   | HTTP client with request/response interceptors |
+| **Firebase SDK**    | 11.10.0 | Firebase Auth client-side SDK                  |
+| **react-hot-toast** | 2.4.1   | Toast notification UI                          |
 
 **Rationale for Next.js 14:** Next.js supports Server-Side Rendering, improving SEO for product pages. The App Router (introduced in Next.js 13) enables collocated layouts and loading states. Vercel — the company behind Next.js — provides free hosting with automated CI/CD from GitHub (Vercel, 2024).
 
@@ -155,32 +155,32 @@ The frontend of the Happy Coloring AI system is built using the following techno
 
 The backend API server is built using the following technologies.
 
-| Technology | Version | Purpose |
-| --- | --- | --- |
-| **Node.js** | 18+ | Server-side JavaScript runtime |
-| **Express** | 4.18.2 | Web framework for RESTful routing |
-| **Firebase Admin SDK** | 10.3.0 | JWT verification, Firestore and Storage access |
-| **Helmet** | 7.1.0 | HTTP security headers |
-| **CORS** | 2.8.5 | Cross-Origin Resource Sharing |
-| **express-rate-limit** | 7.1.5 | Request rate limiting per IP |
-| **Joi** | 17.11.0 | Input schema validation |
-| **Morgan** | 1.10.0 | HTTP request logging |
-| **Axios** | 1.6.2 | Outbound calls to Gemini and MyMemory APIs |
-| **Swagger UI** | 5.0.1 | Auto-generated API documentation |
+| Technology             | Version | Purpose                                        |
+| ---------------------- | ------- | ---------------------------------------------- |
+| **Node.js**            | 18+     | Server-side JavaScript runtime                 |
+| **Express**            | 4.18.2  | Web framework for RESTful routing              |
+| **Firebase Admin SDK** | 10.3.0  | JWT verification, Firestore and Storage access |
+| **Helmet**             | 7.1.0   | HTTP security headers                          |
+| **CORS**               | 2.8.5   | Cross-Origin Resource Sharing                  |
+| **express-rate-limit** | 7.1.5   | Request rate limiting per IP                   |
+| **Joi**                | 17.11.0 | Input schema validation                        |
+| **Morgan**             | 1.10.0  | HTTP request logging                           |
+| **Axios**              | 1.6.2   | Outbound calls to Gemini and MyMemory APIs     |
+| **Swagger UI**         | 5.0.1   | Auto-generated API documentation               |
 
 ### 3.3 Cloud Infrastructure
 
 The system is deployed across three cloud platforms, each serving a distinct infrastructure role.
 
-| Service | Provider | Purpose |
-| --- | --- | --- |
-| **Firebase Authentication** | Google Cloud | User identity management and JWT issuance |
-| **Cloud Firestore** | Google Cloud | NoSQL document database |
-| **Firebase Storage** | Google Cloud | Image file storage (PNG files) |
-| **Vercel** | Vercel Inc. | Frontend hosting with global CDN |
-| **Render** | Render Inc. | Backend Node.js hosting |
-| **Gemini 2.5 Flash Image** | Google DeepMind | AI image generation |
-| **MyMemory Translation** | Translated.net | Free Vietnamese→English translation |
+| Service                     | Provider        | Purpose                                   |
+| --------------------------- | --------------- | ----------------------------------------- |
+| **Firebase Authentication** | Google Cloud    | User identity management and JWT issuance |
+| **Cloud Firestore**         | Google Cloud    | NoSQL document database                   |
+| **Firebase Storage**        | Google Cloud    | Image file storage (PNG files)            |
+| **Vercel**                  | Vercel Inc.     | Frontend hosting with global CDN          |
+| **Render**                  | Render Inc.     | Backend Node.js hosting                   |
+| **Gemini 2.5 Flash Image**  | Google DeepMind | AI image generation                       |
+| **MyMemory Translation**    | Translated.net  | Free Vietnamese→English translation       |
 
 > **Figure 3.2** — Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
 >
@@ -198,30 +198,30 @@ Existing paint-by-numbers platforms, such as Pictorem and PaintYourNumbers, offe
 
 #### Stakeholders
 
-| Stakeholder | Role |
-| --- | --- |
-| **Customer (User)** | Browse products, place orders, generate AI artwork |
-| **Administrator (Admin)** | Manage products, orders, and users |
-| **System** | Authentication, security, automated image generation |
+| Stakeholder               | Role                                                 |
+| ------------------------- | ---------------------------------------------------- |
+| **Customer (User)**       | Browse products, place orders, generate AI artwork   |
+| **Administrator (Admin)** | Manage products, orders, and users                   |
+| **System**                | Authentication, security, automated image generation |
 
 ### 4.2 Use Case Diagrams and User Stories
 
 #### 4.2.1 Customer Use Cases
 
-| ID | Feature | Description |
-| --- | --- | --- |
-| UC-01 | User Registration | Create account with email and password |
-| UC-02 | Login | Firebase authentication with "Remember Me" support |
-| UC-03 | Forgot Password | Send password-reset email via Firebase |
-| UC-04 | Profile Update | Edit name, phone number, address, date of birth |
-| UC-05 | Product Gallery | Browse products with filtering and sorting |
-| UC-06 | Product Detail | View full information for a single product |
-| UC-07 | Favourites | Add/remove products from a personal favourites list |
-| UC-08 | Shopping Cart | Add, remove, update item quantities |
-| UC-09 | Checkout | Fill in shipping information and select COD payment |
-| UC-10 | Order History | View list and status of past orders |
+| ID    | Feature               | Description                                          |
+| ----- | --------------------- | ---------------------------------------------------- |
+| UC-01 | User Registration     | Create account with email and password               |
+| UC-02 | Login                 | Firebase authentication with "Remember Me" support   |
+| UC-03 | Forgot Password       | Send password-reset email via Firebase               |
+| UC-04 | Profile Update        | Edit name, phone number, address, date of birth      |
+| UC-05 | Product Gallery       | Browse products with filtering and sorting           |
+| UC-06 | Product Detail        | View full information for a single product           |
+| UC-07 | Favourites            | Add/remove products from a personal favourites list  |
+| UC-08 | Shopping Cart         | Add, remove, update item quantities                  |
+| UC-09 | Checkout              | Fill in shipping information and select COD payment  |
+| UC-10 | Order History         | View list and status of past orders                  |
 | UC-11 | AI Artwork Generation | Describe artwork in Vietnamese and select complexity |
-| UC-12 | Contact Us | Send a message via the contact form |
+| UC-12 | Contact Us            | Send a message via the contact form                  |
 
 > **Figure 4.1** — Use Case Diagram showing interactions between User, Admin, and System
 >
@@ -233,22 +233,22 @@ Existing paint-by-numbers platforms, such as Pictorem and PaintYourNumbers, offe
 
 #### 4.2.2 Administrator Use Cases
 
-| ID | Feature | Description |
-| --- | --- | --- |
-| UC-13 | Admin Dashboard | Aggregate statistics: revenue, orders, users |
+| ID    | Feature            | Description                                  |
+| ----- | ------------------ | -------------------------------------------- |
+| UC-13 | Admin Dashboard    | Aggregate statistics: revenue, orders, users |
 | UC-14 | Product Management | Create, edit, delete products; upload images |
-| UC-15 | Order Management | View, filter, and update order status |
-| UC-16 | User Management | Search users and disable accounts |
+| UC-15 | Order Management   | View, filter, and update order status        |
+| UC-16 | User Management    | Search users and disable accounts            |
 
 ### 4.3 Non-Functional Requirements
 
-| Category | Requirement |
-| --- | --- |
-| **Performance** | Page load time < 3 seconds for product listings |
-| **Security** | JWT authentication, HTTPS, rate limiting (100 req / 15 min) |
-| **Scalability** | RESTful, stateless backend architecture |
-| **Availability** | Frontend 99.9% uptime (Vercel); backend on Render free tier |
-| **Maintainability** | Decoupled frontend/backend; TypeScript for type safety |
+| Category            | Requirement                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| **Performance**     | Page load time < 3 seconds for product listings             |
+| **Security**        | JWT authentication, HTTPS, rate limiting (100 req / 15 min) |
+| **Scalability**     | RESTful, stateless backend architecture                     |
+| **Availability**    | Frontend 99.9% uptime (Vercel); backend on Render free tier |
+| **Maintainability** | Decoupled frontend/backend; TypeScript for type safety      |
 
 ### 4.4 Database Design (Firestore Collections)
 
@@ -266,96 +266,96 @@ Cloud Firestore is a NoSQL document database. According to Google Firebase docum
 
 Each document in this collection represents a registered user account and is keyed by the Firebase Authentication UID.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `uid` | string | Firebase Auth UID (primary key) |
-| `email` | string | User's email address (unique) |
-| `displayName` | string | Display name |
-| `role` | string | `"user"` or `"admin"` |
-| `phoneNumber` | string? | Phone number (optional) |
-| `address` | string? | Shipping address (optional) |
-| `dateOfBirth` | string? | ISO 8601 date (optional) |
-| `createdAt` | string | ISO 8601 timestamp |
-| `updatedAt` | string | ISO 8601 timestamp |
+| Field         | Type    | Description                     |
+| ------------- | ------- | ------------------------------- |
+| `uid`         | string  | Firebase Auth UID (primary key) |
+| `email`       | string  | User's email address (unique)   |
+| `displayName` | string  | Display name                    |
+| `role`        | string  | `"user"` or `"admin"`           |
+| `phoneNumber` | string? | Phone number (optional)         |
+| `address`     | string? | Shipping address (optional)     |
+| `dateOfBirth` | string? | ISO 8601 date (optional)        |
+| `createdAt`   | string  | ISO 8601 timestamp              |
+| `updatedAt`   | string  | ISO 8601 timestamp              |
 
 #### 4.4.2 Collection `products`
 
 Each document represents a paint-by-numbers product available in the store.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `title` | string | Product name |
-| `description` | string | Full description |
-| `price` | number | Price in VND |
-| `category` | string | Category name (e.g. "Flowers & Nature") |
-| `difficulty` | string | `"easy"`, `"medium"`, or `"hard"` |
-| `dimensions` | string | Canvas size (e.g. "30x40 cm") |
-| `colors` | number | Number of paint colours |
-| `imageUrl` | string | Main image URL (Firebase Storage) |
-| `thumbnailUrl` | string | Thumbnail URL |
-| `status` | string | `"active"` or `"inactive"` |
-| `sales` | number | Total units sold (aggregated from orders) |
-| `createdAt` | string | ISO 8601 timestamp |
-| `updatedAt` | string | ISO 8601 timestamp |
+| Field          | Type   | Description                               |
+| -------------- | ------ | ----------------------------------------- |
+| `title`        | string | Product name                              |
+| `description`  | string | Full description                          |
+| `price`        | number | Price in VND                              |
+| `category`     | string | Category name (e.g. "Flowers & Nature")   |
+| `difficulty`   | string | `"easy"`, `"medium"`, or `"hard"`         |
+| `dimensions`   | string | Canvas size (e.g. "30x40 cm")             |
+| `colors`       | number | Number of paint colours                   |
+| `imageUrl`     | string | Main image URL (Firebase Storage)         |
+| `thumbnailUrl` | string | Thumbnail URL                             |
+| `status`       | string | `"active"` or `"inactive"`                |
+| `sales`        | number | Total units sold (aggregated from orders) |
+| `createdAt`    | string | ISO 8601 timestamp                        |
+| `updatedAt`    | string | ISO 8601 timestamp                        |
 
 #### 4.4.3 Collection `orders`
 
 Each document represents a customer order.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `orderNumber` | string | Human-readable order code (e.g. `ORD-M6JZTW12-K3P7`) |
-| `userId` | string | UID of the customer (FK → users) |
-| `items[]` | array | List of ordered products |
-| `shippingAddress` | object | fullName, phone, address, city |
-| `totalAmount` | number | Total price in VND |
-| `paymentMethod` | string | `"cod"` or `"bank_transfer"` |
-| `status` | string | `"pending"` / `"processing"` / `"shipping"` / `"delivered"` / `"cancelled"` |
-| `paymentStatus` | string | `"pending"` / `"paid"` / `"failed"` |
-| `note` | string? | Delivery note (optional) |
-| `createdAt` | string | ISO 8601 timestamp |
-| `updatedAt` | string | ISO 8601 timestamp |
+| Field             | Type    | Description                                                                 |
+| ----------------- | ------- | --------------------------------------------------------------------------- |
+| `orderNumber`     | string  | Human-readable order code (e.g. `ORD-M6JZTW12-K3P7`)                        |
+| `userId`          | string  | UID of the customer (FK → users)                                            |
+| `items[]`         | array   | List of ordered products                                                    |
+| `shippingAddress` | object  | fullName, phone, address, city                                              |
+| `totalAmount`     | number  | Total price in VND                                                          |
+| `paymentMethod`   | string  | `"cod"` or `"bank_transfer"`                                                |
+| `status`          | string  | `"pending"` / `"processing"` / `"shipping"` / `"delivered"` / `"cancelled"` |
+| `paymentStatus`   | string  | `"pending"` / `"paid"` / `"failed"`                                         |
+| `note`            | string? | Delivery note (optional)                                                    |
+| `createdAt`       | string  | ISO 8601 timestamp                                                          |
+| `updatedAt`       | string  | ISO 8601 timestamp                                                          |
 
 #### 4.4.4 Collection `generations`
 
 Each document represents a single AI image generation job.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | string | Firestore document ID |
-| `userId` | string | UID of the creator (FK → users) |
-| `prompt` | string | Original description (Vietnamese) |
-| `style` | string | Art style (e.g. "realistic", "anime") |
-| `complexity` | string | `"easy"`, `"medium"`, or `"hard"` |
-| `status` | string | `"processing"` / `"completed"` / `"failed"` |
-| `imageUrl` | string | Result image URL (after completion) |
-| `error` | string? | Error message (if failed) |
-| `createdAt` | string | Generation start time |
-| `completedAt` | string? | Completion time |
-| `failedAt` | string? | Failure time |
+| Field         | Type    | Description                                 |
+| ------------- | ------- | ------------------------------------------- |
+| `id`          | string  | Firestore document ID                       |
+| `userId`      | string  | UID of the creator (FK → users)             |
+| `prompt`      | string  | Original description (Vietnamese)           |
+| `style`       | string  | Art style (e.g. "realistic", "anime")       |
+| `complexity`  | string  | `"easy"`, `"medium"`, or `"hard"`           |
+| `status`      | string  | `"processing"` / `"completed"` / `"failed"` |
+| `imageUrl`    | string  | Result image URL (after completion)         |
+| `error`       | string? | Error message (if failed)                   |
+| `createdAt`   | string  | Generation start time                       |
+| `completedAt` | string? | Completion time                             |
+| `failedAt`    | string? | Failure time                                |
 
 ### 4.5 Sitemap
 
 The application consists of the following top-level routes:
 
-| Path | Description |
-| --- | --- |
-| `/` | Homepage (landing page) |
-| `/gallery` | Product gallery with filters |
-| `/products/[id]` | Product detail page |
-| `/generate` | AI artwork generation interface |
-| `/cart` | Shopping cart |
-| `/checkout` | Order placement form |
-| `/order-success` | Order confirmation |
-| `/login` | Login page |
-| `/register` | Registration page |
-| `/forgot-password` | Password reset page |
-| `/profile` | User profile with tabs |
-| `/contact` | Contact form and information |
-| `/admin` | Admin dashboard (protected) |
-| `/admin/products` | Admin product management |
-| `/admin/orders` | Admin order management |
-| `/admin/users` | Admin user management |
+| Path               | Description                     |
+| ------------------ | ------------------------------- |
+| `/`                | Homepage (landing page)         |
+| `/gallery`         | Product gallery with filters    |
+| `/products/[id]`   | Product detail page             |
+| `/generate`        | AI artwork generation interface |
+| `/cart`            | Shopping cart                   |
+| `/checkout`        | Order placement form            |
+| `/order-success`   | Order confirmation              |
+| `/login`           | Login page                      |
+| `/register`        | Registration page               |
+| `/forgot-password` | Password reset page             |
+| `/profile`         | User profile with tabs          |
+| `/contact`         | Contact form and information    |
+| `/admin`           | Admin dashboard (protected)     |
+| `/admin/products`  | Admin product management        |
+| `/admin/orders`    | Admin order management          |
+| `/admin/users`     | Admin user management           |
 
 ---
 
@@ -482,13 +482,13 @@ The registration process executes in ten steps:
 
 The `/api/auth/register` route supports a dual-mode design: if a Bearer token is present, the user was already created by the Firebase SDK and the backend only creates the Firestore document. If no token is present, the backend creates the Firebase Auth user first.
 
-| Error Code | Source | Cause | User-facing Message |
-| --- | --- | --- | --- |
-| `auth/email-already-in-use` | Firebase Auth | Email already registered | "This email is already in use" |
-| `auth/weak-password` | Firebase Auth | Password shorter than 6 characters | "Password must be at least 6 characters" |
-| `auth/invalid-email` | Firebase Auth | Malformed email address | "Invalid email address" |
-| `400 Bad Request` | Backend | Missing email field in body | "Email is required" |
-| `500 Internal Server Error` | Backend | Firestore write failure | "Internal server error" |
+| Error Code                  | Source        | Cause                              | User-facing Message                      |
+| --------------------------- | ------------- | ---------------------------------- | ---------------------------------------- |
+| `auth/email-already-in-use` | Firebase Auth | Email already registered           | "This email is already in use"           |
+| `auth/weak-password`        | Firebase Auth | Password shorter than 6 characters | "Password must be at least 6 characters" |
+| `auth/invalid-email`        | Firebase Auth | Malformed email address            | "Invalid email address"                  |
+| `400 Bad Request`           | Backend       | Missing email field in body        | "Email is required"                      |
+| `500 Internal Server Error` | Backend       | Firestore write failure            | "Internal server error"                  |
 
 ---
 
@@ -520,14 +520,14 @@ The backend has no login route. All authentication is handled client-side throug
 >
 > **Explanation:** This flowchart shows the Axios interceptor pipeline. The request interceptor always fetches a fresh JWT before injecting it into the Authorization header. The response interceptor handles 401 errors by attempting a single silent token refresh and retry; if the retry also fails, the user is logged out and redirected to the login page.
 
-| Error Code | Source | Cause | User-facing Message |
-| --- | --- | --- | --- |
-| `auth/user-not-found` | Firebase Auth | Email not registered | "Incorrect email or password" |
-| `auth/wrong-password` | Firebase Auth | Wrong password | "Incorrect email or password" |
-| `auth/invalid-credential` | Firebase Auth | Invalid credentials (SDK v9+) | "Incorrect email or password" |
-| `auth/too-many-requests` | Firebase Auth | Too many failed attempts | "Account temporarily locked" |
-| `auth/user-disabled` | Firebase Auth | Account disabled by admin | "This account has been suspended" |
-| `401 Unauthorized` | Backend API | Token expired mid-session | Auto-refresh → if still 401 → logout |
+| Error Code                | Source        | Cause                         | User-facing Message                  |
+| ------------------------- | ------------- | ----------------------------- | ------------------------------------ |
+| `auth/user-not-found`     | Firebase Auth | Email not registered          | "Incorrect email or password"        |
+| `auth/wrong-password`     | Firebase Auth | Wrong password                | "Incorrect email or password"        |
+| `auth/invalid-credential` | Firebase Auth | Invalid credentials (SDK v9+) | "Incorrect email or password"        |
+| `auth/too-many-requests`  | Firebase Auth | Too many failed attempts      | "Account temporarily locked"         |
+| `auth/user-disabled`      | Firebase Auth | Account disabled by admin     | "This account has been suspended"    |
+| `401 Unauthorized`        | Backend API   | Token expired mid-session     | Auto-refresh → if still 401 → logout |
 
 ---
 
@@ -565,16 +565,16 @@ The password reset flow uses Firebase's built-in email delivery:
 
 The API supports the following query parameters for filtering and sorting:
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `category` | string | Filter by category |
-| `difficulty` | string | `"easy"` / `"medium"` / `"hard"` |
-| `minPrice` | number | Minimum price (VND) |
-| `maxPrice` | number | Maximum price (VND) |
-| `sortBy` | string | `"price"` / `"sales"` / `"createdAt"` |
-| `sortOrder` | string | `"asc"` / `"desc"` |
-| `page` | number | Current page (default: 1) |
-| `limit` | number | Items per page (default: 20) |
+| Parameter    | Type   | Description                           |
+| ------------ | ------ | ------------------------------------- |
+| `category`   | string | Filter by category                    |
+| `difficulty` | string | `"easy"` / `"medium"` / `"hard"`      |
+| `minPrice`   | number | Minimum price (VND)                   |
+| `maxPrice`   | number | Maximum price (VND)                   |
+| `sortBy`     | string | `"price"` / `"sales"` / `"createdAt"` |
+| `sortOrder`  | string | `"asc"` / `"desc"`                    |
+| `page`       | number | Current page (default: 1)             |
+| `limit`      | number | Items per page (default: 20)          |
 
 **Pagination strategy:** Firestore does not efficiently support multi-field ordering without Composite Indexes. To avoid index management overhead, the system queries Firestore with basic filters and performs sorting and pagination in JavaScript memory. This is a deliberate trade-off: simpler operations at the cost of fetching more documents initially, which is acceptable for a moderate dataset size.
 
@@ -608,16 +608,16 @@ The cart is stored client-side in localStorage via Zustand `persist` middleware.
 >
 > **Explanation:** This screenshot shows the shopping cart page with product line items, quantity controls, item selection checkboxes, subtotal calculation, and the proceed to checkout button.
 
-| Action | Description |
-| --- | --- |
+| Action                       | Description                                        |
+| ---------------------------- | -------------------------------------------------- |
 | `addItem(product, quantity)` | Add product; increment quantity if already present |
-| `removeItem(productId)` | Remove product from cart |
-| `updateQuantity(id, qty)` | Update item quantity |
-| `toggleSelectItem(id)` | Toggle selection for checkout |
-| `selectAllItems()` | Select all items |
-| `moveToSavedForLater(id)` | Move item to saved-for-later list |
-| `getSelectedTotal()` | Compute total for selected items |
-| `clearCart()` | Remove all items from cart |
+| `removeItem(productId)`      | Remove product from cart                           |
+| `updateQuantity(id, qty)`    | Update item quantity                               |
+| `toggleSelectItem(id)`       | Toggle selection for checkout                      |
+| `selectAllItems()`           | Select all items                                   |
+| `moveToSavedForLater(id)`    | Move item to saved-for-later list                  |
+| `getSelectedTotal()`         | Compute total for selected items                   |
+| `clearCart()`                | Remove all items from cart                         |
 
 ---
 
@@ -656,6 +656,7 @@ The order placement flow:
 **Key files:** `frontend/src/app/generate/page.tsx`, `backend/src/routes/generate.js`
 
 **API Endpoints:**
+
 - `POST /api/generate/paint-by-numbers` — initiate generation
 - `GET /api/generate/status/:generationId` — poll for status
 
@@ -673,23 +674,23 @@ The order placement flow:
 
 **Complexity levels:**
 
-| Level | Max Colours | Description |
-| --- | --- | --- |
-| `easy` | 16 | Simple bold shapes, large paint regions, minimal detail |
-| `medium` | 28 | Moderate detail, medium-sized regions, balanced composition |
-| `hard` | 44 | Highly detailed, many small intricate regions, complex composition |
+| Level    | Max Colours | Description                                                        |
+| -------- | ----------- | ------------------------------------------------------------------ |
+| `easy`   | 16          | Simple bold shapes, large paint regions, minimal detail            |
+| `medium` | 28          | Moderate detail, medium-sized regions, balanced composition        |
+| `hard`   | 44          | Highly detailed, many small intricate regions, complex composition |
 
 **Error codes:**
 
-| Code | Source | Cause |
-| --- | --- | --- |
-| `400` | Backend | Missing prompt or prompt exceeds 500 characters |
-| `401` | Backend | User not authenticated |
-| `403` | Backend | Requesting status of another user's generation |
-| `404` | Backend | generationId not found in Firestore |
-| `500` | Backend | Gemini API failure, Storage error, or Firestore write error |
-| `RESOURCE_EXHAUSTED` | Google AI | Free-tier quota exceeded (60 req/min) |
-| `INVALID_ARGUMENT` | Google AI | Prompt violates content safety policy |
+| Code                 | Source    | Cause                                                       |
+| -------------------- | --------- | ----------------------------------------------------------- |
+| `400`                | Backend   | Missing prompt or prompt exceeds 500 characters             |
+| `401`                | Backend   | User not authenticated                                      |
+| `403`                | Backend   | Requesting status of another user's generation              |
+| `404`                | Backend   | generationId not found in Firestore                         |
+| `500`                | Backend   | Gemini API failure, Storage error, or Firestore write error |
+| `RESOURCE_EXHAUSTED` | Google AI | Free-tier quota exceeded (60 req/min)                       |
+| `INVALID_ARGUMENT`   | Google AI | Prompt violates content safety policy                       |
 
 ---
 
@@ -719,12 +720,12 @@ The backend aggregates statistics concurrently using `Promise.all()` across thre
 >
 > **Explanation:** This screenshot shows the admin product management page with the paginated product data table (columns: title, category, price, status, actions) and the add/edit product modal overlay with form fields for all product attributes.
 
-| Method | Path | Description |
-| --- | --- | --- |
-| `GET` | `/api/admin/products` | List all products (including inactive) |
-| `POST` | `/api/products` | Create a new product |
-| `PUT` | `/api/products/:id` | Update product details |
-| `DELETE` | `/api/products/:id` | Soft delete — sets `status = "inactive"` |
+| Method   | Path                  | Description                              |
+| -------- | --------------------- | ---------------------------------------- |
+| `GET`    | `/api/admin/products` | List all products (including inactive)   |
+| `POST`   | `/api/products`       | Create a new product                     |
+| `PUT`    | `/api/products/:id`   | Update product details                   |
+| `DELETE` | `/api/products/:id`   | Soft delete — sets `status = "inactive"` |
 
 Product image upload is handled directly by the Firebase Storage Client SDK on the frontend, bypassing the backend. The resulting `downloadURL` is submitted with the product data.
 
@@ -751,14 +752,14 @@ Admin authorisation is enforced at two independent layers:
 
 #### 6.3.2 OWASP Top 10 Mitigations
 
-| OWASP Vulnerability | Mitigation Applied |
-| --- | --- |
-| **A01 — Broken Access Control** | JWT verification on all protected routes; ownership checks (`userId === req.user.uid`) |
-| **A02 — Cryptographic Failures** | HTTPS enforced end-to-end; passwords never stored (Firebase manages credentials) |
-| **A03 — Injection** | Joi schema validation on all inputs; Firestore uses parameterised queries (no raw SQL) |
-| **A05 — Security Misconfiguration** | Helmet.js automatically sets 12 HTTP security response headers |
-| **A07 — Identification and Authentication Failures** | Firebase Auth account lock-out after repeated failed login attempts |
-| **A09 — Security Logging and Monitoring** | Morgan HTTP request logger enabled on all routes |
+| OWASP Vulnerability                                  | Mitigation Applied                                                                     |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| **A01 — Broken Access Control**                      | JWT verification on all protected routes; ownership checks (`userId === req.user.uid`) |
+| **A02 — Cryptographic Failures**                     | HTTPS enforced end-to-end; passwords never stored (Firebase manages credentials)       |
+| **A03 — Injection**                                  | Joi schema validation on all inputs; Firestore uses parameterised queries (no raw SQL) |
+| **A05 — Security Misconfiguration**                  | Helmet.js automatically sets 12 HTTP security response headers                         |
+| **A07 — Identification and Authentication Failures** | Firebase Auth account lock-out after repeated failed login attempts                    |
+| **A09 — Security Logging and Monitoring**            | Morgan HTTP request logger enabled on all routes                                       |
 
 #### 6.3.3 Rate Limiting
 
@@ -776,11 +777,11 @@ The CORS policy permits requests only from explicitly whitelisted origins: `loca
 
 According to RFC 9110 (Fielding et al., 2022), HTTP status codes are grouped as follows:
 
-| Group | Range | Meaning |
-| --- | --- | --- |
-| 2xx | 200–299 | Success |
-| 4xx | 400–499 | Client-side error |
-| 5xx | 500–599 | Server-side error |
+| Group | Range   | Meaning           |
+| ----- | ------- | ----------------- |
+| 2xx   | 200–299 | Success           |
+| 4xx   | 400–499 | Client-side error |
+| 5xx   | 500–599 | Server-side error |
 
 > **Figure 6.18** — Error propagation flow diagram: source → backend response → frontend user message
 >
@@ -794,54 +795,56 @@ According to RFC 9110 (Fielding et al., 2022), HTTP status codes are grouped as 
 
 **2xx — Success**
 
-| Code | Name | When It Occurs |
-| --- | --- | --- |
-| `200 OK` | OK | Reading products, viewing orders, fetching profile |
-| `201 Created` | Created | Account registered; order placed successfully |
+| Code           | Name     | When It Occurs                                                        |
+| -------------- | -------- | --------------------------------------------------------------------- |
+| `200 OK`       | OK       | Reading products, viewing orders, fetching profile                    |
+| `201 Created`  | Created  | Account registered; order placed successfully                         |
 | `202 Accepted` | Accepted | AI generation started — request accepted, processing not yet complete |
 
 **4xx — Client Errors**
 
-| Code | Name | Specific Cause | Related Route |
-| --- | --- | --- | --- |
-| `400 Bad Request` | Invalid data | Joi validation failure; empty or oversized prompt | `/api/auth/register`, `/api/orders`, `/api/generate` |
-| `401 Unauthorized` | Not authenticated | Missing or expired Bearer token | All protected routes |
-| `403 Forbidden` | No permission | Email not in ADMIN_EMAILS; accessing another user's resource | `/api/admin/*`, `/api/orders/:id` |
-| `404 Not Found` | Resource missing | Product deleted; unknown generationId; Firestore document missing | `/api/products/:id`, `/api/generate/status/:id` |
-| `429 Too Many Requests` | Rate limit exceeded | More than 100 requests from same IP in 15 minutes | All routes |
+| Code                    | Name                | Specific Cause                                                    | Related Route                                        |
+| ----------------------- | ------------------- | ----------------------------------------------------------------- | ---------------------------------------------------- |
+| `400 Bad Request`       | Invalid data        | Joi validation failure; empty or oversized prompt                 | `/api/auth/register`, `/api/orders`, `/api/generate` |
+| `401 Unauthorized`      | Not authenticated   | Missing or expired Bearer token                                   | All protected routes                                 |
+| `403 Forbidden`         | No permission       | Email not in ADMIN_EMAILS; accessing another user's resource      | `/api/admin/*`, `/api/orders/:id`                    |
+| `404 Not Found`         | Resource missing    | Product deleted; unknown generationId; Firestore document missing | `/api/products/:id`, `/api/generate/status/:id`      |
+| `429 Too Many Requests` | Rate limit exceeded | More than 100 requests from same IP in 15 minutes                 | All routes                                           |
 
 **5xx — Server Errors**
 
-| Code | Name | Specific Cause | System Behaviour |
-| --- | --- | --- | --- |
+| Code                        | Name         | Specific Cause                                                   | System Behaviour                                                            |
+| --------------------------- | ------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | `500 Internal Server Error` | Server error | Firestore failure; Gemini returns no image; Storage upload error | Error logged server-side; generation document updated to `status: "failed"` |
 
 #### 6.4.3 Firebase Authentication Error Codes
 
-| Firebase Error Code | When It Occurs | User-Facing Message |
-| --- | --- | --- |
-| `auth/email-already-in-use` | Registration with an existing email | "This email is already in use" |
-| `auth/weak-password` | Password shorter than 6 characters | "Password must be at least 6 characters" |
-| `auth/invalid-email` | Malformed email address | "Invalid email address" |
-| `auth/user-not-found` | Login or password reset with unknown email | "Incorrect email or password" |
-| `auth/wrong-password` | Wrong password entered | "Incorrect email or password" |
-| `auth/invalid-credential` | Invalid credentials — Firebase SDK v9+ | "Incorrect email or password" |
-| `auth/too-many-requests` | Too many consecutive failed login attempts | "Account temporarily locked" |
-| `auth/user-disabled` | Account disabled by administrator | "This account has been suspended" |
-| `auth/network-request-failed` | No internet connection | "Please check your connection and try again" |
+| Firebase Error Code           | When It Occurs                             | User-Facing Message                          |
+| ----------------------------- | ------------------------------------------ | -------------------------------------------- |
+| `auth/email-already-in-use`   | Registration with an existing email        | "This email is already in use"               |
+| `auth/weak-password`          | Password shorter than 6 characters         | "Password must be at least 6 characters"     |
+| `auth/invalid-email`          | Malformed email address                    | "Invalid email address"                      |
+| `auth/user-not-found`         | Login or password reset with unknown email | "Incorrect email or password"                |
+| `auth/wrong-password`         | Wrong password entered                     | "Incorrect email or password"                |
+| `auth/invalid-credential`     | Invalid credentials — Firebase SDK v9+     | "Incorrect email or password"                |
+| `auth/too-many-requests`      | Too many consecutive failed login attempts | "Account temporarily locked"                 |
+| `auth/user-disabled`          | Account disabled by administrator          | "This account has been suspended"            |
+| `auth/network-request-failed` | No internet connection                     | "Please check your connection and try again" |
 
 #### 6.4.4 Google Gemini API Error Codes
 
-| Code / Type | Cause | System Behaviour |
-| --- | --- | --- |
-| `RESOURCE_EXHAUSTED` | Free-tier API quota exceeded (60 req/min) | Generation set to `status: "failed"` |
-| `INVALID_ARGUMENT` | Prompt violates Google's content safety policy | Generation set to `status: "failed"` |
-| `DEADLINE_EXCEEDED` | Axios timeout after 120 seconds | Generation set to `status: "failed"` |
-| No `inlineData` in response | AI returned only text, no image | `throw new Error("No image data returned")` |
+| Code / Type                 | Cause                                          | System Behaviour                            |
+| --------------------------- | ---------------------------------------------- | ------------------------------------------- |
+| `RESOURCE_EXHAUSTED`        | Free-tier API quota exceeded (60 req/min)      | Generation set to `status: "failed"`        |
+| `INVALID_ARGUMENT`          | Prompt violates Google's content safety policy | Generation set to `status: "failed"`        |
+| `DEADLINE_EXCEEDED`         | Axios timeout after 120 seconds                | Generation set to `status: "failed"`        |
+| No `inlineData` in response | AI returned only text, no image                | `throw new Error("No image data returned")` |
 
 ---
 
 ### 6.5 Product Evaluation
+
+The following subsections describe the key pages of the application. Screenshots of each page have been presented alongside the relevant implementation details in the sections above (Sections 6.1 – 6.4).
 
 #### 6.5.1 Homepage (`/`)
 
@@ -854,12 +857,6 @@ The homepage is structured in six sections following the AIDA design pattern (At
 5. **Why Choose Yu Ling Store:** Four feature cards with hover float effect.
 6. **Final CTA:** Purple-to-pink gradient banner with two action buttons.
 
-> **Figure 6.19** — Annotated screenshot of the full Homepage showing all 6 sections
->
-> `[INSERT FIGURE 6.19 HERE]`
->
-> **Explanation:** This annotated screenshot shows all six sections of the homepage with section labels overlaid: Hero, Featured Products, About Us, 3 Simple Steps, Why Choose Us, and Final CTA.
-
 ---
 
 #### 6.5.2 Gallery Page (`/gallery`)
@@ -870,12 +867,6 @@ The homepage is structured in six sections following the AIDA design pattern (At
 - Heart/favourite toggle button on each product card with instant state update.
 - Pagination via "Load More" button.
 
-> **Figure 6.20** — Screenshot of the Gallery page with filters applied and masonry grid
->
-> `[INSERT FIGURE 6.20 HERE]`
->
-> **Explanation:** This screenshot shows the gallery page with active filter selections applied and the resulting filtered product grid.
-
 ---
 
 #### 6.5.3 AI Generate Page (`/generate`)
@@ -885,27 +876,15 @@ The homepage is structured in six sections following the AIDA design pattern (At
 - Loading animation with progress messages during generation.
 - Result display area with an "Add to Cart" button once the image is ready.
 
-> **Figure 6.21** — Screenshot of the Generate page: input state and result display state
->
-> `[INSERT FIGURE 6.21 HERE]`
->
-> **Explanation:** This composite screenshot shows the Generate page in two states side by side: the left panel shows the input state with the prompt textarea and complexity buttons; the right panel shows the result state with the completed generated image and Add to Cart button.
-
 ---
 
 #### 6.5.4 User Profile Page (`/profile`)
 
-| Tab | Content |
-| --- | --- |
-| **My Info** | Editable form: display name, phone, address, date of birth |
-| **Favourites** | Grid of favourited products from `favoriteStore` |
-| **My Orders** | List of the user's orders with status badges |
-
-> **Figure 6.22** — Screenshot of the Profile page showing the three tabs
->
-> `[INSERT FIGURE 6.22 HERE]`
->
-> **Explanation:** This screenshot shows the user profile page with the three-tab interface. The My Info tab is active, displaying the editable personal information form.
+| Tab            | Content                                                    |
+| -------------- | ---------------------------------------------------------- |
+| **My Info**    | Editable form: display name, phone, address, date of birth |
+| **Favourites** | Grid of favourited products from `favoriteStore`           |
+| **My Orders**  | List of the user's orders with status badges               |
 
 ---
 
@@ -920,24 +899,6 @@ The admin panel provides four management areas:
 
 Access is protected by the two-layer authorisation mechanism described in Section 6.3.1.
 
-> **Figure 6.23** — Screenshot of the Admin Dashboard with statistics cards
->
-> `[INSERT FIGURE 6.23 HERE]`
->
-> **Explanation:** This screenshot shows the admin dashboard with four statistics summary cards and the order status breakdown panel.
-
-> **Figure 6.24** — Screenshot of the Admin Orders management table with status filter
->
-> `[INSERT FIGURE 6.24 HERE]`
->
-> **Explanation:** This screenshot shows the admin orders page with the status filter tabs and the order data table.
-
-> **Figure 6.25** — Screenshot of the Admin Products page with the add/edit modal
->
-> `[INSERT FIGURE 6.25 HERE]`
->
-> **Explanation:** This screenshot shows the admin products page with an open product add/edit modal, including the image upload area and all product attribute fields.
-
 ---
 
 #### 6.5.6 Contact Page (`/contact`)
@@ -947,24 +908,18 @@ Access is protected by the two-layer authorisation mechanism described in Sectio
 - Right column: validated contact form with fields for Full Name, Email, Subject (dropdown), and Message (minimum 20 characters with live character counter).
 - FAQ section with six common questions and concise answers.
 
-> **Figure 6.26** — Screenshot of the Contact page showing the info panel and contact form
->
-> `[INSERT FIGURE 6.26 HERE]`
->
-> **Explanation:** This screenshot shows the contact page with the contact information panel on the left and the validated contact form on the right.
-
 ---
 
 ### 6.6 Deployment
 
 #### 6.6.1 Production Environment
 
-| Component | URL | Platform |
-| --- | --- | --- |
-| Frontend | `https://happy-coloring-ai.vercel.app` | Vercel |
-| Backend API | `https://paint-by-numbers-back-end.onrender.com` | Render |
-| Database | Firebase Firestore | Google Cloud |
-| Storage | Firebase Storage | Google Cloud |
+| Component   | URL                                              | Platform     |
+| ----------- | ------------------------------------------------ | ------------ |
+| Frontend    | `https://happy-coloring-ai.vercel.app`           | Vercel       |
+| Backend API | `https://paint-by-numbers-back-end.onrender.com` | Render       |
+| Database    | Firebase Firestore                               | Google Cloud |
+| Storage     | Firebase Storage                                 | Google Cloud |
 
 #### 6.6.2 CI/CD Pipeline
 
@@ -984,24 +939,24 @@ Access is protected by the two-layer authorisation mechanism described in Sectio
 
 **Backend (`.env`):**
 
-| Variable | Description |
-| --- | --- |
-| `FIREBASE_PROJECT_ID` | Firebase project ID |
-| `FIREBASE_CLIENT_EMAIL` | Service account email address |
-| `FIREBASE_PRIVATE_KEY` | Service account private key (PEM format) |
-| `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket name |
-| `GOOGLE_AI_API_KEY` | Google AI Studio (Gemini) API key |
-| `ADMIN_EMAILS` | Comma-separated list of admin email addresses |
-| `CORS_ORIGIN` | Allowed frontend domain for production |
+| Variable                  | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| `FIREBASE_PROJECT_ID`     | Firebase project ID                           |
+| `FIREBASE_CLIENT_EMAIL`   | Service account email address                 |
+| `FIREBASE_PRIVATE_KEY`    | Service account private key (PEM format)      |
+| `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket name                  |
+| `GOOGLE_AI_API_KEY`       | Google AI Studio (Gemini) API key             |
+| `ADMIN_EMAILS`            | Comma-separated list of admin email addresses |
+| `CORS_ORIGIN`             | Allowed frontend domain for production        |
 
 **Frontend (`.env.local`):**
 
-| Variable | Description |
-| --- | --- |
-| `NEXT_PUBLIC_API_URL` | Backend API base URL |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase web API key |
+| Variable                           | Description          |
+| ---------------------------------- | -------------------- |
+| `NEXT_PUBLIC_API_URL`              | Backend API base URL |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`     | Firebase web API key |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`  | Firebase project ID  |
 
 #### 6.6.4 Render Free Tier Cold Start
 
@@ -1023,13 +978,13 @@ This project provided practical experience across a broad range of full-stack we
 
 ### 7.2 Project Results
 
-| Objective | Result |
-| --- | --- |
-| Full-featured e-commerce system | ✅ 21 features implemented |
-| AI image generation integration | ✅ Gemini 2.5 Flash Image, 3 complexity levels |
-| Admin management system | ✅ Dashboard, full CRUD for products / orders / users |
-| Cloud deployment with CI/CD | ✅ Vercel + Render + Firebase |
-| OWASP security compliance | ✅ JWT, Helmet, CORS, Rate Limiting, Joi validation |
+| Objective                       | Result                                                |
+| ------------------------------- | ----------------------------------------------------- |
+| Full-featured e-commerce system | ✅ 21 features implemented                            |
+| AI image generation integration | ✅ Gemini 2.5 Flash Image, 3 complexity levels        |
+| Admin management system         | ✅ Dashboard, full CRUD for products / orders / users |
+| Cloud deployment with CI/CD     | ✅ Vercel + Render + Firebase                         |
+| OWASP security compliance       | ✅ JWT, Helmet, CORS, Rate Limiting, Joi validation   |
 
 ### 7.3 Known Limitations
 
@@ -1053,35 +1008,35 @@ The following enhancements are proposed for future development:
 
 ## References
 
-Dai, P. (2021). *Zustand: Bear necessities for state management in React*. GitHub. https://github.com/pmndrs/zustand
+Dai, P. (2021). _Zustand: Bear necessities for state management in React_. GitHub. https://github.com/pmndrs/zustand
 
-Express.js. (2024). *Trust proxy in Express*. Express.js Documentation. https://expressjs.com/en/guide/behind-proxies.html
+Express.js. (2024). _Trust proxy in Express_. Express.js Documentation. https://expressjs.com/en/guide/behind-proxies.html
 
-Fielding, R., Nottingham, M. and Reschke, J. (2022). *HTTP Semantics* (RFC 9110). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc9110
+Fielding, R., Nottingham, M. and Reschke, J. (2022). _HTTP Semantics_ (RFC 9110). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc9110
 
-Google. (2024a). *Firebase Authentication overview*. Firebase Documentation. https://firebase.google.com/docs/auth
+Google. (2024a). _Firebase Authentication overview_. Firebase Documentation. https://firebase.google.com/docs/auth
 
-Google. (2024b). *Cloud Firestore data model*. Firebase Documentation. https://firebase.google.com/docs/firestore/data-model
+Google. (2024b). _Cloud Firestore data model_. Firebase Documentation. https://firebase.google.com/docs/firestore/data-model
 
-Google. (2024c). *Gemini API reference — generateContent*. Google AI for Developers. https://ai.google.dev/api/generate-content
+Google. (2024c). _Gemini API reference — generateContent_. Google AI for Developers. https://ai.google.dev/api/generate-content
 
-Grand View Research. (2023). *Paint by Numbers Market Size, Share & Trends Analysis Report*. Grand View Research. https://www.grandviewresearch.com/industry-analysis/paint-by-numbers-market
+Grand View Research. (2023). _Paint by Numbers Market Size, Share & Trends Analysis Report_. Grand View Research. https://www.grandviewresearch.com/industry-analysis/paint-by-numbers-market
 
-Helme, S. (2023). *Helmet.js — Help secure Express apps with various HTTP headers*. GitHub. https://github.com/helmetjs/helmet
+Helme, S. (2023). _Helmet.js — Help secure Express apps with various HTTP headers_. GitHub. https://github.com/helmetjs/helmet
 
-Lethbridge, T. C. and Laganière, R. (2005). *Object-Oriented Software Engineering: Practical Software Development using UML and Java* (2nd ed.). McGraw-Hill.
+Lethbridge, T. C. and Laganière, R. (2005). _Object-Oriented Software Engineering: Practical Software Development using UML and Java_ (2nd ed.). McGraw-Hill.
 
-Next.js. (2024). *App Router Introduction*. Vercel / Next.js Documentation. https://nextjs.org/docs/app
+Next.js. (2024). _App Router Introduction_. Vercel / Next.js Documentation. https://nextjs.org/docs/app
 
-OWASP Foundation. (2021). *OWASP Top Ten 2021*. Open Web Application Security Project. https://owasp.org/www-project-top-ten/
+OWASP Foundation. (2021). _OWASP Top Ten 2021_. Open Web Application Security Project. https://owasp.org/www-project-top-ten/
 
-Rescorla, E. (2015). *HTTP Over TLS* (RFC 7235). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc7235
+Rescorla, E. (2015). _HTTP Over TLS_ (RFC 7235). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc7235
 
-Render. (2024). *Free tier limitations*. Render Documentation. https://render.com/docs/free
+Render. (2024). _Free tier limitations_. Render Documentation. https://render.com/docs/free
 
-Translated.net. (2024). *MyMemory Translation API*. Translated. https://mymemory.translated.net/doc/spec.php
+Translated.net. (2024). _MyMemory Translation API_. Translated. https://mymemory.translated.net/doc/spec.php
 
-Vercel. (2024). *Vercel deployment overview*. Vercel Documentation. https://vercel.com/docs/deployments/overview
+Vercel. (2024). _Vercel deployment overview_. Vercel Documentation. https://vercel.com/docs/deployments/overview
 
 ---
 

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
@@ -70,6 +70,23 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
 
+  const loadProducts = useCallback(async () => {
+    try {
+      const data = await adminAPI.products.getAll({
+        limit: 200,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+      const list = data?.data?.products || data?.products || [];
+      const sortedList = [...list].sort(
+        (a: Product, b: Product) => getCreatedTime(b) - getCreatedTime(a),
+      );
+      setProducts(sortedList);
+    } catch {
+      toast.error("Không thể tải danh sách sản phẩm!");
+    }
+  }, []);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -82,7 +99,8 @@ export default function AdminProductsPage() {
     }
     loadProducts();
     setLoading(false);
-  }, [user, router, authLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.uid, authLoading]);
 
   const getCreatedTime = (product: Product) => {
     const createdAt = (product as any)?.createdAt;
@@ -126,29 +144,12 @@ export default function AdminProductsPage() {
     };
   };
 
-  const isNewProduct = (product: Product) => {
+  const isNewProduct = useCallback((product: Product) => {
     const createdTime = getCreatedTime(product);
     if (!createdTime) return false;
     const daysSinceCreated = (Date.now() - createdTime) / (1000 * 60 * 60 * 24);
     return daysSinceCreated <= NEW_PRODUCT_DAYS;
-  };
-
-  const loadProducts = async () => {
-    try {
-      const data = await adminAPI.products.getAll({
-        limit: 200,
-        sortBy: "createdAt",
-        sortOrder: "desc",
-      });
-      const list = data?.data?.products || data?.products || [];
-      const sortedList = [...list].sort(
-        (a, b) => getCreatedTime(b) - getCreatedTime(a),
-      );
-      setProducts(sortedList);
-    } catch {
-      toast.error("Không thể tải danh sách sản phẩm!");
-    }
-  };
+  }, []);
 
   const stats = useMemo(
     () => ({
@@ -176,12 +177,12 @@ export default function AdminProductsPage() {
               : p.category === filterCategory;
         return matchSearch && matchCategory;
       }),
-    [products, search, filterCategory],
+    [products, search, filterCategory, isNewProduct],
   );
 
   const newProductCount = useMemo(
     () => products.filter((p) => isNewProduct(p)).length,
-    [products],
+    [products, isNewProduct],
   );
 
   const categoryCounts = useMemo(() => {
@@ -194,12 +195,15 @@ export default function AdminProductsPage() {
   const handleDelete = async (productId: string, name: string) => {
     if (!confirm(`Bạn có chắc muốn xoá sản phẩm "${name}"?`)) return;
     const toastId = toast.loading("Đang xóa...");
+    // Xóa ngay khỏi state để UI phản hồi tức thì
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
     try {
       await adminAPI.products.delete(productId);
       toast.success("Đã xóa sản phẩm!", { id: toastId });
-      loadProducts();
     } catch {
       toast.error("Có lỗi xảy ra!", { id: toastId });
+      // Rollback: tải lại danh sách nếu API thất bại
+      loadProducts();
     }
   };
 
@@ -372,6 +376,7 @@ export default function AdminProductsPage() {
                       >
                         <td className="px-5 py-4">
                           <div className="relative inline-block">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={product.imageUrl}
                               alt={product.title}

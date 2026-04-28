@@ -138,6 +138,12 @@ app.get("/api/health", (req, res) => {
 });
 
 // API Routes
+app.use("/api/admin", (req, res, next) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/generate", generateRoutes);
 app.use("/api/products", productRoutes);

@@ -28,18 +28,20 @@ const COMPLEXITY_CONFIG = {
   easy: {
     label: "Easy",
     max: 16,
-    detail: "simple bold shapes, very large paint regions, minimal detail",
+    detail:
+      "simplified cartoon style with thick outlines (3-4px). Large flat regions, minimum 40x40px each. Only 5-10 main recognisable shapes. Bold, child-friendly composition with very minimal fine detail.",
   },
   medium: {
     label: "Medium",
     max: 28,
-    detail: "moderate detail, medium-sized paint regions, balanced composition",
+    detail:
+      "semi-realistic illustrative style with standard outlines (2-3px). Medium regions (minimum 18x18px). 15-25 distinct shapes with a balanced level of detail. Suitable for adults with some painting experience.",
   },
   hard: {
     label: "Hard",
     max: 44,
     detail:
-      "highly detailed, many small intricate regions, complex composition",
+      "realistic detailed style with fine outlines (1.5-2px). Many small intricate regions (as small as 8x8px). 35-50 distinct shapes with rich texture, shadows as outlines, and complex overlapping elements.",
   },
 };
 
@@ -53,41 +55,60 @@ function seqNumbers(max) {
 // {{USER_PROMPT}}, {{STYLE}}, {{COLOR_MAX}}, {{SEQ_NUMBERS}}, {{DETAIL}}
 // sẽ được thay thế bằng dữ liệu thật khi gọi buildLineArtPrompt()
 // ============================================================
-const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illustrator. Your ONLY task is to draw EXACTLY the subject described below as a printable paint-by-numbers worksheet. Never substitute or ignore the subject.
+const LINE_ART_PROMPT_TEMPLATE = `Generate a PAINT-BY-NUMBERS WORKSHEET that looks exactly like a professionally printed paint-by-numbers kit sold in art stores.
 
-=== SUBJECT TO DRAW (mandatory, do not change) ===
-"{{USER_PROMPT}}"
+Subject to draw: "{{USER_PROMPT}}"
 
-=== PARAMETERS ===
-- Art style: {{STYLE}}
-- Exact number of colors: {{COLOR_MAX}} colors
-- Allowed color numbers: {{SEQ_NUMBERS}} — use ONLY these numbers, nothing else
-- Detail level: {{DETAIL}}
+════════════════════════════════════════
+SECTION 1 — OVERALL CANVAS (1024×1024 px)
+════════════════════════════════════════
+• Top 78% of the canvas  →  DRAWING ZONE enclosed in a thin solid black rectangular border
+• 2px solid black horizontal rule divides drawing zone from palette
+• Bottom 22% of the canvas  →  COLOUR PALETTE ROW on a pure white background
 
-=== MANDATORY LAYOUT (pixel-perfect) ===
-- Top 75% of canvas: the main line-art drawing inside a thin rectangular border.
-- Bottom 25% of canvas: a horizontal row of colored number swatches (the palette).
-- A thin horizontal divider line separates the drawing from the palette.
+════════════════════════════════════════
+SECTION 2 — DRAWING ZONE (top 78%)
+════════════════════════════════════════
+SUBJECT ACCURACY (critical):
+  Draw "{{USER_PROMPT}}" and nothing else. The subject must be immediately recognisable, fill the entire drawing zone, and match the description word for word. Do NOT replace, simplify, or omit any part of the subject.
 
-=== STEP-BY-STEP DRAWING RULES ===
-Step 1 – Draw the subject "{{USER_PROMPT}}" using only BLACK outlines on a WHITE background. No grayscale shading.
-Step 2 – Divide the drawing into CLOSED regions. Every region must be fully enclosed by outlines.
-Step 3 – Assign colors using ONLY the sequential numbers: {{SEQ_NUMBERS}}. Start from 1. Each number represents one unique color. Regions sharing the same color use the same number.
-Step 4 – Print each region's assigned number as a LARGE BOLD digit centered INSIDE that region. EVERY region must have exactly one number. No region may be left blank.
-Step 5 – In the palette strip at the bottom, show exactly {{COLOR_MAX}} swatches in ORDER: swatch 1, swatch 2, swatch 3 … swatch {{COLOR_MAX}}. Each swatch is a filled colored square or circle with its number beside it. Numbers in the palette must be sequential: 1, 2, 3, 4 … {{COLOR_MAX}}.
+ART STYLE:
+  {{DETAIL}}
+  The composition must be dense — every part of the drawing zone covered with meaningful shapes, not empty white space.
 
-=== STRICT PROHIBITIONS ===
-- Do NOT use any number larger than {{COLOR_MAX}} in the drawing or palette.
-- Do NOT skip any number between 1 and {{COLOR_MAX}}.
-- NO grayscale shading or gradients in the drawing area.
-- NO color fills inside regions — regions stay WHITE. Only the number digit is printed inside.
-- Do not color in the picture. All regions must remain white/uncolored inside the drawing area.
-- NO color names written anywhere.
-- NO watermarks, logos, copyright text, or signatures.
-- NO adult, violent, or disturbing content.
+LINE ART RULES (strictly enforced):
+  • Use pure black (#000000) outlines on a pure white (#ffffff) background ONLY
+  • Zero grey tones, zero colour tints, zero gradients, zero drop-shadows, zero halftones anywhere in the drawing zone
+  • All outlines must be fully CLOSED — every shape/region is a completely enclosed area with no gaps or open endpoints
 
-=== QUALITY TARGET ===
-High resolution (1024x1024), print-ready, clean and crisp so users can easily paint by following the numbers.`;
+NUMBERING RULES (strictly enforced):
+  • Divide the entire drawing into enclosed regions. Every single region — large or tiny — must contain exactly one small black number
+  • The number indicates which colour to paint that region
+  • Size the numbers proportionally: large regions get slightly larger digits; small regions get smaller digits. Numbers must always be legible but should NOT dominate the region — they are subtle guide markers
+  • Use ONLY the integers 1 through {{COLOR_MAX}}. Numbers outside this range are forbidden
+  • Every integer from 1 to {{COLOR_MAX}} must appear at least once in the drawing
+  • Numbers are plain black digits — no circles, boxes, or backgrounds around them in the drawing zone
+
+════════════════════════════════════════
+SECTION 3 — COLOUR PALETTE ROW (bottom 22%)
+════════════════════════════════════════
+  • Display exactly {{COLOR_MAX}} swatches in strict ascending order: 1, 2, 3 … {{COLOR_MAX}}
+  • Each swatch is a FILLED SOLID-COLOUR CIRCLE (approx. 30–36 px diameter)
+  • The integer (1–{{COLOR_MAX}}) is printed in BOLD BLACK in the centre of the circle, contrasting clearly against the fill colour
+  • Circles are spaced evenly across the full width on a pure white strip
+  • Choose colours that are visually distinct from one another and appropriate for "{{USER_PROMPT}}"
+  • Zero missing swatches, zero out-of-order swatches, zero duplicate numbers
+
+════════════════════════════════════════
+SECTION 4 — ABSOLUTE PROHIBITIONS
+════════════════════════════════════════
+  ✗ Any number greater than {{COLOR_MAX}} anywhere on the image
+  ✗ Any integer between 1 and {{COLOR_MAX}} that is missing from either the drawing or the palette
+  ✗ Any colour fill, grey shading, or tint inside drawing regions (regions must stay pure white)
+  ✗ Any text other than single digits (no colour names, labels, titles, watermarks, signatures)
+  ✗ Drawing a different subject instead of "{{USER_PROMPT}}"
+
+Final output: 1024×1024 px, crisp print-ready black-and-white line art with numbered regions, plus a fully populated colour palette row at the bottom.`;
 
 function buildLineArtPrompt(userPrompt, style, complexity) {
   const cfg = COMPLEXITY_CONFIG[complexity] || COMPLEXITY_CONFIG.medium;

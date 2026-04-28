@@ -159,20 +159,10 @@ export const adminSettingsAPI = {
   updatePaymentSettings: async (settings: {
     paymentMethods?: {
       cod?: boolean;
-      vnpay?: boolean;
-      momo?: boolean;
+
       banking?: boolean;
     };
-    vnpayConfig?: {
-      tmnCode?: string;
-      hashSecret?: string;
-      url?: string;
-    };
-    momoConfig?: {
-      partnerCode?: string;
-      accessKey?: string;
-      secretKey?: string;
-    };
+
     bankingInfo?: {
       bankName?: string;
       accountNumber?: string;

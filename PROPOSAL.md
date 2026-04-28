@@ -1,10 +1,10 @@
 # Undergraduate Final Year Project Proposal
 
-## [Your Project Title]
+## Happy Coloring AI — AI-Integrated Paint-by-Numbers E-Commerce Platform
 
 **[Your Name]**
 
-**[Your Programme of Study]**
+**Information Technology**
 
 **[Your Banner ID]**
 
@@ -12,64 +12,73 @@
 
 ## 1 Overview
 
-Currently, people who enjoy digital coloring paint usually only have one option: buying pre-made designs from stores. There is no easy way for them to turn their personal ideas or photos into a real numbered canvas toolkit. This project, called Happy Coloring AI, aims to solve this problem by combining a standard e-commerce website with an artificial intelligence image generator.
+Paint-by-numbers is a widely popular art activity that allows people to create detailed artwork without professional drawing skills, by following numbered colour guides printed on a canvas. However, existing products are entirely pre-designed — buyers have no way to create personalised kits based on their own ideas or descriptions. This project, **Happy Coloring AI**, solves this problem by combining a fully functional e-commerce store with an AI-powered custom image generator.
 
-The project will function as a full online store where users can browse existing products, add items to a shopping cart, and check out using standard payment methods like VNPay, MoMo, or regular Cash on Delivery. However, the main feature is the AI generation tool. By connecting the system to the Google Gemini API, registered users can simply type a text description of what they want. The system will process this request and automatically generate a custom, black-and-white outline with numbers and a color palette, which is ready to be printed and painted.
+The platform operates as an online store where users can browse and purchase pre-made paint-by-numbers kits, manage a shopping cart, and place orders with Cash on Delivery or Bank Transfer payment options. The key differentiating feature is the AI generation tool: authenticated users can type a text description (in Vietnamese) of any subject they wish to paint. The backend translates the description to English using the MyMemory translation API, then sends it to the Google Gemini 2.5 Flash Image model, which generates a properly structured paint-by-numbers worksheet — a black-and-white line-art drawing with numbered colour regions and a colour palette strip at the bottom. The generated image is stored in Firebase Storage and the result is delivered to the user via a Firestore polling mechanism, keeping the interface responsive during the generation wait time.
 
-To build this platform, I will use Next.js and Tailwind CSS for the frontend to make it fast and look good on mobile devices. The backend API will run on Node.js and Express. For the database and user authentication, I chose Firebase because it provides a secure NoSQL structure and handles image storage well. Because generating AI images takes time, the system will use a polling structure so the user interface does not freeze. Overall, this project will demonstrate how web development and AI can work together to create a useful and fun business application.
+The frontend is built with **Next.js 14** (TypeScript), **Tailwind CSS**, **Zustand** for global state management, and **Framer Motion** for animations. The backend REST API is built with **Node.js 18** and **Express**, secured with Helmet, express-rate-limit, and Joi input validation. Firebase Firestore serves as the NoSQL database, Firebase Authentication handles all user identity, and Firebase Storage holds all product and generated images. The entire application is deployed on **Vercel** (frontend) and **Render** (backend), with a CI/CD pipeline that automatically rebuilds and redeploys on every `git push` to the `main` branch.
 
 ---
 
 ## 2 Aim
 
-To develop a full-stack e-commerce web application that allows users to buy pre-made digital coloring paint kits and use an integrated AI generator to create custom coloring artworks based on their own text descriptions.
+To develop and deploy a full-stack e-commerce web application that enables users to purchase pre-made digital paint-by-numbers kits and to generate fully personalised paint-by-numbers worksheets on demand using AI, based on their own text descriptions.
 
 ---
 
 ## 3 Objectives
 
 3.1 Project Requirements and Design
-3.1.1 Research existing e-commerce systems and AI image tools [2.0]
-3.1.2 Define the main features and software requirements [1.5]
-3.1.3 Design the database schema and system architecture [2.0]
+3.1.1 Research existing e-commerce platforms and AI image generation tools [2.0]
+3.1.2 Define functional and non-functional requirements for the system [1.5]
+3.1.3 Design the Firestore data model and overall system architecture [2.0]
+
 3.2 Frontend User Interface
-3.2.1 Setup the Next.js application with Tailwind CSS [1.0]
-3.2.2 Build the home, product gallery, and shopping cart pages [4.0]
-3.2.3 Create the AI generation page with a loading state [2.5]
-3.2.4 Implement the admin dashboard for managing data [3.0]
+3.2.1 Set up the Next.js 14 (TypeScript) application with Tailwind CSS and Zustand [1.0]
+3.2.2 Build the homepage, gallery, product detail, cart, and checkout pages [4.0]
+3.2.3 Create the AI generation page with a polling-based loading state [2.5]
+3.2.4 Implement the admin dashboard for managing products, orders, and users [3.0]
+
 3.3 Backend API Development
-3.3.1 Setup the Express server and Firebase Admin connection [1.5]
-3.3.2 Write API endpoints for user login, products, and orders [4.0]
-3.3.3 Integrate VNPay and MoMo payment gateways [3.5]
-3.4 AI System Integration
-3.4.1 Connect the backend to the Google Gemini API [2.0]
-3.4.2 Write the logic to upload AI images to Firebase Storage [1.5]
-3.4.3 Integrate an AI chatbot to help users find products [2.0]
-3.5 System Testing and Deployment
-3.5.1 Test the backend APIs using Postman [2.0]
-3.5.2 Perform user testing on the frontend features [2.0]
-3.5.3 Deploy the application to Vercel and Render [1.5]
-3.5.4 Write the final project report and documentation [10.0]
+3.3.1 Set up the Express server with Firebase Admin SDK, Helmet, and rate limiting [1.5]
+3.3.2 Implement REST API endpoints for authentication, products, orders, and users [4.0]
+3.3.3 Implement Cash on Delivery and Bank Transfer order processing [2.0]
+
+3.4 AI Image Generation Integration
+3.4.1 Integrate the MyMemory API for Vietnamese-to-English prompt translation [1.5]
+3.4.2 Connect the backend to the Google Gemini 2.5 Flash Image API [2.0]
+3.4.3 Implement asynchronous generation with Firestore status tracking and Storage upload [2.0]
+3.4.4 Design and refine the paint-by-numbers prompt template for accurate output [2.0]
+
+3.5 Security and API Documentation
+3.5.1 Apply Joi request validation, Helmet headers, and role-based route protection [2.0]
+3.5.2 Write Swagger/OpenAPI documentation for all backend endpoints [1.5]
+
+3.6 Testing and Deployment
+3.6.1 Test all backend APIs using Postman [2.0]
+3.6.2 Perform end-to-end testing of frontend user flows [2.0]
+3.6.3 Deploy the application to Vercel and Render with CI/CD [1.5]
+3.6.4 Write the final project report and documentation [10.0]
 
 ---
 
 ## 4 Legal, Social, Ethical and Professional
 
-**Legal Issues:** Since this is an e-commerce website, I will be storing user information such as email addresses and delivery details. The platform needs to comply with basic data protection laws by keeping passwords secure using Firebase Auth and keeping database records private. For payments, I am connecting to VNPay and MoMo, so my website will not store any credit card numbers directly. Additionally, AI-generated images might have copyright issues, so I will include a Terms of Service page explaining the rules about image ownership.
+**Legal Issues:** The platform stores personal user data including email addresses and delivery details. All authentication is managed through Firebase Auth, which uses industry-standard token-based security; passwords are never stored in plain text. The system does not process or store any payment card details — bank transfer payments are handled entirely offline between the buyer and the store. AI-generated images are produced by the Google Gemini API, and ownership and usage rights are governed by Google's Terms of Service; a brief disclaimer is shown to users on the generation page.
 
-**Social Issues:** This project is designed to be accessible so that anyone, even those without technical or drawing skills, can create their own art. It encourages creativity and provides a relaxing hobby for users of different ages. I will also make sure the user interface is clear with good text contrast so it is easy to read.
+**Social Issues:** By enabling anyone to describe a subject in plain Vietnamese text and receive a ready-to-print paint-by-numbers worksheet, the platform removes the barrier of artistic skill. This makes creative art activities accessible to users of all ages and technical backgrounds. The user interface has been designed with sufficient text contrast and a clean layout to support readability.
 
-**Ethical Issues:** AI tools can sometimes generate inappropriate or restricted content. To handle this, I will add strict instructions in the backend AI prompt to prevent it from creating violent or 18+ images. I also need to be transparent with users by clearly labeling that the chatbot and the image generators are powered by AI, and not by a real human.
+**Ethical Issues:** AI image generation models can produce inappropriate content. To mitigate this, the backend prompt template includes explicit prohibitions against violent, adult, or disturbing content, and relies on Google Gemini's built-in content safety filters as a second layer of protection. Users are informed on the generation page that artwork is created by an AI model, maintaining transparency.
 
-**Professional Issues:** As a student developer, I will follow professional coding standards. This includes writing clean and understandable code, using version control (Git/GitHub) properly, and protecting the web app against common security threats. I will use rate limiting and basic headers to stop spam and simple attacks, showing that I take user security seriously.
+**Professional Issues:** The project follows professional software engineering practices throughout: version control via Git and GitHub with a single `main` branch and descriptive commit messages; environment variables for all secrets (API keys, Firebase credentials) stored in `.env` files excluded from the repository via `.gitignore`; input validation on all API endpoints using Joi; security headers applied via Helmet; and API documentation generated with Swagger/OpenAPI. These practices demonstrate awareness of production-grade development standards.
 
 ---
 
 ## 5 Planning (see appendix A)
 
-My approach for this project is to use a simplified Agile methodology. Since I am working alone, I will break the project down into manageable weekly sprints. I will use a Kanban board on GitHub Projects to track my tasks under "To Do", "In Progress", and "Done".
+This project follows a simplified Agile methodology adapted for a solo developer. The 15-week schedule is divided into four phases: Proposal & Setup, Core Development, Advanced Features, and Testing & Deployment. Each phase is broken into one-week sprints with clearly defined deliverables.
 
-The project is split into phases. First, I will focus on building the fundamental e-commerce parts (user login, product display, and shopping cart). Once those work smoothly, I will move on to the more complex features like the AI image generation API and payment gateways. Finally, the last few weeks will be dedicated mainly to bug fixing, overall system testing, and writing my final dissertation report. This way, if the AI part takes more time than expected, I will still have a working shopping website that I can demonstrate.
+Phase 1 establishes the project architecture and foundational e-commerce functionality — user authentication, product browsing, shopping cart, and the admin panel. Phase 2 adds the AI generation pipeline and the checkout/order flow. Phase 3 covers security hardening, API documentation, and responsive design refinement. The final phase is dedicated to full deployment, end-to-end testing, and writing the dissertation report. Separating core e-commerce from the AI feature ensures a demonstrable working product even if AI integration encounters difficulties.
 
 ---
 
@@ -77,15 +86,17 @@ The project is split into phases. First, I will focus on building the fundamenta
 
 Firebase, 2024. _Firebase Documentation_. [online] Available at: <https://firebase.google.com/docs> (Accessed 15 January 2026).
 
-Google AI for Developers, 2024. _Gemini API Reference_. [online] Available at: <https://ai.google.dev/docs> (Accessed 18 January 2026).
+Google AI for Developers, 2024. _Gemini API Reference — Image Generation_. [online] Available at: <https://ai.google.dev/docs> (Accessed 18 January 2026).
 
-Next.js, 2024. _Next.js Documentation_. [online] Available at: <https://nextjs.org/docs> (Accessed 12 January 2026).
+MyMemory, 2024. _MyMemory Translation API Documentation_. [online] Available at: <https://mymemory.translated.net/doc/spec.php> (Accessed 20 January 2026).
+
+Next.js, 2024. _Next.js 14 Documentation_. [online] Available at: <https://nextjs.org/docs> (Accessed 12 January 2026).
 
 OWASP, 2021. _Top 10 Web Application Security Risks_. [online] Available at: <https://owasp.org/www-project-top-ten/> (Accessed 20 January 2026).
 
 Sommerville, I., 2015. _Software Engineering_. 10th ed. Pearson.
 
-VNPay, 2024. _VNPay Payment Gateway Integration_. [online] Available at: <https://sandbox.vnpayment.vn/apis/docs/> (Accessed 22 January 2026).
+Zustand, 2024. _Zustand State Management Documentation_. [online] Available at: <https://docs.pmnd.rs/zustand> (Accessed 14 January 2026).
 
 ---
 
@@ -93,34 +104,34 @@ VNPay, 2024. _VNPay Payment Gateway Integration_. [online] Available at: <https:
 
 The table below outlines the full schedule for the 15-week project, including activity names, planned start dates, durations (in days), and the corresponding week periods to ensure steady progress up to the final demonstration.
 
-| ACTIVITY                                      | PLAN START (DAY) | PLAN DURATION (DAYS) | WEEKS (1-15) |
-| :-------------------------------------------- | :--------------- | :------------------- | :----------- |
-| **Project Proposal & Setup**                  |                  | **13**               |              |
-| Discuss proposal with supervisor              | Mon 12/01/26     | 1                    | Week 1       |
-| Write project proposal                        | Tue 13/01/26     | 5                    | Week 1       |
-| Upload project proposal                       | Mon 19/01/26     | 1                    | Week 2       |
-| Setup GitHub, Next.js frontend, Node backend  | Tue 20/01/26     | 3                    | Week 2       |
-| Research existing systems & UI design mockups | Fri 23/01/26     | 3                    | Week 2       |
-| **Product Development - Phase 1 (Core)**      |                  | **25**               |              |
-| Setup Firebase Authentication & DB schema     | Mon 26/01/26     | 3                    | Week 3       |
-| Build homepage & login pages                  | Thu 29/01/26     | 4                    | Week 3-4     |
-| Create API to fetch & display products        | Wed 04/02/26     | 5                    | Week 4-5     |
-| Develop shopping cart (local storage)         | Wed 11/02/26     | 5                    | Week 5-6     |
-| Build checkout page & order logic             | Wed 18/02/26     | 4                    | Week 6       |
-| Implement Admin dashboard (products/orders)   | Tue 24/02/26     | 4                    | Week 7       |
-| **Product Development - Phase 2 (Advanced)**  |                  | **20**               |              |
-| Integrate VNPay & MoMo payment gateways       | Mon 02/03/26     | 5                    | Week 8       |
-| Connect backend to Google Gemini AI API       | Mon 09/03/26     | 3                    | Week 9       |
-| Refine AI prompts & set up Firebase Storage   | Thu 12/03/26     | 4                    | Week 9 -10   |
-| Develop "Generate" page with loading handle   | Wed 18/03/26     | 5                    | Week 10-11   |
-| Integrate AI Chatbot feature                  | Wed 25/03/26     | 3                    | Week 11      |
-| **Testing & Refinement**                      |                  | **10**               |              |
-| Conduct API testing via Postman               | Mon 30/03/26     | 3                    | Week 12      |
-| Fix UI bugs & optimize responsive design      | Thu 02/04/26     | 4                    | Week 12-13   |
-| Implement database security rules             | Wed 08/04/26     | 3                    | Week 13      |
-| **Final Deployment & Report**                 |                  | **16**               |              |
-| Deploy frontend to Vercel, backend to Render  | Mon 13/04/26     | 2                    | Week 14      |
-| Perform final live end-to-end testing         | Wed 15/04/26     | 2                    | Week 14      |
-| Write the final dissertation report           | Fri 17/04/26     | 10                   | Week 14-15   |
-| **Project Demonstration**                     |                  | **2**                |              |
-| Prepare slides for final presentation         | Thu 30/04/26     | 2                    | Week 15      |
+| ACTIVITY                                               | PLAN START (DAY) | PLAN DURATION (DAYS) | WEEKS (1-15) |
+| :----------------------------------------------------- | :--------------- | :------------------- | :----------- |
+| **Phase 1 — Proposal & Setup**                         |                  | **13**               |              |
+| Discuss proposal with supervisor                       | Mon 12/01/26     | 1                    | Week 1       |
+| Write and submit project proposal                      | Tue 13/01/26     | 5                    | Week 1       |
+| Set up GitHub monorepo, Next.js frontend, Node backend | Mon 19/01/26     | 3                    | Week 2       |
+| Research existing systems & create UI design mockups   | Thu 22/01/26     | 3                    | Week 2       |
+| **Phase 2 — Core E-Commerce Development**              |                  | **25**               |              |
+| Configure Firebase Auth, Firestore schema & Storage    | Mon 26/01/26     | 3                    | Week 3       |
+| Build homepage, login, register, and gallery pages     | Thu 29/01/26     | 5                    | Week 3-4     |
+| Implement product detail page and REST API             | Thu 05/02/26     | 4                    | Week 4-5     |
+| Develop shopping cart with Zustand persisted store     | Wed 11/02/26     | 4                    | Week 5-6     |
+| Build checkout page and order creation API             | Tue 17/02/26     | 4                    | Week 6       |
+| Implement admin panel (products, orders, users CRUD)   | Mon 23/02/26     | 5                    | Week 7       |
+| **Phase 3 — AI Generation & Advanced Features**        |                  | **20**               |              |
+| Integrate MyMemory translation API                     | Mon 02/03/26     | 2                    | Week 8       |
+| Connect backend to Google Gemini Image API             | Wed 04/03/26     | 3                    | Week 8-9     |
+| Implement async generation with Firestore polling      | Mon 09/03/26     | 4                    | Week 9       |
+| Design and refine paint-by-numbers prompt template     | Fri 13/03/26     | 4                    | Week 9-10    |
+| Build AI generation frontend page with loading state   | Thu 19/03/26     | 5                    | Week 10-11   |
+| Implement user profile, favourites, and order history  | Thu 26/03/26     | 3                    | Week 11      |
+| **Phase 4 — Testing, Security & Deployment**           |                  | **16**               |              |
+| Apply Joi validation, Helmet headers, rate limiting    | Mon 30/03/26     | 3                    | Week 12      |
+| Write Swagger/OpenAPI documentation                    | Thu 02/04/26     | 2                    | Week 12      |
+| Test all API endpoints with Postman                    | Mon 06/04/26     | 3                    | Week 13      |
+| Fix UI bugs and optimise responsive design             | Thu 09/04/26     | 3                    | Week 13      |
+| Deploy frontend to Vercel, backend to Render           | Mon 13/04/26     | 2                    | Week 14      |
+| Perform final end-to-end live testing                  | Wed 15/04/26     | 2                    | Week 14      |
+| Write the final dissertation report                    | Fri 17/04/26     | 10                   | Week 14-15   |
+| **Project Demonstration**                              |                  | **2**                |              |
+| Prepare slides for final presentation                  | Thu 30/04/26     | 2                    | Week 15      |
