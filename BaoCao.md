@@ -1,37 +1,39 @@
+<div align="center">
+
 # FINAL YEAR PROJECT REPORT
+### Greenwich Template
 
-## Happy Coloring AI — An AI-Integrated Paint-by-Numbers E-Commerce Platform
-
----
-
+**Project Title:** Happy Coloring AI
 **Student:** [Full Name]
 **Student ID:** [ID Number]
 **Major:** Information Technology
 **Supervisor:** [Supervisor's Name]
-**Academic Year:** 2025 – 2026
+**Academic Year:** 2025 - 2026
+
+</div>
+
+---
+
+## ACKNOWLEDGEMENTS
+[Insert your acknowledgements here]
 
 ---
 
 ## TABLE OF CONTENTS
-
-1. [Introduction](#1-introduction)
-2. [System Requirements Analysis](#2-system-requirements-analysis)
-3. [System Architecture](#3-system-architecture)
-4. [Technologies Used](#4-technologies-used)
-5. [Database Design](#5-database-design)
-6. [Detailed Feature Analysis](#6-detailed-feature-analysis)
-7. [System Security](#7-system-security)
-8. [HTTP Error Code Reference](#8-http-error-code-reference)
-9. [User Interface](#9-user-interface)
-10. [Deployment](#10-deployment)
-11. [Conclusion and Future Development](#11-conclusion-and-future-development)
-12. [References](#12-references)
+- [Chapter 1 Introduction](#chapter-1-introduction)
+- [Chapter 2 Literature Review](#chapter-2-literature-review)
+- [Chapter 3 Technology and Tools](#chapter-3-technology-and-tools)
+- [Chapter 4 Software Product Requirements](#chapter-4-software-product-requirements)
+- [Chapter 5 Review of Software Development Methodologies](#chapter-5-review-of-software-development-methodologies)
+- [Chapter 6 Design and Implementation of your demo product](#chapter-6-design-and-implementation-of-your-demo-product)
+- [Chapter 7 Conclusions](#chapter-7-conclusions)
+- [References](#references)
 
 ---
 
-## 1. INTRODUCTION
+## Chapter 1 Introduction
 
-### 1.1. Motivation
+### 1.1 Introduction about the project subject
 
 Paint-by-numbers is an art activity that helps users relax, focus, and develop aesthetic sensibility without requiring professional drawing skills. The global paint-by-numbers market is projected to reach USD 1.2 billion by 2028, growing at a CAGR of 6.1% (Grand View Research, 2023).
 
@@ -44,17 +46,29 @@ This project builds an AI-integrated e-commerce platform that allows users to bo
 > **Figure 1.1** — Screenshot of the Happy Coloring AI homepage (hero section)
 >
 > `[INSERT FIGURE 1.1 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 1.1** — screenshot of the happy coloring ai homepage (hero section). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
-### 1.2. Project Objectives
+### 1.2 Project objectives
+
+### 1.3 Project plan
+(See Appendix A)
+
+### 1.4 Project outcomes
+
 
 - Build a fully functional online store (product browsing, cart, checkout, order management)
 - Integrate AI image generation for paint-by-numbers artwork from Vietnamese text descriptions
 - Build an administration system for store management
 - Deploy the system to a cloud environment with automated CI/CD
 
-### 1.3. Project Scope
+### 1.5 Project evaluation
+This project presents a functional custom-generated e-commerce system that executes AI prompts efficiently and correctly.
+
+### 1.6 Project Scope
 
 | In Scope                                     | Out of Scope                         |
 | -------------------------------------------- | ------------------------------------ |
@@ -67,9 +81,12 @@ This project builds an AI-integrated e-commerce platform that allows users to bo
 
 ---
 
-## 2. SYSTEM REQUIREMENTS ANALYSIS
+## Chapter 4 Software Product Requirements
 
-### 2.1. Stakeholders
+### 4.1 Review/overview of other similar products
+(Original comparison lacking; stakeholders detailed below)
+
+#### Stakeholders
 
 | Stakeholder               | Role                                                 |
 | ------------------------- | ---------------------------------------------------- |
@@ -77,7 +94,7 @@ This project builds an AI-integrated e-commerce platform that allows users to bo
 | **Administrator (Admin)** | Manage products, orders, and users                   |
 | **System**                | Authentication, security, automated image generation |
 
-### 2.2. Functional Requirements
+### 4.2 Use Case Diagrams/User Stories
 
 #### User Functions
 
@@ -101,6 +118,9 @@ This project builds an AI-integrated e-commerce platform that allows users to bo
 > **Figure 2.1** — Use Case Diagram showing interactions between User, Admin, and System
 >
 > `[INSERT FIGURE 2.1 HERE — Use Case Diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 2.1** — use case diagram showing interactions between user, admin, and system. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -125,7 +145,19 @@ This project builds an AI-integrated e-commerce platform that allows users to bo
 
 ---
 
-## 3. SYSTEM ARCHITECTURE
+
+## Chapter 5 Review of Software Development Methodologies
+
+### 5.1 Waterfall
+### 5.2 Spiral
+### 5.3 RAD (Prototyping)
+### 5.4 Agile
+### 5.5 Selection of software development methodology
+**Agile Methodology** was selected to ensure continuous feedback handling and rapid feature prototyping.
+
+## Chapter 6 Design and Implementation of your demo product
+
+### 6.1 Product Analysis and Design
 
 ### 3.1. Architecture Overview
 
@@ -155,6 +187,9 @@ The system follows a **Decoupled Client-Server Architecture** with a separate fr
 > **Figure 3.1** — System Architecture Diagram (three-tier overview)
 >
 > `[INSERT FIGURE 3.1 HERE — Architecture diagram, e.g. drawn in draw.io]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 3.1** — system architecture diagram (three-tier overview). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -175,6 +210,9 @@ This design leverages Firebase Authentication as an Identity Provider; the backe
 > **Figure 3.2** — Authentication sequence diagram: Firebase Auth SDK → JWT issuance → Backend middleware verification
 >
 > `[INSERT FIGURE 3.2 HERE — Authentication sequence diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 3.2** — authentication sequence diagram: firebase auth sdk → jwt issuance → backend middleware verification. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -207,12 +245,21 @@ Frontend           Backend                  External Services
 > **Figure 3.3** — AI Generation sequence diagram: prompt input → translation → Gemini call → Storage upload → Firestore update → polling
 >
 > `[INSERT FIGURE 3.3 HERE — Full AI generation sequence diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 3.3** — ai generation sequence diagram: prompt input → translation → gemini call → storage upload → firestore update → polling. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
-## 4. TECHNOLOGIES USED
 
-### 4.1. Frontend
+## Chapter 2 Literature Review
+
+### 2.1 The Global Paint-by-Numbers Market
+### 2.2 Generative AI in Art Production
+
+## Chapter 3 Technology and Tools
+
+### 3.1 Chapter 3.1: Frontend Framework (Next.js, React)
 
 | Technology          | Version | Purpose                                        |
 | ------------------- | ------- | ---------------------------------------------- |
@@ -234,10 +281,13 @@ Frontend           Backend                  External Services
 > **Figure 4.1** — Frontend technology stack diagram showing component relationships
 >
 > `[INSERT FIGURE 4.1 HERE — Frontend tech stack diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 4.1** — frontend technology stack diagram showing component relationships. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
-### 4.2. Backend
+### 3.2 Chapter 3.2: Backend Framework (Node.js, Express)
 
 | Technology             | Version | Purpose                                        |
 | ---------------------- | ------- | ---------------------------------------------- |
@@ -252,7 +302,7 @@ Frontend           Backend                  External Services
 | **Axios**              | 1.6.2   | Outbound calls to Gemini and MyMemory APIs     |
 | **Swagger UI**         | 5.0.1   | Auto-generated API documentation               |
 
-### 4.3. Cloud Infrastructure
+### 3.3 Chapter 3.3: Cloud Infrastructure (Firebase, Vercel, Render)
 
 | Service                     | Provider        | Purpose                             |
 | --------------------------- | --------------- | ----------------------------------- |
@@ -269,10 +319,20 @@ Frontend           Backend                  External Services
 > **Figure 4.2** — Cloud infrastructure diagram: Vercel ↔ Render ↔ Firebase ↔ Google AI
 >
 > `[INSERT FIGURE 4.2 HERE — Cloud infrastructure / deployment overview diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 4.2** — cloud infrastructure diagram: vercel ↔ render ↔ firebase ↔ google ai. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
-## 5. DATABASE DESIGN
+### 4.4 ERD Database Design
+The database relies on NoSQL structure (Firestore Collections)
+
+### 4.5 Sitemap
+- `/` : Homepage
+- `/gallery` : Products
+- `/generate` : AI Interface
+- `/cart`, `/checkout`, `/login`, `/admin`
 
 Cloud Firestore is a NoSQL document database. According to Google Firebase documentation (Google, 2024b), data is organised in a Collection → Document → Fields hierarchy.
 
@@ -281,6 +341,9 @@ Cloud Firestore is a NoSQL document database. According to Google Firebase docum
 > **Figure 5.1** — Firestore data model overview showing 4 collections and their relationships
 >
 > `[INSERT FIGURE 5.1 HERE — Firestore entity-relationship / collections diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 5.1** — firestore data model overview showing 4 collections and their relationships. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -363,7 +426,7 @@ generations/{generationId}
 
 ---
 
-## 6. DETAILED FEATURE ANALYSIS
+### 6.2 Features include with screenshots
 
 ---
 
@@ -376,6 +439,9 @@ generations/{generationId}
 > **Figure 6.1** — Screenshot of the Registration page
 >
 > `[INSERT FIGURE 6.1 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.1** — screenshot of the registration page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -420,12 +486,18 @@ Step 10: Redirect user to homepage
 > **Figure 6.2** — Screenshot of the Login page
 >
 > `[INSERT FIGURE 6.2 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.2** — screenshot of the login page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
 > **Figure 6.3** — Axios interceptor flow: request token injection and automatic 401 retry logic
 >
 > `[INSERT FIGURE 6.3 HERE — Interceptor flow diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.3** — axios interceptor flow: request token injection and automatic 401 retry logic. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -481,6 +553,9 @@ if (error.response.status === 401 && !retried) {
 > **Figure 6.4** — Screenshot of the Forgot Password page (email input and success state)
 >
 > `[INSERT FIGURE 6.4 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.4** — screenshot of the forgot password page (email input and success state). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -515,6 +590,9 @@ Step 5: Display success confirmation screen
 > **Figure 6.5** — Screenshot of the Gallery page with filter options and masonry product grid
 >
 > `[INSERT FIGURE 6.5 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.5** — screenshot of the gallery page with filter options and masonry product grid. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -554,6 +632,9 @@ Firestore does not efficiently support multi-field ordering without Composite In
 > **Figure 6.6** — Screenshot of the Profile page "Favourites" tab
 >
 > `[INSERT FIGURE 6.6 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.6** — screenshot of the profile page "favourites" tab. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -588,6 +669,9 @@ removeFavorite(id)   → favoritesByUser[uid].filter(p => p.id !== id)
 > **Figure 6.7** — Screenshot of the Shopping Cart page
 >
 > `[INSERT FIGURE 6.7 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.7** — screenshot of the shopping cart page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -617,12 +701,18 @@ removeFavorite(id)   → favoritesByUser[uid].filter(p => p.id !== id)
 > **Figure 6.8** — Screenshot of the Checkout page with shipping form
 >
 > `[INSERT FIGURE 6.8 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.8** — screenshot of the checkout page with shipping form. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
 > **Figure 6.9** — Screenshot of the Order Success confirmation page
 >
 > `[INSERT FIGURE 6.9 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.9** — screenshot of the order success confirmation page. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -694,12 +784,18 @@ Frontend:
 > **Figure 6.10** — Screenshot of the AI Generate page: prompt input area, complexity selector buttons
 >
 > `[INSERT FIGURE 6.10 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.10** — screenshot of the ai generate page: prompt input area, complexity selector buttons. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
 > **Figure 6.11** — Example of a completed AI-generated paint-by-numbers image showing numbered regions and colour palette strip at the bottom
 >
 > `[INSERT FIGURE 6.11 HERE — Sample generated output image]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.11** — example of a completed ai-generated paint-by-numbers image showing numbered regions and colour palette strip at the bottom. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -794,6 +890,9 @@ Termination conditions:
 > **Figure 6.12** — Screenshot of the Admin Dashboard with statistics cards and order status breakdown
 >
 > `[INSERT FIGURE 6.12 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.12** — screenshot of the admin dashboard with statistics cards and order status breakdown. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -842,6 +941,9 @@ const [productStats, orderStats, userStats] = await Promise.all([
 > **Figure 6.13** — Screenshot of the Admin Products page with product list table and add/edit modal
 >
 > `[INSERT FIGURE 6.13 HERE]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 6.13** — screenshot of the admin products page with product list table and add/edit modal. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -858,7 +960,7 @@ const [productStats, orderStats, userStats] = await Promise.all([
 
 ---
 
-## 7. SYSTEM SECURITY
+### 6.3 Product Implementation (Security & API Flow)
 
 ### 7.1. Authentication and Authorisation
 
@@ -881,6 +983,9 @@ The backend validates every protected request using `auth.verifyIdToken(token)` 
 > **Figure 7.1** — Two-layer authorisation diagram: client-side redirect guard and server-side middleware guard
 >
 > `[INSERT FIGURE 7.1 HERE — Authorisation layers diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 7.1** — two-layer authorisation diagram: client-side redirect guard and server-side middleware guard. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -938,6 +1043,9 @@ According to RFC 9110 (Fielding et al., 2022):
 > **Figure 8.1** — Error propagation flow diagram: source (Firebase / Gemini / Firestore) → backend response → frontend user message
 >
 > `[INSERT FIGURE 8.1 HERE — Error flow diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 8.1** — error propagation flow diagram: source (firebase / gemini / firestore) → backend response → frontend user message. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -992,7 +1100,9 @@ According to RFC 9110 (Fielding et al., 2022):
 
 ---
 
-## 9. USER INTERFACE
+### 6.4 Evaluation of your product
+
+#### User Interface Highlights
 
 ### 9.1. Homepage (Landing Page — `/`)
 
@@ -1010,6 +1120,9 @@ The page is structured in 6 sections following the AIDA design pattern (Attentio
 > **Figure 9.1** — Annotated screenshot of the full Homepage showing all 6 sections
 >
 > `[INSERT FIGURE 9.1 HERE — Full homepage annotated screenshot]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.1** — annotated screenshot of the full homepage showing all 6 sections. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1026,6 +1139,9 @@ The page is structured in 6 sections following the AIDA design pattern (Attentio
 > **Figure 9.2** — Screenshot of the Gallery page with filters applied and masonry grid
 >
 > `[INSERT FIGURE 9.2 HERE — Gallery page with active filters]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.2** — screenshot of the gallery page with filters applied and masonry grid. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1041,6 +1157,9 @@ The page is structured in 6 sections following the AIDA design pattern (Attentio
 > **Figure 9.3** — Screenshot of the Generate page: left — input state; right — result display state
 >
 > `[INSERT FIGURE 9.3 HERE — Generate page input and result states]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.3** — screenshot of the generate page: left — input state; right — result display state. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1059,6 +1178,9 @@ Three tabs:
 > **Figure 9.4** — Screenshot of the Profile page showing the three tabs
 >
 > `[INSERT FIGURE 9.4 HERE — Profile page with tabs]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.4** — screenshot of the profile page showing the three tabs. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1074,18 +1196,27 @@ Three tabs:
 > **Figure 9.5** — Screenshot of the Admin Dashboard with statistics cards
 >
 > `[INSERT FIGURE 9.5 HERE — Admin Dashboard screenshot]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.5** — screenshot of the admin dashboard with statistics cards. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
 > **Figure 9.6** — Screenshot of the Admin Orders management table with status filter
 >
 > `[INSERT FIGURE 9.6 HERE — Admin Orders management page]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.6** — screenshot of the admin orders management table with status filter. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
 > **Figure 9.7** — Screenshot of the Admin Products page with the product add/edit modal
 >
 > `[INSERT FIGURE 9.7 HERE — Admin Products management page]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.7** — screenshot of the admin products page with the product add/edit modal. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1104,10 +1235,13 @@ Three tabs:
 > **Figure 9.8** — Screenshot of the Contact page showing the info panel and contact form
 >
 > `[INSERT FIGURE 9.8 HERE — Contact page screenshot]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 9.8** — screenshot of the contact page showing the info panel and contact form. It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
-## 10. DEPLOYMENT
+#### Deployment Procedures
 
 ### 10.1. Production Environment
 
@@ -1138,6 +1272,9 @@ git push origin main → Render deploy hook → npm start → service live
 > **Figure 10.1** — CI/CD pipeline diagram: GitHub repository → Vercel (frontend) and GitHub → Render (backend)
 >
 > `[INSERT FIGURE 10.1 HERE — CI/CD pipeline diagram]`
+> 
+> **Explanation:** *This figure visually illustrates > **figure 10.1** — ci/cd pipeline diagram: github repository → vercel (frontend) and github → render (backend). It serves to highlight the specific UI layout, system architecture, or logical sequence mapped for this section of the project.*
+
 
 ---
 
@@ -1170,9 +1307,11 @@ Render's free tier suspends the service after 15 minutes without incoming traffi
 
 ---
 
-## 11. CONCLUSION AND FUTURE DEVELOPMENT
+## Chapter 7 Conclusions
 
-### 11.1. Achievements
+### 7.1 What you have learned in this project?
+
+### 7.2 What is the result of this project?
 
 | Objective                       | Result                                                |
 | ------------------------------- | ----------------------------------------------------- |
@@ -1189,7 +1328,7 @@ Render's free tier suspends the service after 15 minutes without incoming traffi
 - **Payment:** Only COD and manual bank transfer are supported; no automated payment gateway integration
 - **Search:** No full-text search capability; current product filtering uses exact-match only
 
-### 11.3. Future Development Roadmap
+### 7.3 Further development of this project
 
 - Integrate an automated payment gateway (VNPay or MoMo)
 - Add a product ratings and reviews system
@@ -1200,7 +1339,18 @@ Render's free tier suspends the service after 15 minutes without incoming traffi
 
 ---
 
-## 12. REFERENCES
+## REFERENCES
+[insert refs here]
+
+## PROJECT PROPOSAL
+[Insert approved proposal]
+
+## APPENDIX 1
+### SURVEY AND RESULTS
+
+## APPENDIX 2
+### SCHEDULE OF WORK
+
 
 Dai, P. (2021). _Zustand: Bear necessities for state management in React_. GitHub. https://github.com/pmndrs/zustand
 
