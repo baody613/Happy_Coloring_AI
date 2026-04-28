@@ -23,25 +23,66 @@ const GOOGLE_IMAGE_MODELS = ["models/gemini-2.5-flash-image"];
 // ============================================================
 // COMPLEXITY CONFIG – Số màu theo từng độ phức tạp
 // max: số màu tối đa (dùng để sinh danh sách số tuần tự)
+// stars: hiển thị độ khó bằng ngôi sao in trên tờ tranh
 // ============================================================
 const COMPLEXITY_CONFIG = {
   easy: {
     label: "Easy",
+    stars: "★☆☆",
     max: 16,
     detail: "simple bold shapes, very large paint regions, minimal detail",
   },
   medium: {
     label: "Medium",
+    stars: "★★☆",
     max: 28,
     detail: "moderate detail, medium-sized paint regions, balanced composition",
   },
   hard: {
     label: "Hard",
+    stars: "★★★",
     max: 44,
     detail:
       "highly detailed, many small intricate regions, complex composition",
   },
 };
+
+// ============================================================
+// FRAME STYLE CONFIG – Mô tả kiểu khung tranh
+// ============================================================
+const FRAME_STYLE_CONFIG = {
+  rectangular:
+    "a clearly visible thick rectangular border/frame",
+  oval:
+    "a clearly visible thick oval or circular border/frame",
+  decorative:
+    "a decorative ornamental border/frame featuring simple floral or geometric patterns",
+};
+
+// ============================================================
+// CONTENT MODERATION – Blocklist từ khóa không phù hợp
+// Kiểm tra trước khi gửi prompt tới AI
+// ============================================================
+const BLOCKED_KEYWORDS = [
+  // English – adult / explicit
+  "nude", "naked", "sex", "porn", "explicit", "nsfw", "erotic", "hentai",
+  "xxx", "adult content", "breast", "genitalia", "penis", "vagina",
+  // English – violence / disturbing
+  "gore", "blood", "kill", "murder", "suicide", "torture", "weapon",
+  "gun", "rifle", "knife", "bomb", "terrorist",
+  // Vietnamese – nội dung người lớn
+  "khỏa thân", "tình dục", "khiêu dâm", "người lớn", "nội dung 18+",
+  // Vietnamese – bạo lực
+  "bạo lực", "máu", "giết", "đâm", "chém", "tự tử", "vũ khí",
+].map((kw) => kw.toLowerCase());
+
+/**
+ * Trả về true nếu prompt chứa từ khóa bị chặn.
+ */
+function moderatePrompt(prompt) {
+  const lower = prompt.toLowerCase();
+  return BLOCKED_KEYWORDS.some((kw) => lower.includes(kw));
+}
 
 // Sinh danh sách số tuần tự: "1, 2, 3, 4, ... N"
 function seqNumbers(max) {
@@ -50,10 +91,14 @@ function seqNumbers(max) {
 
 // ============================================================
 // PROMPT TEMPLATE – Hướng dẫn chi tiết gửi tới AI
-// {{USER_PROMPT}}, {{STYLE}}, {{COLOR_MAX}}, {{SEQ_NUMBERS}}, {{DETAIL}}
-// sẽ được thay thế bằng dữ liệu thật khi gọi buildLineArtPrompt()
+// Placeholders được thay thế trong buildLineArtPrompt():
+//   {{USER_PROMPT}}, {{STYLE}}, {{COLOR_MAX}}, {{SEQ_NUMBERS}},
+//   {{DETAIL}}, {{FRAME_STYLE_DESC}}, {{COMPLEXITY_LABEL}},
+//   {{COMPLEXITY_STARS}}, {{PALETTE_LAYOUT_DESC}}
 // ============================================================
-const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illustrator. Your ONLY task is to draw EXACTLY the subject described below as a printable paint-by-numbers worksheet. Never substitute or ignore the subject.
+const LINE_ART_PROMPT_TEMPLATE = `⚠️ CONTENT SAFETY (non-negotiable): This artwork MUST be suitable for children of all ages. Strictly NO sexual, violent, scary, disturbing, or adult content of any kind. If the subject contains any such element, replace it with a generic child-friendly alternative.
+
+You are a professional paint-by-numbers illustrator. Your ONLY task is to draw EXACTLY the subject described below as a printable paint-by-numbers worksheet. Never substitute or ignore the subject.
 
 === SUBJECT TO DRAW (mandatory, do not change) ===
 "{{USER_PROMPT}}"
@@ -63,39 +108,63 @@ const LINE_ART_PROMPT_TEMPLATE = `You are a professional paint-by-numbers illust
 - Exact number of colors: {{COLOR_MAX}} colors
 - Allowed color numbers: {{SEQ_NUMBERS}} — use ONLY these numbers, nothing else
 - Detail level: {{DETAIL}}
+- Frame style: {{FRAME_STYLE_DESC}}
 
 === MANDATORY LAYOUT (pixel-perfect) ===
-- Top 75% of canvas: the main line-art drawing inside a thin rectangular border.
-- Bottom 25% of canvas: a horizontal row of colored number swatches (the palette).
-- A thin horizontal divider line separates the drawing from the palette.
+- Very top strip (≈5% of canvas): a title area displaying the subject name "{{USER_PROMPT}}" in clear, readable text centered above the frame.
+- Below the title (≈70% of canvas): the main line-art drawing enclosed inside {{FRAME_STYLE_DESC}}.
+- Bottom-left corner of the drawing area: a small difficulty badge reading "{{COMPLEXITY_LABEL}} – {{COLOR_MAX}} colors {{COMPLEXITY_STARS}}" in small text.
+- Bottom-right corner of the drawing area: a small box containing the text "Colored by: ___________" for the painter to sign.
+- Bottom strip (≈25% of canvas): {{PALETTE_LAYOUT_DESC}}
+- A thin horizontal divider line separates the drawing area from the palette strip.
 
 === STEP-BY-STEP DRAWING RULES ===
-Step 1 – Draw the subject "{{USER_PROMPT}}" using only BLACK outlines on a WHITE background. No grayscale shading.
+Step 1 – Draw the subject "{{USER_PROMPT}}" using ONLY BLACK outlines on a PURE WHITE background. No grayscale shading whatsoever.
 Step 2 – Divide the drawing into CLOSED regions. Every region must be fully enclosed by outlines.
 Step 3 – Assign colors using ONLY the sequential numbers: {{SEQ_NUMBERS}}. Start from 1. Each number represents one unique color. Regions sharing the same color use the same number.
 Step 4 – Print each region's assigned number as a LARGE BOLD digit centered INSIDE that region. EVERY region must have exactly one number. No region may be left blank.
-Step 5 – In the palette strip at the bottom, show exactly {{COLOR_MAX}} swatches in ORDER: swatch 1, swatch 2, swatch 3 … swatch {{COLOR_MAX}}. Each swatch is a filled colored square or circle with its number beside it. Numbers in the palette must be sequential: 1, 2, 3, 4 … {{COLOR_MAX}}.
+Step 5 – In the palette strip at the bottom, draw {{PALETTE_LAYOUT_DESC}} Each swatch is a FILLED COLORED square (use a naturally matching suggested color for the subject) with its number printed beside it. Numbers must be sequential: 1, 2, 3 … {{COLOR_MAX}}.
 
 === STRICT PROHIBITIONS ===
 - Do NOT use any number larger than {{COLOR_MAX}} in the drawing or palette.
 - Do NOT skip any number between 1 and {{COLOR_MAX}}.
-- NO grayscale shading or gradients in the drawing area.
-- NO color fills inside regions — regions stay WHITE. Only the number digit is printed inside.
-- Do not color in the picture. All regions must remain white/uncolored inside the drawing area.
-- NO color names written anywhere.
-- NO watermarks, logos, copyright text, or signatures.
-- NO adult, violent, or disturbing content.
+- The drawing area MUST be strictly BLACK outlines on a PURE WHITE background. Any AI-added shading, color tinting, gradients, or background patterns inside the drawing area are STRICTLY FORBIDDEN.
+- NO color fills inside regions in the drawing area — regions stay WHITE. Only the number digit is printed inside.
+- NO color names written anywhere in the image.
+- NO watermarks, logos, copyright text, or extra signatures (only the "Colored by:" box and difficulty badge defined above are allowed).
+- NO adult, violent, scary, or disturbing content.
 
 === QUALITY TARGET ===
 High resolution (1024x1024), print-ready, clean and crisp so users can easily paint by following the numbers.`;
 
-function buildLineArtPrompt(userPrompt, style, complexity) {
+/**
+ * Builds the final prompt string by substituting all placeholders.
+ * @param {string} userPrompt  – translated English subject description
+ * @param {string} style       – art style (e.g. "realistic")
+ * @param {string} complexity  – "easy" | "medium" | "hard"
+ * @param {string} frameStyle  – "rectangular" | "oval" | "decorative"
+ */
+function buildLineArtPrompt(userPrompt, style, complexity, frameStyle = "rectangular") {
   const cfg = COMPLEXITY_CONFIG[complexity] || COMPLEXITY_CONFIG.medium;
-  return LINE_ART_PROMPT_TEMPLATE.replace(/{{USER_PROMPT}}/g, userPrompt)
+  const frameDesc =
+    FRAME_STYLE_CONFIG[frameStyle] || FRAME_STYLE_CONFIG.rectangular;
+
+  // Palette layout: 2 rows when color count > 20 to avoid tiny unreadable swatches
+  const paletteLayoutDesc =
+    cfg.max > 20
+      ? `two horizontal rows of colored number swatches, with approximately ${Math.ceil(cfg.max / 2)} swatches per row (${cfg.max} swatches total).`
+      : `a single horizontal row of ${cfg.max} colored number swatches.`;
+
+  return LINE_ART_PROMPT_TEMPLATE
+    .replace(/{{USER_PROMPT}}/g, userPrompt)
     .replace(/{{STYLE}}/g, style)
     .replace(/{{COLOR_MAX}}/g, cfg.max)
     .replace(/{{SEQ_NUMBERS}}/g, seqNumbers(cfg.max))
-    .replace(/{{DETAIL}}/g, cfg.detail);
+    .replace(/{{DETAIL}}/g, cfg.detail)
+    .replace(/{{FRAME_STYLE_DESC}}/g, frameDesc)
+    .replace(/{{COMPLEXITY_LABEL}}/g, cfg.label)
+    .replace(/{{COMPLEXITY_STARS}}/g, cfg.stars)
+    .replace(/{{PALETTE_LAYOUT_DESC}}/g, paletteLayoutDesc);
 }
 
 // ============================================================
@@ -103,7 +172,12 @@ function buildLineArtPrompt(userPrompt, style, complexity) {
 // ============================================================
 router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
   try {
-    const { prompt, style = "realistic", complexity = "medium" } = req.body;
+    const {
+      prompt,
+      style = "realistic",
+      complexity = "medium",
+      frameStyle = "rectangular",
+    } = req.body;
     const userId = req.user.uid;
 
     if (!prompt) {
@@ -116,6 +190,19 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
         .json({ error: "Prompt must be 500 characters or fewer" });
     }
 
+    // Kiểm tra nội dung không phù hợp trước khi gửi tới AI
+    if (moderatePrompt(prompt)) {
+      return res.status(400).json({
+        error:
+          "Nội dung không phù hợp. Vui lòng mô tả chủ đề thân thiện với trẻ em.",
+      });
+    }
+
+    const validFrameStyles = Object.keys(FRAME_STYLE_CONFIG);
+    const safeFrameStyle = validFrameStyles.includes(frameStyle)
+      ? frameStyle
+      : "rectangular";
+
     const generationRef = db.collection("generations").doc();
     const generationId = generationRef.id;
 
@@ -125,13 +212,14 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       prompt,
       style,
       complexity,
+      frameStyle: safeFrameStyle,
       status: "processing",
       imageUrl: "",
       createdAt: new Date().toISOString(),
     });
 
     // Chạy ngầm tiến trình (Fire-and-forget), thêm .catch để tránh unhandled promise rejection
-    generatePaintByNumbers(generationId, prompt, style, complexity).catch(
+    generatePaintByNumbers(generationId, prompt, style, complexity, safeFrameStyle).catch(
       (err) => console.error("Background generation task failed:", err),
     );
 
@@ -178,13 +266,13 @@ router.get("/status/:generationId", authenticateUser, async (req, res) => {
 // ============================================================
 // HÀM HELPER: generatePaintByNumbers
 // ============================================================
-async function generatePaintByNumbers(generationId, prompt, style, complexity) {
+async function generatePaintByNumbers(generationId, prompt, style, complexity, frameStyle = "rectangular") {
   try {
     // 1. Dịch sang tiếng Anh (AI Render hiểu tiếng Anh tốt hơn tiếng Việt)
     const englishPrompt = await translatePromptToEnglish(prompt.trim());
 
     // 2. Xây dựng lệnh đưa cho AI
-    const lineArtPrompt = buildLineArtPrompt(englishPrompt, style, complexity);
+    const lineArtPrompt = buildLineArtPrompt(englishPrompt, style, complexity, frameStyle);
 
     let imageBuffer;
 
