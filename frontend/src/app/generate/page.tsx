@@ -30,7 +30,6 @@ export default function GeneratePage() {
     useFavoriteStore();
   const [prompt, setPrompt] = useState("");
   const [complexity, setComplexity] = useState("medium");
-  const [frameStyle, setFrameStyle] = useState("rectangular");
   const [generating, setGenerating] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState("");
@@ -95,7 +94,6 @@ export default function GeneratePage() {
       const { data } = await api.post("/generate/paint-by-numbers", {
         prompt,
         complexity,
-        frameStyle,
       });
 
       toast.success("Đang tạo tranh... Vui lòng đợi");
@@ -154,7 +152,6 @@ export default function GeneratePage() {
     setPrompt("");
     setGeneratedImage("");
     setComplexity("medium");
-    setFrameStyle("rectangular");
     setShowDetails(false);
   };
 
@@ -301,43 +298,6 @@ export default function GeneratePage() {
                         </div>
                       </div>
                       {complexity === c.value && (
-                        <div className="text-purple-600 text-2xl">✓</div>
-                      )}
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-
-            {/* Frame Style Selection */}
-            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
-                🖼️ Kiểu Khung Tranh
-              </h2>
-              <div className="space-y-3">
-                {frameStyles.map((f) => (
-                  <motion.button
-                    key={f.value}
-                    onClick={() => setFrameStyle(f.value)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all text-left ${
-                      frameStyle === f.value
-                        ? "border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 shadow-md"
-                        : "border-gray-200 hover:border-purple-300 bg-white"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-lg flex items-center gap-2">
-                          {f.icon}{" "}
-                          <span className="text-pink-600">{f.label}</span>
-                        </div>
-                        <div className="text-sm text-purple-400 mt-1">
-                          {f.description}
-                        </div>
-                      </div>
-                      {frameStyle === f.value && (
                         <div className="text-purple-600 text-2xl">✓</div>
                       )}
                     </div>
@@ -602,25 +562,4 @@ const examplePrompts = [
   "Phong cảnh biển hoàng hôn với những con sóng vỗ vào bờ",
   "Cô gái anime với mái tóc dài cầm bó hoa",
   "Rừng cây mùa thu với lá vàng rơi",
-];
-
-const frameStyles = [
-  {
-    value: "rectangular",
-    label: "Chữ Nhật",
-    icon: "⬜",
-    description: "Khung vuông cổ điển – phù hợp mọi chủ đề",
-  },
-  {
-    value: "oval",
-    label: "Bầu Dục",
-    icon: "🔵",
-    description: "Khung tròn / oval – phù hợp tranh mandala",
-  },
-  {
-    value: "decorative",
-    label: "Trang Trí",
-    icon: "🌸",
-    description: "Khung hoa văn – phù hợp chủ đề fairy tale",
-  },
 ];

@@ -48,18 +48,6 @@ const COMPLEXITY_CONFIG = {
 };
 
 // ============================================================
-// FRAME STYLE CONFIG – Mô tả kiểu khung tranh
-// ============================================================
-const FRAME_STYLE_CONFIG = {
-  rectangular:
-    "a clearly visible thick rectangular border/frame",
-  oval:
-    "a clearly visible thick oval or circular border/frame",
-  decorative:
-    "a decorative ornamental border/frame featuring simple floral or geometric patterns",
-};
-
-// ============================================================
 // CONTENT MODERATION – Blocklist từ khóa không phù hợp
 // Kiểm tra trước khi gửi prompt tới AI
 // ============================================================
@@ -93,8 +81,8 @@ function seqNumbers(max) {
 // PROMPT TEMPLATE – Hướng dẫn chi tiết gửi tới AI
 // Placeholders được thay thế trong buildLineArtPrompt():
 //   {{USER_PROMPT}}, {{STYLE}}, {{COLOR_MAX}}, {{SEQ_NUMBERS}},
-//   {{DETAIL}}, {{FRAME_STYLE_DESC}}, {{COMPLEXITY_LABEL}},
-//   {{COMPLEXITY_STARS}}, {{PALETTE_LAYOUT_DESC}}
+//   {{DETAIL}}, {{COMPLEXITY_LABEL}}, {{COMPLEXITY_STARS}},
+//   {{PALETTE_LAYOUT_DESC}}
 // ============================================================
 const LINE_ART_PROMPT_TEMPLATE = `⚠️ CONTENT SAFETY (non-negotiable): This artwork MUST be suitable for children of all ages. Strictly NO sexual, violent, scary, disturbing, or adult content of any kind. If the subject contains any such element, replace it with a generic child-friendly alternative.
 
@@ -108,11 +96,10 @@ You are a professional paint-by-numbers illustrator. Your ONLY task is to draw E
 - Exact number of colors: {{COLOR_MAX}} colors
 - Allowed color numbers: {{SEQ_NUMBERS}} — use ONLY these numbers, nothing else
 - Detail level: {{DETAIL}}
-- Frame style: {{FRAME_STYLE_DESC}}
 
 === MANDATORY LAYOUT (pixel-perfect) ===
 - Very top strip (≈5% of canvas): a title area displaying the subject name "{{USER_PROMPT}}" in clear, readable text centered above the frame.
-- Below the title (≈70% of canvas): the main line-art drawing enclosed inside {{FRAME_STYLE_DESC}}.
+- Below the title (≈70% of canvas): the main line-art drawing enclosed inside a clearly visible thick rectangular border/frame.
 - Bottom-left corner of the drawing area: a small difficulty badge reading "{{COMPLEXITY_LABEL}} – {{COLOR_MAX}} colors {{COMPLEXITY_STARS}}" in small text.
 - Bottom-right corner of the drawing area: a small box containing the text "Colored by: ___________" for the painter to sign.
 - Bottom strip (≈25% of canvas): {{PALETTE_LAYOUT_DESC}}
@@ -142,12 +129,9 @@ High resolution (1024x1024), print-ready, clean and crisp so users can easily pa
  * @param {string} userPrompt  – translated English subject description
  * @param {string} style       – art style (e.g. "realistic")
  * @param {string} complexity  – "easy" | "medium" | "hard"
- * @param {string} frameStyle  – "rectangular" | "oval" | "decorative"
  */
-function buildLineArtPrompt(userPrompt, style, complexity, frameStyle = "rectangular") {
+function buildLineArtPrompt(userPrompt, style, complexity) {
   const cfg = COMPLEXITY_CONFIG[complexity] || COMPLEXITY_CONFIG.medium;
-  const frameDesc =
-    FRAME_STYLE_CONFIG[frameStyle] || FRAME_STYLE_CONFIG.rectangular;
 
   // Palette layout: 2 rows when color count > 20 to avoid tiny unreadable swatches
   const paletteLayoutDesc =
@@ -161,7 +145,6 @@ function buildLineArtPrompt(userPrompt, style, complexity, frameStyle = "rectang
     .replace(/{{COLOR_MAX}}/g, cfg.max)
     .replace(/{{SEQ_NUMBERS}}/g, seqNumbers(cfg.max))
     .replace(/{{DETAIL}}/g, cfg.detail)
-    .replace(/{{FRAME_STYLE_DESC}}/g, frameDesc)
     .replace(/{{COMPLEXITY_LABEL}}/g, cfg.label)
     .replace(/{{COMPLEXITY_STARS}}/g, cfg.stars)
     .replace(/{{PALETTE_LAYOUT_DESC}}/g, paletteLayoutDesc);
@@ -176,7 +159,6 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       prompt,
       style = "realistic",
       complexity = "medium",
-      frameStyle = "rectangular",
     } = req.body;
     const userId = req.user.uid;
 
@@ -198,11 +180,6 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       });
     }
 
-    const validFrameStyles = Object.keys(FRAME_STYLE_CONFIG);
-    const safeFrameStyle = validFrameStyles.includes(frameStyle)
-      ? frameStyle
-      : "rectangular";
-
     const generationRef = db.collection("generations").doc();
     const generationId = generationRef.id;
 
@@ -212,14 +189,13 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
       prompt,
       style,
       complexity,
-      frameStyle: safeFrameStyle,
       status: "processing",
       imageUrl: "",
       createdAt: new Date().toISOString(),
     });
 
     // Chạy ngầm tiến trình (Fire-and-forget), thêm .catch để tránh unhandled promise rejection
-    generatePaintByNumbers(generationId, prompt, style, complexity, safeFrameStyle).catch(
+    generatePaintByNumbers(generationId, prompt, style, complexity).catch(
       (err) => console.error("Background generation task failed:", err),
     );
 
@@ -266,13 +242,13 @@ router.get("/status/:generationId", authenticateUser, async (req, res) => {
 // ============================================================
 // HÀM HELPER: generatePaintByNumbers
 // ============================================================
-async function generatePaintByNumbers(generationId, prompt, style, complexity, frameStyle = "rectangular") {
+async function generatePaintByNumbers(generationId, prompt, style, complexity) {
   try {
     // 1. Dịch sang tiếng Anh (AI Render hiểu tiếng Anh tốt hơn tiếng Việt)
     const englishPrompt = await translatePromptToEnglish(prompt.trim());
 
     // 2. Xây dựng lệnh đưa cho AI
-    const lineArtPrompt = buildLineArtPrompt(englishPrompt, style, complexity, frameStyle);
+    const lineArtPrompt = buildLineArtPrompt(englishPrompt, style, complexity);
 
     let imageBuffer;
 
