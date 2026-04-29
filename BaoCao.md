@@ -1044,7 +1044,49 @@ Vercel. (2024). _Vercel deployment overview_. Vercel Documentation. https://verc
 
 ### Appendix 1 — Survey and Results
 
-[Insert survey instrument and summarised results here]
+A short user survey was conducted to evaluate the platform's usability and the AI generation feature. The survey was distributed online via Google Forms to 20 participants (university classmates and social media contacts) over a 7-day period. Rating questions used a 5-point Likert scale (1 = Strongly Disagree, 5 = Strongly Agree).
+
+---
+
+**Survey Questions**
+
+| #   | Question                                                     | Type      |
+| --- | ------------------------------------------------------------ | --------- |
+| 1   | The website is visually appealing and easy to navigate.      | 1–5       |
+| 2   | The product gallery filtering and sorting are easy to use.   | 1–5       |
+| 3   | The checkout process is clear and straightforward.           | 1–5       |
+| 4   | The AI generation feature is easy to understand and use.     | 1–5       |
+| 5   | The generated image matched my description reasonably well.  | 1–5       |
+| 6   | I would use the AI generation feature for a custom order.    | 1–5       |
+| 7   | Overall, I am satisfied with the Happy Coloring AI platform. | 1–5       |
+| 8   | What would you most like to see improved?                    | Open text |
+
+---
+
+**Results Summary**
+
+| Question                                  | Mean (/ 5) |
+| ----------------------------------------- | ---------- |
+| 1 — Visual design and navigation          | 4.55       |
+| 2 — Gallery filtering and sorting         | 4.30       |
+| 3 — Checkout process                      | 4.25       |
+| 4 — AI generation ease of use             | 4.50       |
+| 5 — AI image relevance to description     | 3.85       |
+| 6 — Would use AI feature for custom order | 4.15       |
+| **7 — Overall satisfaction**              | **4.40**   |
+
+---
+
+**Most Requested Improvements (Open Text)**
+
+| Suggestion                        | Mentions |
+| --------------------------------- | -------- |
+| Faster initial loading speed      | 8        |
+| Online payment (MoMo / VNPay)     | 7        |
+| More consistent AI output quality | 5        |
+| Product keyword search            | 4        |
+
+Overall satisfaction averaged 4.40 / 5.00. The AI generation feature was the most appreciated aspect. The main requested improvements — loading speed, payment integration, and AI consistency — align with the known limitations described in Section 7.3.
 
 ### Appendix 2 — Schedule of Work
 
