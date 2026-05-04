@@ -1,192 +1,192 @@
-# KỊCH BẢN THUYẾT TRÌNH — FINAL YEAR PROJECT
+﻿# PRESENTATION SCRIPT — FINAL YEAR PROJECT
 
-**Dự án:** Happy Coloring AI — AI-Integrated Paint-by-Numbers E-Commerce Platform  
-**Sinh viên:** Tống Bảo Duy — GCS210642  
-**Trường:** Greenwich University Vietnam  
-
----
-
-> **Hướng dẫn sử dụng kịch bản:**  
-> Phần in đậm `[SLIDE X]` là tín hiệu chuyển slide.  
-> Phần in nghiêng là ghi chú hành động (không đọc to).  
-> Thời lượng ước tính toàn bài: **~12–15 phút** + Q&A.
+**Project:** Happy Coloring AI — AI-Integrated Paint-by-Numbers E-Commerce Platform
+**Student:** Tong Bao Duy — GCS210642
+**Institution:** Greenwich University Vietnam
 
 ---
 
-## [SLIDE 1] — TRANG BÌA
-
-*Bước vào vị trí, chào hội đồng, ổn định tư thế.*
-
-> "Kính chào Thầy/Cô trong hội đồng phản biện. Em tên là **Tống Bảo Duy**, mã số sinh viên **GCS210642**, ngành Công nghệ Thông tin, Đại học Greenwich Việt Nam.
->
-> Đồ án tốt nghiệp của em có tên **Happy Coloring AI** — một nền tảng thương mại điện tử tích hợp trí tuệ nhân tạo, cho phép người dùng mua tranh tô màu theo số sẵn có **và** tự tạo tranh cá nhân hoá từ mô tả bằng tiếng Việt, được cung cấp sức mạnh bởi Google Gemini 2.5 Flash.
->
-> Trong buổi thuyết trình hôm nay, em sẽ trình bày theo ba phần chính: **Công nghệ sử dụng**, **Các tính năng cốt lõi**, và **Chức năng tạo ảnh AI** — đây là phần trọng tâm nhất của đồ án. Em xin bắt đầu."
+> **How to use this script:**
+> Bold `[SLIDE X]` markers are your cue to advance the slide.
+> *Italic* lines are stage directions — do not read them aloud.
+> Estimated total duration: **~12–15 minutes** + Q&A.
 
 ---
 
-## [SLIDE 2] — TECHNOLOGY STACK — FRONTEND *(PART 1 / ~2 phút)*
+## [SLIDE 1] — TITLE SLIDE
 
-> "Trước tiên, em xin giới thiệu về công nghệ frontend mà em đã lựa chọn.
+*Step forward, greet the panel, settle your posture.*
+
+> "Good morning / Good afternoon, respected members of the examination panel. My name is **Tong Bao Duy**, student ID **GCS210642**, majoring in Information Technology at Greenwich University Vietnam.
 >
-> Về **UI Framework**, em dùng **Next.js 14** với App Router kết hợp **React 18** và **TypeScript**. Lý do chọn Next.js là vì nó hỗ trợ **Server-Side Rendering** ngay từ đầu, giúp cải thiện SEO cho trang sản phẩm, đồng thời hệ thống routing theo file-system rất sạch và dễ quản lý với hơn 30 trang. Em dùng **Tailwind CSS** để xây dựng giao diện responsive mà không cần viết CSS thủ công, và **Framer Motion** để tạo animation mượt mà trên trang chủ và trang Generate.
+> My Final Year Project is titled **Happy Coloring AI** — an AI-integrated e-commerce platform that allows users both to purchase ready-made paint-by-numbers products **and** to generate personalised numbered artwork from natural-language descriptions, powered by Google Gemini 2.5 Flash.
 >
-> Về **State & Data**, em dùng **Zustand** để quản lý global state — bao gồm giỏ hàng, trạng thái đăng nhập, và danh sách yêu thích. Zustand nhẹ hơn Redux rất nhiều, không cần boilerplate. **Firebase SDK** phía client đảm nhận xác thực người dùng trên trình duyệt. Mọi HTTP request đều đi qua **Axios** với interceptor tự động đính kèm Bearer Token và refresh token khi hết hạn. Đặc biệt, em có file `safeStorage.ts` để kiểm tra `typeof window` trước mỗi lần truy cập localStorage — giải quyết vấn đề SSR-safe khi Next.js render phía server.
+> Today's presentation is structured into three main parts: **Technology Stack**, **Core Features**, and **AI Image Generation** — which is the centrepiece of this project. Let me begin."
+
+---
+
+## [SLIDE 2] — TECHNOLOGY STACK — FRONTEND *(PART 1 / ~2 min)*
+
+> "First, I would like to introduce the frontend technology choices.
 >
-> Cấu trúc thư mục frontend gồm `app/` với 30+ trang, `components/`, `store/` với ba store chính, `lib/` với các helper API, và `hooks/`."
+> For the **UI Framework**, I used **Next.js 14** with the App Router, combined with **React 18** and **TypeScript**. I chose Next.js because it provides built-in **Server-Side Rendering**, which improves SEO for product pages, and its file-system routing keeps more than 30 pages clean and manageable. I used **Tailwind CSS** to build a fully responsive interface without writing manual CSS, and **Framer Motion** for smooth animations on the home page and the Generate page.
+>
+> For **State & Data management**, I used **Zustand** to handle global state — including the shopping cart, authentication status, and the favourites list. Zustand is much lighter than Redux and requires no boilerplate. The **Firebase SDK** on the client side handles user authentication in the browser. Every HTTP request goes through **Axios**, whose interceptor automatically attaches the Bearer Token and refreshes it when expired. Notably, the `safeStorage.ts` utility checks `typeof window` before every localStorage access — solving the SSR hydration problem when Next.js renders on the server.
+>
+> The frontend directory structure consists of `app/` with 30+ pages, `components/`, `store/` with three Zustand stores, `lib/` with API helpers, and `hooks/`."
 
 ---
 
 ## [SLIDE 3] — TECHNOLOGY STACK — BACKEND & DATABASE
 
-> "Chuyển sang phía **Backend**.
+> "Moving to the **Backend**.
 >
-> Server được xây dựng trên **Node.js + Express.js**, triển khai theo kiến trúc RESTful API. Em dùng **Firebase Admin SDK** phía server để xác minh token, truy xuất Firestore và Firebase Storage. Về bảo mật, em tích hợp **Helmet** để thiết lập các HTTP security header chống XSS, clickjacking; **Morgan** để ghi log request; và **Express Rate Limit** giới hạn 100 request mỗi 15 phút mỗi IP — phòng chống brute-force attack, đây là một trong các hướng dẫn của OWASP Top 10. Ngoài ra, **Joi** đảm nhận validate dữ liệu đầu vào, và **Nodemailer** gửi email reset mật khẩu.
+> The server is built on **Node.js + Express.js**, following a RESTful API architecture. I use the **Firebase Admin SDK** server-side to verify tokens and access Firestore and Firebase Storage. For security, I integrated **Helmet** to set HTTP security headers against XSS and clickjacking; **Morgan** for request logging; and **Express Rate Limit** to cap each IP at 100 requests per 15 minutes — guarding against brute-force attacks, aligned with the OWASP Top 10 guidelines. **Joi** handles input validation, and **Nodemailer** sends password-reset emails.
 >
-> Về **AI APIs**, em sử dụng hai model khác nhau: **Gemini 2.5 Flash Image** để tạo ảnh tranh tô màu từ văn bản — đây là model chính, và **Gemini 2.5 Flash Text** cho chatbot tư vấn sản phẩm. **MyMemory API** dịch prompt từ tiếng Việt sang tiếng Anh trước khi gửi sang Gemini.
+> For **AI APIs**, I used two different models: **Gemini 2.5 Flash Image** to generate paint-by-numbers artwork from text — this is the primary model — and **Gemini 2.5 Flash Text** for the product advisory chatbot. **MyMemory API** translates user prompts from Vietnamese to English before they are sent to Gemini.
 >
-> Về **Database & Storage**, em dùng hoàn toàn hệ sinh thái Firebase: **Firestore** lưu trữ toàn bộ dữ liệu dưới dạng NoSQL với 5 collections chính — Users, Products, Orders, Generations, và Settings. **Firebase Auth** cung cấp JWT identity, **Firebase Storage** lưu ảnh sản phẩm và ảnh AI được tạo ra.
+> For **Database & Storage**, I relied entirely on the Firebase ecosystem: **Firestore** stores all data as NoSQL documents across 5 main collections — Users, Products, Orders, Generations, and Settings. **Firebase Auth** provides JWT identity, and **Firebase Storage** stores product images and AI-generated artwork.
 >
-> Tổng cộng backend có **49 API endpoints** chia trên 14 file route."
+> In total, the backend exposes **49 API endpoints** across 14 route files."
 
 ---
 
 ## [SLIDE 4] — SYSTEM FLOW — 5 STAGES
 
-> "Để có cái nhìn tổng thể, đây là **luồng hoạt động của hệ thống** gồm 5 giai đoạn.
+> "To get a high-level view, here is the **system workflow** broken into 5 stages.
 >
-> **Stage 1 — Authentication:** Người dùng đăng ký hoặc đăng nhập qua Firebase Auth. Component `AuthProvider` lắng nghe sự kiện `onAuthStateChanged` và cập nhật Zustand `authStore`. Mọi request sau đó đều gắn **Bearer Token** trong header.
+> **Stage 1 — Authentication:** Users register or sign in via Firebase Auth. The `AuthProvider` component listens for the `onAuthStateChanged` event and updates the Zustand `authStore`. Every subsequent request carries a **Bearer Token** in the Authorization header.
 >
-> **Stage 2 — Browse & Shop:** Sản phẩm được tải từ Firestore và hiển thị với đầy đủ tính năng lọc theo danh mục, độ khó, giá tiền. Người dùng thêm vào giỏ hàng — giỏ hàng được persist bằng Zustand kết hợp localStorage, đảm bảo không mất dữ liệu khi refresh trang.
+> **Stage 2 — Browse & Shop:** Products are fetched from Firestore and displayed with full filtering by category, difficulty, and price. Users add items to the cart — the cart is persisted by Zustand combined with localStorage, so no data is lost on page refresh.
 >
-> **Stage 3 — Payment:** Sau khi checkout, hệ thống xử lý thanh toán COD hoặc Bank Transfer. Backend xác minh và cập nhật trạng thái đơn hàng trong Firestore.
+> **Stage 3 — Payment:** After checkout, the system processes payment via COD or Bank Transfer. The backend verifies and updates the order status in Firestore.
 >
-> **Stage 4 — AI Generation:** Đây là giai đoạn đặc trưng nhất — người dùng nhập mô tả bằng tiếng Việt, hệ thống gọi Gemini để tạo ảnh và lưu lên Firebase Storage. Em sẽ trình bày chi tiết trong Part 3.
+> **Stage 4 — AI Generation:** This is the most distinctive stage — users enter a description, the system calls Gemini to generate an image, and the result is saved to Firebase Storage. I will cover this in detail in Part 3.
 >
-> **Stage 5 — Administration:** Admin đăng nhập vào dashboard riêng với xác thực hai lớp, quản lý sản phẩm, đơn hàng, người dùng và cập nhật trạng thái đơn."
+> **Stage 5 — Administration:** Admins log into a dedicated dashboard with two-layer authentication, and manage products, orders, users, and order status updates."
 
 ---
 
-## [SLIDE 5] — 7 CORE FEATURE GROUPS *(PART 2 / ~4 phút)*
+## [SLIDE 5] — 7 CORE FEATURE GROUPS *(PART 2 / ~4 min)*
 
-> "Bước sang **Part 2**, em sẽ trình bày 7 nhóm tính năng cốt lõi của hệ thống.
+> "Moving to **Part 2**, I will walk through the 7 core feature groups.
 >
-> **Nhóm 1 — Authentication:** Đăng ký, đăng nhập, đăng xuất đầy đủ. Tính năng 'Remember me' lưu thông tin vào localStorage; nếu tắt thì dùng sessionStorage. Hỗ trợ reset mật khẩu qua email bằng Nodemailer.
+> **Group 1 — Authentication:** Full register, login, and logout flow. The 'Remember me' feature stores credentials in localStorage; if disabled, sessionStorage is used instead. Password reset via email using Nodemailer is supported.
 >
-> **Nhóm 2 — Products:** Danh sách sản phẩm có đầy đủ filter theo danh mục, độ khó, giá; phân trang. Phía admin có thể thêm, sửa, xoá sản phẩm và upload ảnh thẳng lên Firebase Storage.
+> **Group 2 — Products:** The product listing includes full filtering by category, difficulty, and price, plus pagination. Admins can add, edit, delete products, and upload images directly to Firebase Storage.
 >
-> **Nhóm 3 — Cart:** Giỏ hàng dùng Zustand persist — trạng thái không mất khi reload. Người dùng có thể lưu sản phẩm vào 'yêu thích' để mua sau. Hệ thống có 3 voucher giảm giá: `YULING10` giảm 10%, `YULING20` giảm 20%, `GIAMGIA15` giảm 15%.
+> **Group 3 — Cart:** The cart uses Zustand persist — state survives page reloads. Users can save products to a 'favourites' list for later purchase. The system supports 3 discount vouchers: `YULING10` for 10% off, `YULING20` for 20% off, and `GIAMGIA15` for 15% off.
 >
-> **Nhóm 4 — Payment:** Hỗ trợ thanh toán COD và Bank Transfer. Hệ thống có callback verification để xác nhận giao dịch.
+> **Group 4 — Payment:** Supports Cash on Delivery (COD) and Bank Transfer. A callback verification flow confirms transactions.
 >
-> **Nhóm 5 — Orders:** Đơn hàng đi qua vòng đời: pending → processing → shipping → delivered hoặc cancelled. Người dùng xem lịch sử đơn hàng; admin cập nhật trạng thái.
+> **Group 5 — Orders:** Orders progress through a lifecycle: pending → processing → shipping → delivered or cancelled. Users can view their order history; admins update the status.
 >
-> **Nhóm 6 — AI Generation:** Đây là **tính năng flagship** — em sẽ đi sâu vào Part 3.
+> **Group 6 — AI Generation:** This is the **flagship feature** — covered in depth in Part 3.
 >
-> **Nhóm 7 — Admin Dashboard:** Quản lý toàn diện sản phẩm, đơn hàng, người dùng, và cài đặt hệ thống. Có thống kê tổng quan cho admin."
+> **Group 7 — Admin Dashboard:** Comprehensive management of products, orders, users, and system settings, with an overview statistics panel."
 
 ---
 
 ## [SLIDE 6] — BACKEND ARCHITECTURE — LAYERED DESIGN
 
-> "Trước khi đi vào AI Generation, em muốn trình bày kiến trúc backend theo **Layered Design** — thiết kế theo lớp, vì đây là quyết định thiết kế quan trọng.
+> "Before diving into AI Generation, I want to present the backend's **Layered Design** — a key architectural decision.
 >
-> Luồng xử lý đi qua 4 lớp: **Routes** nhận request và validate đầu vào cơ bản — có 14 file route. Tiếp theo là **Middleware** với hai file chính: `auth.js` xác minh Firebase ID Token và gắn `req.user`, còn `adminAuth.js` thực hiện xác thực quyền admin **hai lớp**. **Services** là nơi chứa toàn bộ business logic trong 6 file. Cuối cùng là lớp **Firebase** — Firestore, Storage, và Auth.
+> Request processing flows through 4 layers. **Routes** receive requests and perform basic input validation — there are 14 route files. Next is the **Middleware** layer with two main files: `auth.js` verifies the Firebase ID Token and attaches `req.user`, while `adminAuth.js` enforces **two-layer admin authentication**. **Services** contain all business logic across 6 files. Finally, the **Firebase** layer handles Firestore, Storage, and Auth.
 >
-> Điểm đáng chú ý là cơ chế `adminAuth` hai lớp: **Lớp 1** kiểm tra email trong biến môi trường `ADMIN_EMAILS` — rất nhanh, không cần query database. **Lớp 2** query Firestore để kiểm tra trường `role = "admin"` — chính xác và linh hoạt, có thể cấp/thu hồi quyền admin mà không cần deploy lại.
+> The two-layer `adminAuth` mechanism works as follows: **Layer 1** checks the email against the `ADMIN_EMAILS` environment variable — fast, no database query needed. **Layer 2** queries Firestore to verify the user document has `role = "admin"` — precise and flexible, allowing admin access to be granted or revoked without redeploying.
 >
-> Về Services: `productService` đảm nhận CRUD, filtering, pagination; `orderService` quản lý vòng đời đơn hàng; `userService` quản lý tài khoản và profile."
+> Regarding Services: `productService` handles CRUD, filtering, and pagination; `orderService` manages the order lifecycle; `userService` manages accounts and profiles."
 
 ---
 
-## [SLIDE 7] — AI IMAGE GENERATION — OVERVIEW *(PART 3 / ~5 phút — CORE FEATURE)*
+## [SLIDE 7] — AI IMAGE GENERATION — OVERVIEW *(PART 3 / ~5 min — CORE FEATURE)*
 
-> "Và bây giờ là **Part 3** — phần quan trọng nhất của đồ án: **Tính năng tạo ảnh AI**.
+> "And now, **Part 3** — the most important part of this project: the **AI Image Generation feature**.
 >
-> Em sử dụng model **Gemini 2.5 Flash Image** của Google AI Studio — đây là một trong số rất ít model **miễn phí** hỗ trợ sinh ảnh inline qua REST API. Model trả về ảnh dưới dạng **Base64 inline** trong response, không cần lưu qua bước trung gian.
+> I use the **Gemini 2.5 Flash Image** model from Google AI Studio — one of the very few **free** models that support inline image generation via a plain REST API, with no heavy SDK required. The model returns images as **Base64 inline data** in the response body.
 >
-> Tính năng cho phép người dùng chọn **3 mức độ phức tạp**:
-> - **Easy (16 màu):** Nét dày 3–4px, vùng tô lớn tối thiểu 40×40px, phong cách cartoon đơn giản — phù hợp trẻ em.
-> - **Medium (28 màu):** Nét tiêu chuẩn 2–3px, semi-realistic, vùng tô tối thiểu 18×18px — dành cho người lớn.
-> - **Hard (44 màu):** Nét mảnh 1.5–2px, nhiều vùng nhỏ 8×8px, độ phức tạp cao — dành cho người có kinh nghiệm.
+> The feature offers **3 complexity levels**:
+> - **Easy (16 colours):** Thick outlines (3–4px), large regions at minimum 40×40px, simple cartoon style — suitable for children.
+> - **Medium (28 colours):** Standard outlines (2–3px), semi-realistic, minimum 18×18px regions — for adults.
+> - **Hard (44 colours):** Fine outlines (1.5–2px), many small regions down to 8×8px — for experienced painters.
 >
-> Và đây là toàn bộ **7-bước xử lý** mà em đã thiết kế — em sẽ trình bày ngay slide tiếp theo."
-
----
-
-## [SLIDE 8] — 7-STEP PROCESSING FLOW — BƯỚC 1 ĐẾN 4
-
-> "**Bước 1 — User gửi request:** Frontend POST lên `/api/generate/paint-by-numbers` với Bearer Token. Route được bảo vệ bởi middleware `authenticateUser`. Trước khi gửi sang Gemini, **MyMemory API** dịch prompt tiếng Việt sang tiếng Anh.
->
-> **Bước 2 — Backend phản hồi 202 Accepted ngay lập tức:** Đây là điểm thiết kế then chốt. Gemini có thể mất từ 30 đến 120 giây để tạo ảnh — nếu giữ kết nối mở, request sẽ timeout. Vì vậy, backend tạo ngay một document trong Firestore với `status: "processing"` và trả về HTTP 202 kèm `generationId`. Frontend nhận ID này và bắt đầu polling.
->
-> **Bước 3 — Prompt Engineering:** Hàm `buildLineArtPrompt()` chạy ở background dưới dạng **fire-and-forget** — không có `await`, không block Event Loop của Node.js. Prompt được xây dựng với template: vai trò được gán là *'You are a professional paint-by-numbers illustrator'*, sau đó là các **hard requirements** như closed regions, numbered, màu sắc theo palette, không watermark, không nội dung 18+.
->
-> **Bước 4 — Gọi Google AI Studio API:** `generateContent` được gọi với `responseModalities: ['TEXT', 'IMAGE']`. Model trả về mảng `parts[]`, em iterate qua mảng này để tìm `inlineData` chứa chuỗi Base64 PNG, sau đó convert sang `Buffer`."
+> Here is the full **7-step processing flow** I designed — detailed across the next two slides."
 
 ---
 
-## [SLIDE 9] — 7-STEP PROCESSING FLOW — BƯỚC 5 ĐẾN 7
+## [SLIDE 8] — 7-STEP PROCESSING FLOW — STEPS 1 TO 4
 
-> "**Bước 5 — Upload lên Firebase Storage:** Hàm `uploadToStorage()` tạo reference `generations/<tên-file>`, lưu buffer với `contentType: "image/png"`, gọi `makePublic()` để có public URL. Tại sao không trả thẳng Base64 về frontend? Vì một ảnh Base64 khoảng **500KB text** — quá nặng để lưu trong Firestore và không thể reuse được. URL public thì compact và permanent.
+> "**Step 1 — User sends the request:** The frontend POSTs to `/api/generate/paint-by-numbers` with a Bearer Token. The route is protected by the `authenticateUser` middleware. Before sending to Gemini, **MyMemory API** translates the Vietnamese prompt to English.
 >
-> **Bước 6 — Cập nhật Firestore:** Document được cập nhật:
-> - Thành công: `status: "completed"` + `imageUrl` + `completedAt`
-> - Thất bại: `status: "failed"` + error message
-> - Nếu vượt quota Gemini → `RESOURCE_EXHAUSTED` → set failed
-> - Nếu vi phạm nội dung → `INVALID_ARGUMENT` → set failed
-> - Nếu Axios timeout sau 120 giây → set failed
+> **Step 2 — Backend responds immediately with 202 Accepted:** This is the key design decision. Gemini can take 30–120 seconds to generate an image — keeping the connection open would cause a timeout. Instead, the backend immediately creates a Firestore document with `status: 'processing'` and returns HTTP 202 with a `generationId`. The frontend receives this ID and starts polling.
 >
-> **Bước 7 — Frontend Polling:** Frontend gọi `GET /api/generate/status/:id` mỗi **5 giây**, tối đa **60 lần** — tức là timeout sau 5 phút. Server kiểm tra `userId` trong Firestore khớp với token để bảo mật — người dùng khác không thể xem kết quả của nhau. ID của interval được lưu trong `useRef` và `clearInterval` khi component unmount — không có memory leak. Khi ảnh sẵn sàng, người dùng có thể **download**, **thêm vào giỏ hàng**, hoặc **thêm vào yêu thích**."
+> **Step 3 — Prompt Engineering:** The `buildLineArtPrompt()` function runs in the background as a **fire-and-forget** task — no `await`, no blocking of Node.js's Event Loop. The prompt is built from a template: the model is assigned the role of *'a professional paint-by-numbers illustrator'*, followed by **hard requirements** such as closed regions, numbered sections, palette-based colours, no watermarks, and no inappropriate content.
+>
+> **Step 4 — Call the Google AI Studio API:** `generateContent` is called with `responseModalities: ['TEXT', 'IMAGE']`. The model returns a `parts[]` array; I iterate through it to find the `inlineData` entry containing the Base64 PNG string, then convert it to a `Buffer`."
+
+---
+
+## [SLIDE 9] — 7-STEP PROCESSING FLOW — STEPS 5 TO 7
+
+> "**Step 5 — Upload to Firebase Storage:** The `uploadToStorage()` function creates a reference under `generations/<filename>`, saves the buffer with `contentType: 'image/png'`, and calls `makePublic()` to obtain a public URL. Why not return the Base64 directly to the frontend? Because a Base64-encoded image is roughly **500 KB of text** — too large to store in Firestore and impossible to reuse. A public URL is compact and permanent.
+>
+> **Step 6 — Update Firestore:** The document is updated:
+> - Success: `status: 'completed'` + `imageUrl` + `completedAt`
+> - Failure: `status: 'failed'` + error message
+> - Gemini quota exceeded → `RESOURCE_EXHAUSTED` → set failed
+> - Content policy violation → `INVALID_ARGUMENT` → set failed
+> - Axios timeout after 120 seconds → set failed
+>
+> **Step 7 — Frontend Polling:** The frontend calls `GET /api/generate/status/:id` every **5 seconds**, up to **60 attempts** — a 5-minute timeout. The server verifies that the `userId` in Firestore matches the token — preventing any user from accessing another user's result. The interval ID is stored in a `useRef` and `clearInterval` is called on component unmount — no memory leaks. Once the image is ready, users can **download it**, **add it to the cart**, or **add it to favourites**."
 
 ---
 
 ## [SLIDE 10] — WHY GEMINI? PROMPT ENGINEERING
 
-> "Một câu hỏi tự nhiên là: **tại sao chọn Gemini thay vì train model riêng?**
+> "A natural question is: **why choose Gemini instead of training a custom model?**
 >
-> Thứ nhất, Gemini là một trong số ít model **miễn phí** hỗ trợ sinh ảnh inline qua REST API thuần túy — không cần SDK nặng. Free tier của Google AI Studio đủ cho phạm vi đồ án này.
+> First, Gemini is one of the few **free** models that support inline image generation via a plain REST API. The Google AI Studio free tier is sufficient for the scope of this project.
 >
-> Thứ hai, về **Prompt Engineering thay vì training:** Gemini đã được train trên hàng tỷ data points — không cần retrain từ đầu. Chiến lược của em là *'steer'* — dẫn hướng model bằng prompt chi tiết thay vì training lại. Cấu trúc prompt gồm ba phần: **Role assignment** → **Hard requirements** → **Runtime variables** (prompt người dùng + style + complexity). Kết quả là cùng một model nhưng **luôn output đúng định dạng** tranh tô màu theo số.
+> Second, on **Prompt Engineering versus model training:** Gemini has already been trained on billions of data points — there is no need to retrain from scratch. My strategy was to *steer* the model with a detailed prompt. The prompt structure has three parts: **Role assignment** → **Hard requirements** → **Runtime variables** (user prompt + style + complexity). The result is that the same model **consistently outputs the correct paint-by-numbers format**.
 >
-> **Đây là đóng góp kỹ thuật chính của em:** Em đã thiết kế hệ thống Prompt Engineering để ổn định output ra đúng layout 76%/24%, closed regions, numbered, circular color palette — và toàn bộ hệ thống async processing xung quanh nó."
+> **This is my main technical contribution:** I designed a structured Prompt Engineering system to reliably produce the correct 78%/22% canvas split, closed regions, numbered sections, and a populated colour palette row — together with the entire async processing pipeline surrounding it."
 
 ---
 
 ## [SLIDE 11] — THANK YOU / Q&A
 
-> "Vậy là em đã trình bày xong toàn bộ đồ án **Happy Coloring AI**.
+> "That brings me to the end of my presentation of **Happy Coloring AI**.
 >
-> Để tóm tắt lại: em đã xây dựng và deploy thành công một nền tảng thương mại điện tử đầy đủ — tích hợp tính năng tạo ảnh AI bằng Google Gemini, kiến trúc async 7 bước, hệ thống admin hai lớp xác thực, và triển khai CI/CD trên Vercel và Render.
+> To summarise: I have successfully built and deployed a fully functional e-commerce platform — integrating AI image generation via Google Gemini, a 7-step async architecture, a two-layer admin authentication system, and CI/CD pipelines on Vercel and Render.
 >
-> Frontend live tại: **happy-coloring-ai.vercel.app**  
-> Backend API tại: **paint-by-numbers-back-end.onrender.com**
+> Live frontend: **happy-coloring-ai.vercel.app**
+> Backend API: **paint-by-numbers-back-end.onrender.com**
 >
-> *Đọc câu kết, giọng bình tĩnh và tự tin:*
+> *Deliver the closing line calmly and confidently:*
 >
 > 'That concludes my Final Year Project presentation. Thank you very much for your time and attention. I warmly welcome any questions or feedback from the panel.'
 >
-> Em xin cảm ơn Thầy/Cô và hội đồng. Em sẵn sàng trả lời bất kỳ câu hỏi nào."
+> I am now ready for your questions. Thank you."
 
 ---
 
-## GỢI Ý TRẢ LỜI CÁC CÂU HỎI THƯỜNG GẶP
+## SUGGESTED ANSWERS TO COMMON QUESTIONS
 
-### "Tại sao chọn Firebase thay vì PostgreSQL/MySQL?"
-> "Firestore là NoSQL document database phù hợp với schema linh hoạt của đồ án này — mỗi sản phẩm có thể có thuộc tính khác nhau. Hơn nữa, Firebase cung cấp trọn bộ Auth + Storage + Database trong một ecosystem, giúp giảm thời gian cấu hình và tích hợp, phù hợp với phạm vi đồ án cá nhân."
+### "Why did you choose Firebase over PostgreSQL / MySQL?"
+> "Firestore is a NoSQL document database well-suited to the flexible schema of this project — each product can carry different attributes. Moreover, Firebase bundles Auth, Storage, and Database in one ecosystem, which significantly reduces configuration and integration overhead — ideal for an individual final-year project."
 
-### "Hệ thống xử lý được bao nhiêu người dùng đồng thời?"
-> "Backend deploy trên Render free tier với giới hạn tài nguyên, nhưng do kiến trúc async fire-and-forget, các generation request không block nhau. Giới hạn thực tế đến từ rate limit của Gemini API và Render."
+### "How many concurrent users can the system handle?"
+> "The backend is deployed on Render's free tier with limited resources. However, because of the async fire-and-forget architecture, generation requests do not block one another. The real bottleneck comes from Gemini's API rate limit and Render's compute constraints."
 
-### "Tại sao không dùng WebSocket thay vì polling?"
-> "WebSocket phù hợp hơn cho real-time communication hai chiều. Trong trường hợp này, client chỉ cần biết khi nào generation xong — polling mỗi 5 giây là đủ và đơn giản hơn nhiều để implement, không cần duy trì persistent connection."
+### "Why use polling instead of WebSockets?"
+> "WebSockets suit two-way real-time communication such as live chat. Here, the client only needs to know when generation is complete — polling every 5 seconds is sufficient and far simpler to implement, requiring no persistent connection."
 
-### "Bảo mật như thế nào với API Key của Gemini?"
-> "API Key được lưu trong file `.env` phía backend và không bao giờ được hard-code hoặc expose ra client. File `.env` được thêm vào `.gitignore`. Trên Render, key được lưu dưới dạng environment variable được mã hoá."
+### "How is the Gemini API key kept secure?"
+> "The API key is stored in a `.env` file on the backend and is never hard-coded or exposed to the client. The `.env` file is listed in `.gitignore`. On Render, it is stored as an encrypted environment variable."
 
-### "Voucher code có thể bị brute-force không?"
-> "Có rủi ro lý thuyết. Trong phiên bản hiện tại, rate limiting 100 req/15 min/IP làm chậm đáng kể. Để cải thiện, có thể hash voucher codes hoặc thêm CAPTCHA — đây là hướng phát triển trong tương lai."
+### "Can voucher codes be brute-forced?"
+> "There is a theoretical risk. In the current version, rate limiting at 100 requests per 15 minutes per IP significantly slows any brute-force attempt. Future improvements — such as hashing voucher codes or adding CAPTCHA — are planned enhancements."
 
 ---
 
-*Cuối file — Tống Bảo Duy, GCS210642, Greenwich University Vietnam, 2025–2026*
+*End of file — Tong Bao Duy, GCS210642, Greenwich University Vietnam, 2025–2026*
