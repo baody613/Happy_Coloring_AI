@@ -43,7 +43,7 @@
 >
 > The server is built on **Node.js + Express.js**, following a RESTful API architecture. I use the **Firebase Admin SDK** server-side to verify tokens and access Firestore and Firebase Storage. For security, I integrated **Helmet** to set HTTP security headers against XSS and clickjacking; **Morgan** for request logging; and **Express Rate Limit** to cap each IP at 100 requests per 15 minutes — guarding against brute-force attacks, aligned with the OWASP Top 10 guidelines. **Joi** handles input validation, and **Nodemailer** sends password-reset emails.
 >
-> For **AI APIs**, I used two different models: **Gemini 2.5 Flash Image** to generate paint-by-numbers artwork from text — this is the primary model — and **Gemini 2.5 Flash Text** for the product advisory chatbot. **MyMemory API** translates user prompts from Vietnamese to English before they are sent to Gemini.
+> For **AI APIs**, I used **Gemini 2.5 Flash Image** to generate paint-by-numbers artwork from text. **MyMemory API** translates user prompts from Vietnamese to English before they are sent to Gemini.
 >
 > For **Database & Storage**, I relied entirely on the Firebase ecosystem: **Firestore** stores all data as NoSQL documents across 5 main collections — Users, Products, Orders, Generations, and Settings. **Firebase Auth** provides JWT identity, and **Firebase Storage** stores product images and AI-generated artwork.
 >
@@ -75,9 +75,9 @@
 >
 > **Group 2 — Products:** The product listing includes full filtering by category, difficulty, and price, plus pagination. Admins can add, edit, delete products, and upload images directly to Firebase Storage.
 >
-> **Group 3 — Cart:** The cart uses Zustand persist — state survives page reloads. Users can save products to a 'favourites' list for later purchase. The system supports 3 discount vouchers: `YULING10` for 10% off, `YULING20` for 20% off, and `GIAMGIA15` for 15% off.
+> **Group 3 — Cart:** The cart uses Zustand persist — state survives page reloads. Users can save products to a 'favourites' list for later purchase. The system supports 5 discount voucher codes: `YULING10` (10%), `YULING20` (20%), `YULING30` (30%), `GIAMGIA15` (15%), and `KHAITRUONG` (25%).
 >
-> **Group 4 — Payment:** Supports Cash on Delivery (COD) and Bank Transfer. A callback verification flow confirms transactions.
+> **Group 4 — Payment:** Supports Cash on Delivery (COD) and Bank Transfer. Payment details (bank name, account number, QR image) are loaded dynamically from the backend environment configuration.
 >
 > **Group 5 — Orders:** Orders progress through a lifecycle: pending → processing → shipping → delivered or cancelled. Users can view their order history; admins update the status.
 >
