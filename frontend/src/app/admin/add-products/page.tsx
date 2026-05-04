@@ -385,6 +385,7 @@ export default function AddProductsPage() {
                       <p className="text-sm font-semibold text-gray-700 mb-2">
                         ✨ Xem trước:
                       </p>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={formData.imageUrl}
                         alt="Preview"

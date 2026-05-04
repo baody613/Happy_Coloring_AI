@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthStore } from "@/store/authStore";
@@ -29,11 +29,25 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
+  const fetchOrders = useCallback(async () => {
+    if (!user) return;
+    setOrdersLoading(true);
+    try {
+      const res = await api.get(`/orders/user/${user.uid}`);
+      const data = res.data?.data;
+      setOrders(data?.orders || []);
+    } catch (err) {
+      toast.error("Không thể tải đơn hàng!");
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (activeTab === "orders") {
       fetchOrders();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchOrders]);
 
   useEffect(() => {
     setCurrentUser(user?.uid || null);
@@ -93,19 +107,7 @@ export default function ProfilePage() {
     }
   };
 
-  const fetchOrders = async () => {
-    if (!user) return;
-    setOrdersLoading(true);
-    try {
-      const res = await api.get(`/orders/user/${user.uid}`);
-      const data = res.data?.data;
-      setOrders(data?.orders || []);
-    } catch (err) {
-      toast.error("Không thể tải đơn hàng!");
-    } finally {
-      setOrdersLoading(false);
-    }
-  };
+  // fetchOrders is defined above with useCallback
 
   if (!user) return null;
 

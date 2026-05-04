@@ -52,6 +52,7 @@ export default function AdminUsersPage() {
       return;
     }
     loadUsers(1, "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, router, authLoading]);
 
   const loadUsers = useCallback(

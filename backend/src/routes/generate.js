@@ -137,6 +137,10 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
         .json({ error: "Prompt must be 500 characters or fewer" });
     }
 
+    // Sanitize prompt: strip template placeholder markers to prevent
+    // user-controlled injection into the LINE_ART_PROMPT_TEMPLATE
+    const sanitizedPrompt = prompt.replace(/\{\{|\}\}/g, "");
+
     const generationRef = db.collection("generations").doc();
     const generationId = generationRef.id;
 
@@ -152,7 +156,7 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
     });
 
     // Chạy ngầm tiến trình (Fire-and-forget), thêm .catch để tránh unhandled promise rejection
-    generatePaintByNumbers(generationId, prompt, style, complexity).catch(
+    generatePaintByNumbers(generationId, sanitizedPrompt, style, complexity).catch(
       (err) => console.error("Background generation task failed:", err),
     );
 

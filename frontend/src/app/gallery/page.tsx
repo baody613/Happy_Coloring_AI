@@ -428,10 +428,11 @@ function ProductQuickView({
             className="relative aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100"
             variants={quickViewItemVariants}
           >
-            <img
+            <Image
               src={product.imageUrl || product.thumbnailUrl}
               alt={product.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </motion.div>
 

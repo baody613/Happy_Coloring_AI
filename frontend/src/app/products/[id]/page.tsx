@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { FaHeart, FaShoppingCart, FaArrowLeft, FaStar } from "react-icons/fa";
 import toast from "react-hot-toast";
 import api from "@/lib/api";
@@ -131,11 +132,12 @@ export default function ProductDetailPage() {
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
-            <div className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
-              <img
+            <div className="relative bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 min-h-[320px]">
+              <Image
                 src={product.imageUrl || product.thumbnailUrl}
                 alt={product.title}
-                className="w-full h-full object-cover min-h-[320px]"
+                fill
+                className="object-cover"
               />
             </div>
 
