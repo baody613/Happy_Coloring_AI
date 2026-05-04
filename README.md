@@ -22,19 +22,19 @@
 
 ## ✨ Tính năng chính
 
-| Tính năng | Mô tả |
-|---|---|
+| Tính năng                  | Mô tả                                                                |
+| -------------------------- | -------------------------------------------------------------------- |
 | 🤖 **AI Image Generation** | Nhập mô tả tiếng Việt, AI dịch và tạo tranh tô màu số hóa hoàn chỉnh |
-| 🎨 **3 mức độ phức tạp** | Dễ (16 màu), Trung bình (28 màu), Khó (44 màu) |
-| 🖼️ **Gallery** | Thư viện tranh có sẵn, lọc theo danh mục / độ khó / giá |
-| 🛒 **Shopping Cart** | Giỏ hàng persistent (Zustand + localStorage), mã giảm giá |
-| ❤️ **Yêu thích** | Lưu tranh yêu thích, persistent qua reload |
-| 📦 **Order Management** | Vòng đời đơn hàng: chờ → xử lý → giao → hoàn thành / hủy |
-| 💬 **AI Chatbot** | Tư vấn sản phẩm tự động bằng Gemini 2.5 Flash Text |
-| 🔐 **Authentication** | Đăng ký / đăng nhập qua Firebase Auth + JWT (RS256) |
-| 🏦 **Thanh toán** | COD và Chuyển khoản ngân hàng |
-| 👑 **Admin Panel** | Quản lý sản phẩm, đơn hàng, người dùng với xác thực 2 lớp |
-| 📊 **Swagger Docs** | Tài liệu API tương tác tại `/api-docs` |
+| 🎨 **3 mức độ phức tạp**   | Dễ (16 màu), Trung bình (28 màu), Khó (44 màu)                       |
+| 🖼️ **Gallery**             | Thư viện tranh có sẵn, lọc theo danh mục / độ khó / giá              |
+| 🛒 **Shopping Cart**       | Giỏ hàng persistent (Zustand + localStorage), mã giảm giá            |
+| ❤️ **Yêu thích**           | Lưu tranh yêu thích, persistent qua reload                           |
+| 📦 **Order Management**    | Vòng đời đơn hàng: chờ → xử lý → giao → hoàn thành / hủy             |
+| 💬 **AI Chatbot**          | Tư vấn sản phẩm tự động bằng Gemini 2.5 Flash Text                   |
+| 🔐 **Authentication**      | Đăng ký / đăng nhập qua Firebase Auth + JWT (RS256)                  |
+| 🏦 **Thanh toán**          | COD và Chuyển khoản ngân hàng                                        |
+| 👑 **Admin Panel**         | Quản lý sản phẩm, đơn hàng, người dùng với xác thực 2 lớp            |
+| 📊 **Swagger Docs**        | Tài liệu API tương tác tại `/api-docs`                               |
 
 ---
 
@@ -42,58 +42,58 @@
 
 ### Frontend
 
-| Công nghệ | Phiên bản | Vai trò |
-|---|---|---|
-| **Next.js** (App Router) | 14 | React framework, SSR/SSG, file-system routing |
-| **React** | 18 | UI library, Concurrent Rendering |
-| **TypeScript** | 5 | Static typing, type safety |
-| **Tailwind CSS** | 3 | Utility-first styling, responsive |
-| **Zustand** | 4 | Global state (cart, auth, favorites) với persist |
-| **Framer Motion** | 10 | Animations, staggerChildren, transitions |
-| **Axios** | 1.6 | HTTP client với interceptor tự động gắn Bearer Token |
-| **Firebase SDK** | 11 | Client-side auth, onAuthStateChanged |
-| **react-hot-toast** | 2 | Toast notifications |
-| **react-icons** | 4 | Icon library tổng hợp |
+| Công nghệ                | Phiên bản | Vai trò                                              |
+| ------------------------ | --------- | ---------------------------------------------------- |
+| **Next.js** (App Router) | 14        | React framework, SSR/SSG, file-system routing        |
+| **React**                | 18        | UI library, Concurrent Rendering                     |
+| **TypeScript**           | 5         | Static typing, type safety                           |
+| **Tailwind CSS**         | 3         | Utility-first styling, responsive                    |
+| **Zustand**              | 4         | Global state (cart, auth, favorites) với persist     |
+| **Framer Motion**        | 10        | Animations, staggerChildren, transitions             |
+| **Axios**                | 1.6       | HTTP client với interceptor tự động gắn Bearer Token |
+| **Firebase SDK**         | 11        | Client-side auth, onAuthStateChanged                 |
+| **react-hot-toast**      | 2         | Toast notifications                                  |
+| **react-icons**          | 4         | Icon library tổng hợp                                |
 
 ### Backend
 
-| Công nghệ | Phiên bản | Vai trò |
-|---|---|---|
-| **Node.js** | 18+ | Runtime, non-blocking I/O, Event Loop |
-| **Express.js** | 4 | REST API framework, 49 endpoints / 14 route file |
-| **Firebase Admin SDK** | 10 | Xác minh JWT, truy cập Firestore/Storage phía server |
-| **Helmet** | 7 | 14 HTTP security header (HSTS, CSP, X-Frame-Options…) |
-| **express-rate-limit** | 7 | Giới hạn 100 req / 15 phút / IP |
-| **Joi** | 17 | Schema validation đầu vào |
-| **Morgan** | 1 | HTTP request logging |
-| **Nodemailer** | 8 | Gửi email đặt lại mật khẩu |
-| **cors** | 2 | CORS whitelist theo domain |
-| **dotenv** | 16 | Quản lý biến môi trường |
-| **swagger-jsdoc / swagger-ui-express** | 6/5 | Tự động sinh tài liệu API OpenAPI |
+| Công nghệ                              | Phiên bản | Vai trò                                               |
+| -------------------------------------- | --------- | ----------------------------------------------------- |
+| **Node.js**                            | 18+       | Runtime, non-blocking I/O, Event Loop                 |
+| **Express.js**                         | 4         | REST API framework, 49 endpoints / 14 route file      |
+| **Firebase Admin SDK**                 | 10        | Xác minh JWT, truy cập Firestore/Storage phía server  |
+| **Helmet**                             | 7         | 14 HTTP security header (HSTS, CSP, X-Frame-Options…) |
+| **express-rate-limit**                 | 7         | Giới hạn 100 req / 15 phút / IP                       |
+| **Joi**                                | 17        | Schema validation đầu vào                             |
+| **Morgan**                             | 1         | HTTP request logging                                  |
+| **Nodemailer**                         | 8         | Gửi email đặt lại mật khẩu                            |
+| **cors**                               | 2         | CORS whitelist theo domain                            |
+| **dotenv**                             | 16        | Quản lý biến môi trường                               |
+| **swagger-jsdoc / swagger-ui-express** | 6/5       | Tự động sinh tài liệu API OpenAPI                     |
 
 ### Database & Storage
 
-| Dịch vụ | Vai trò |
-|---|---|
-| **Firebase Firestore** | NoSQL document DB — 5 collection: Users, Products, Orders, Generations, Settings |
-| **Firebase Authentication** | Quản lý tài khoản, JWT RS256 |
-| **Firebase Storage** | Lưu ảnh sản phẩm và ảnh AI tạo ra |
+| Dịch vụ                     | Vai trò                                                                          |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| **Firebase Firestore**      | NoSQL document DB — 5 collection: Users, Products, Orders, Generations, Settings |
+| **Firebase Authentication** | Quản lý tài khoản, JWT RS256                                                     |
+| **Firebase Storage**        | Lưu ảnh sản phẩm và ảnh AI tạo ra                                                |
 
 ### AI & API ngoài
 
-| Dịch vụ | Vai trò |
-|---|---|
-| **Gemini 2.5 Flash Image** | Tạo tranh tô màu từ prompt (trả về Base64 PNG) |
-| **Gemini 2.5 Flash Text** | Chatbot tư vấn sản phẩm |
-| **MyMemory API** | Dịch prompt tiếng Việt → tiếng Anh trước khi gửi Gemini |
+| Dịch vụ                    | Vai trò                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| **Gemini 2.5 Flash Image** | Tạo tranh tô màu từ prompt (trả về Base64 PNG)          |
+| **Gemini 2.5 Flash Text**  | Chatbot tư vấn sản phẩm                                 |
+| **MyMemory API**           | Dịch prompt tiếng Việt → tiếng Anh trước khi gửi Gemini |
 
 ### Triển khai
 
-| Thành phần | Nền tảng | URL |
-|---|---|---|
-| Frontend | **Vercel** (CI/CD từ GitHub) | `https://happy-coloring-ai.vercel.app` |
-| Backend | **Render** (CI/CD từ GitHub) | `https://paint-by-numbers-back-end.onrender.com` |
-| Docs | Swagger UI | `https://paint-by-numbers-back-end.onrender.com/api-docs` |
+| Thành phần | Nền tảng                     | URL                                                       |
+| ---------- | ---------------------------- | --------------------------------------------------------- |
+| Frontend   | **Vercel** (CI/CD từ GitHub) | `https://happy-coloring-ai.vercel.app`                    |
+| Backend    | **Render** (CI/CD từ GitHub) | `https://paint-by-numbers-back-end.onrender.com`          |
+| Docs       | Swagger UI                   | `https://paint-by-numbers-back-end.onrender.com/api-docs` |
 
 ---
 
@@ -266,82 +266,82 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 
 ### 🔐 Authentication — `/api/auth`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `POST` | `/api/auth/register` | — | Đăng ký tài khoản |
-| `GET` | `/api/auth/profile/:uid` | ✅ | Lấy profile từ Firebase Auth |
+| Method | Endpoint                 | Auth | Mô tả                        |
+| ------ | ------------------------ | ---- | ---------------------------- |
+| `POST` | `/api/auth/register`     | —    | Đăng ký tài khoản            |
+| `GET`  | `/api/auth/profile/:uid` | ✅   | Lấy profile từ Firebase Auth |
 
 ### 🤖 AI Generation — `/api/generate`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `POST` | `/api/generate/paint-by-numbers` | ✅ | Tạo tranh tô màu từ prompt — trả về 202 + `generationId` |
-| `GET` | `/api/generate/status/:id` | ✅ | Polling trạng thái (processing / completed / failed) |
+| Method | Endpoint                         | Auth | Mô tả                                                    |
+| ------ | -------------------------------- | ---- | -------------------------------------------------------- |
+| `POST` | `/api/generate/paint-by-numbers` | ✅   | Tạo tranh tô màu từ prompt — trả về 202 + `generationId` |
+| `GET`  | `/api/generate/status/:id`       | ✅   | Polling trạng thái (processing / completed / failed)     |
 
 ### 🖼️ Products — `/api/products`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `GET` | `/api/products` | — | Danh sách sản phẩm (lọc, phân trang) |
-| `GET` | `/api/products/categories` | — | Danh sách danh mục |
-| `GET` | `/api/products/:id` | — | Chi tiết sản phẩm |
-| `POST` | `/api/products` | 👑 Admin | Tạo sản phẩm |
-| `PUT` | `/api/products/:id` | 👑 Admin | Cập nhật sản phẩm |
-| `DELETE` | `/api/products/:id` | 👑 Admin | Xóa sản phẩm |
+| Method   | Endpoint                   | Auth     | Mô tả                                |
+| -------- | -------------------------- | -------- | ------------------------------------ |
+| `GET`    | `/api/products`            | —        | Danh sách sản phẩm (lọc, phân trang) |
+| `GET`    | `/api/products/categories` | —        | Danh sách danh mục                   |
+| `GET`    | `/api/products/:id`        | —        | Chi tiết sản phẩm                    |
+| `POST`   | `/api/products`            | 👑 Admin | Tạo sản phẩm                         |
+| `PUT`    | `/api/products/:id`        | 👑 Admin | Cập nhật sản phẩm                    |
+| `DELETE` | `/api/products/:id`        | 👑 Admin | Xóa sản phẩm                         |
 
 ### 📦 Orders — `/api/orders`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `POST` | `/api/orders/validate-voucher` | — | Kiểm tra mã giảm giá |
-| `POST` | `/api/orders` | ✅ | Tạo đơn hàng |
-| `GET` | `/api/orders/user/:userId` | ✅ | Đơn hàng của user |
-| `GET` | `/api/orders/:orderId` | ✅ | Chi tiết đơn hàng |
-| `PUT` | `/api/orders/:orderId/status` | 👑 Admin | Cập nhật trạng thái đơn |
-| `POST` | `/api/orders/:orderId/cancel` | ✅ | Hủy đơn hàng |
+| Method | Endpoint                       | Auth     | Mô tả                   |
+| ------ | ------------------------------ | -------- | ----------------------- |
+| `POST` | `/api/orders/validate-voucher` | —        | Kiểm tra mã giảm giá    |
+| `POST` | `/api/orders`                  | ✅       | Tạo đơn hàng            |
+| `GET`  | `/api/orders/user/:userId`     | ✅       | Đơn hàng của user       |
+| `GET`  | `/api/orders/:orderId`         | ✅       | Chi tiết đơn hàng       |
+| `PUT`  | `/api/orders/:orderId/status`  | 👑 Admin | Cập nhật trạng thái đơn |
+| `POST` | `/api/orders/:orderId/cancel`  | ✅       | Hủy đơn hàng            |
 
 ### 👤 Users — `/api/users`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `GET` | `/api/users/:userId` | ✅ | Lấy profile người dùng |
-| `PUT` | `/api/users/:userId` | ✅ | Cập nhật profile |
+| Method | Endpoint             | Auth | Mô tả                  |
+| ------ | -------------------- | ---- | ---------------------- |
+| `GET`  | `/api/users/:userId` | ✅   | Lấy profile người dùng |
+| `PUT`  | `/api/users/:userId` | ✅   | Cập nhật profile       |
 
 ### 🏦 Payment — `/api/payment`
 
-| Method | Endpoint | Auth | Mô tả |
-|---|---|---|---|
-| `GET` | `/api/payment/banking-info` | — | Thông tin chuyển khoản ngân hàng |
+| Method | Endpoint                    | Auth | Mô tả                            |
+| ------ | --------------------------- | ---- | -------------------------------- |
+| `GET`  | `/api/payment/banking-info` | —    | Thông tin chuyển khoản ngân hàng |
 
 ### 👑 Admin — `/api/admin`
 
-| Method | Endpoint | Mô tả |
-|---|---|---|
-| `GET` | `/api/admin/stats` | Thống kê tổng hợp (đơn, sản phẩm, doanh thu, users) |
-| `GET` | `/api/admin/users` | Danh sách tất cả người dùng (lọc, tìm kiếm, phân trang) |
-| `GET` | `/api/admin/users/stats` | Thống kê người dùng |
-| `PUT` | `/api/admin/users/:userId` | Cập nhật user (disable/enable, displayName) |
-| `PUT` | `/api/admin/users/:userId/role` | Phân quyền người dùng |
-| `DELETE` | `/api/admin/users/:userId` | Xóa người dùng |
-| `GET` | `/api/admin/orders` | Tất cả đơn hàng (lọc, tìm kiếm, phân trang) |
-| `GET` | `/api/admin/orders/stats` | Thống kê đơn hàng (theo ngày, theo trạng thái) |
-| `PUT` | `/api/admin/orders/:orderId/status` | Cập nhật trạng thái đơn |
-| `PUT` | `/api/admin/orders/:orderId/payment` | Cập nhật trạng thái thanh toán |
-| `GET` | `/api/admin/products` | Tất cả sản phẩm kể cả inactive |
-| `POST` | `/api/admin/products` | Tạo sản phẩm |
-| `PUT` | `/api/admin/products/:id` | Cập nhật sản phẩm |
-| `DELETE` | `/api/admin/products/:id` | Xóa sản phẩm |
-| `GET` | `/api/admin/products/stats` | Thống kê sản phẩm |
+| Method   | Endpoint                             | Mô tả                                                   |
+| -------- | ------------------------------------ | ------------------------------------------------------- |
+| `GET`    | `/api/admin/stats`                   | Thống kê tổng hợp (đơn, sản phẩm, doanh thu, users)     |
+| `GET`    | `/api/admin/users`                   | Danh sách tất cả người dùng (lọc, tìm kiếm, phân trang) |
+| `GET`    | `/api/admin/users/stats`             | Thống kê người dùng                                     |
+| `PUT`    | `/api/admin/users/:userId`           | Cập nhật user (disable/enable, displayName)             |
+| `PUT`    | `/api/admin/users/:userId/role`      | Phân quyền người dùng                                   |
+| `DELETE` | `/api/admin/users/:userId`           | Xóa người dùng                                          |
+| `GET`    | `/api/admin/orders`                  | Tất cả đơn hàng (lọc, tìm kiếm, phân trang)             |
+| `GET`    | `/api/admin/orders/stats`            | Thống kê đơn hàng (theo ngày, theo trạng thái)          |
+| `PUT`    | `/api/admin/orders/:orderId/status`  | Cập nhật trạng thái đơn                                 |
+| `PUT`    | `/api/admin/orders/:orderId/payment` | Cập nhật trạng thái thanh toán                          |
+| `GET`    | `/api/admin/products`                | Tất cả sản phẩm kể cả inactive                          |
+| `POST`   | `/api/admin/products`                | Tạo sản phẩm                                            |
+| `PUT`    | `/api/admin/products/:id`            | Cập nhật sản phẩm                                       |
+| `DELETE` | `/api/admin/products/:id`            | Xóa sản phẩm                                            |
+| `GET`    | `/api/admin/products/stats`          | Thống kê sản phẩm                                       |
 
 ### 🎫 Mã giảm giá hiện có
 
-| Mã | Giảm |
-|---|---|
-| `YULING10` | 10% |
-| `YULING20` | 20% |
-| `YULING30` | 30% |
-| `GIAMGIA15` | 15% |
-| `KHAITRUONG` | 25% |
+| Mã           | Giảm |
+| ------------ | ---- |
+| `YULING10`   | 10%  |
+| `YULING20`   | 20%  |
+| `YULING30`   | 30%  |
+| `GIAMGIA15`  | 15%  |
+| `KHAITRUONG` | 25%  |
 
 ---
 
@@ -457,17 +457,17 @@ Frontend sẽ chạy tại: `http://localhost:3002`
 
 ## 🔐 Bảo mật
 
-| Biện pháp | Chi tiết |
-|---|---|
-| **Firebase Authentication** | JWT RS256, không lưu mật khẩu trong DB |
-| **Xác thực admin 2 lớp** | Layer 1: `ADMIN_EMAILS` env var; Layer 2: `role = "admin"` trong Firestore |
-| **Helmet.js** | 14 HTTP security header (HSTS, CSP, X-Frame-Options, XSS-Protection…) |
-| **Rate Limiting** | 100 req / 15 phút / IP — chống brute-force và spam |
-| **CORS Whitelist** | Chỉ cho phép domain frontend được cấu hình |
-| **Joi Validation** | Kiểm tra và làm sạch mọi input đầu vào |
-| **Prompt Sanitization** | Xóa ký tự `{{` `}}` khỏi prompt trước khi nhúng vào template Gemini |
-| **IDOR Protection** | Mọi endpoint kiểm tra `userId === req.user.uid` trước khi trả dữ liệu |
-| **dotenv + .gitignore** | API key và credentials không bao giờ commit lên GitHub |
+| Biện pháp                   | Chi tiết                                                                   |
+| --------------------------- | -------------------------------------------------------------------------- |
+| **Firebase Authentication** | JWT RS256, không lưu mật khẩu trong DB                                     |
+| **Xác thực admin 2 lớp**    | Layer 1: `ADMIN_EMAILS` env var; Layer 2: `role = "admin"` trong Firestore |
+| **Helmet.js**               | 14 HTTP security header (HSTS, CSP, X-Frame-Options, XSS-Protection…)      |
+| **Rate Limiting**           | 100 req / 15 phút / IP — chống brute-force và spam                         |
+| **CORS Whitelist**          | Chỉ cho phép domain frontend được cấu hình                                 |
+| **Joi Validation**          | Kiểm tra và làm sạch mọi input đầu vào                                     |
+| **Prompt Sanitization**     | Xóa ký tự `{{` `}}` khỏi prompt trước khi nhúng vào template Gemini        |
+| **IDOR Protection**         | Mọi endpoint kiểm tra `userId === req.user.uid` trước khi trả dữ liệu      |
+| **dotenv + .gitignore**     | API key và credentials không bao giờ commit lên GitHub                     |
 
 ---
 

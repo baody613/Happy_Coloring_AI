@@ -65,7 +65,9 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-purple-600">Đang tải chi tiết sản phẩm...</div>
+        <div className="text-xl text-purple-600">
+          Đang tải chi tiết sản phẩm...
+        </div>
       </div>
     );
   }
@@ -94,7 +96,8 @@ export default function ProductDetailPage() {
   const favorite = hydrated && isFavorite(product.id);
   const difficultyKey = product.difficulty || "medium";
   const difficultyLabel = DIFFICULTY_LABELS[difficultyKey] || "Trung Bình";
-  const difficultyColor = DIFFICULTY_COLORS[difficultyKey] || DIFFICULTY_COLORS.medium;
+  const difficultyColor =
+    DIFFICULTY_COLORS[difficultyKey] || DIFFICULTY_COLORS.medium;
 
   const handleAddToCart = () => {
     addItem(product, 1);
@@ -142,10 +145,14 @@ export default function ProductDetailPage() {
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">{product.title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                {product.title}
+              </h1>
 
               <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${difficultyColor}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-semibold ${difficultyColor}`}
+                >
                   {difficultyLabel}
                 </span>
                 {product.category && (
@@ -167,11 +174,15 @@ export default function ProductDetailPage() {
               <div className="grid grid-cols-2 gap-3 mb-6 text-sm">
                 <div className="bg-gray-50 border border-gray-100 rounded-lg p-3">
                   <p className="text-gray-500">Số màu</p>
-                  <p className="font-bold text-gray-800">{product.colors || 0}</p>
+                  <p className="font-bold text-gray-800">
+                    {product.colors || 0}
+                  </p>
                 </div>
                 <div className="bg-gray-50 border border-gray-100 rounded-lg p-3">
                   <p className="text-gray-500">Đã bán</p>
-                  <p className="font-bold text-gray-800">{product.sales || 0}</p>
+                  <p className="font-bold text-gray-800">
+                    {product.sales || 0}
+                  </p>
                 </div>
               </div>
 
@@ -195,9 +206,12 @@ export default function ProductDetailPage() {
               </div>
 
               <div>
-                <h2 className="text-lg font-bold text-gray-900 mb-2">Mô tả sản phẩm</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-2">
+                  Mô tả sản phẩm
+                </h2>
                 <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                  {product.description || "Chưa có mô tả chi tiết cho sản phẩm này."}
+                  {product.description ||
+                    "Chưa có mô tả chi tiết cho sản phẩm này."}
                 </p>
               </div>
             </div>

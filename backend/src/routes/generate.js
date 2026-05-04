@@ -156,9 +156,12 @@ router.post("/paint-by-numbers", authenticateUser, async (req, res) => {
     });
 
     // Chạy ngầm tiến trình (Fire-and-forget), thêm .catch để tránh unhandled promise rejection
-    generatePaintByNumbers(generationId, sanitizedPrompt, style, complexity).catch(
-      (err) => console.error("Background generation task failed:", err),
-    );
+    generatePaintByNumbers(
+      generationId,
+      sanitizedPrompt,
+      style,
+      complexity,
+    ).catch((err) => console.error("Background generation task failed:", err));
 
     res.status(202).json({
       message: "Generation started",
