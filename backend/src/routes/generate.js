@@ -99,7 +99,11 @@ SECTION 3 — COLOUR PALETTE ROW (bottom 22%)
   • Each swatch is a FILLED SOLID-COLOUR CIRCLE (approx. 30–36 px diameter)
   • The integer (1–{{COLOR_MAX}}) is printed in BOLD BLACK in the centre of the circle, contrasting clearly against the fill colour
   • Circles are spaced evenly across the full width on a pure white strip
-  • Choose colours that are visually distinct from one another and appropriate for "{{USER_PROMPT}}"
+  • Choose colours that are REALISTIC and APPROPRIATE for each object/element in "{{USER_PROMPT}}":
+    — Use natural colours: green for leaves/grass, blue for sky/water, brown for wood/earth, yellow for sun, pink for flowers, etc.
+    — Match the actual appearance of real-world objects (e.g., a cat painting needs realistic fur colours: orange/grey/white/black, not pink or purple)
+    — Include necessary shades: light and dark versions of base colours for depth and dimension
+    — Colours must be visually distinct from one another while remaining true to the subject
   • Zero missing swatches, zero out-of-order swatches, zero duplicate numbers
 
 ════════════════════════════════════════
@@ -270,7 +274,7 @@ async function generateImage(prompt) {
 
   if (providers.length === 0) {
     throw new Error(
-      "No image generation API key configured. Set OPENAI_API_KEY and/or GOOGLE_AI_API_KEY in backend/.env",
+      "No image generation provider is configured on the server. Contact the administrator.",
     );
   }
 
