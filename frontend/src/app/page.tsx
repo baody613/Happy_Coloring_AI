@@ -5,6 +5,20 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import api from "@/lib/api";
 import { Product } from "@/types";
+import {
+  staggerContainer,
+  staggerItem,
+  heroAnimation,
+  cardReveal,
+  buttonTap,
+  imageZoom,
+  fadeInUp,
+} from "@/utils/animations";
+import {
+  useScrollReveal,
+  use3DTilt,
+  useMagneticHover,
+} from "@/hooks/useAnimations";
 
 const FEATURED_LIMIT = 8;
 const HERO_TITLE = "Color with Pure Elegance";
@@ -28,18 +42,68 @@ function FadeIn({
   delay?: number;
   className?: string;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const { ref, isInView } = useScrollReveal(true, "-100px");
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={fadeInUp}
+      transition={{ delay }}
     >
       {children}
+    </motion.div>
+  );
+}
+
+// Enhanced Product Card with 3D Tilt
+function ProductCard3D({
+  product,
+  index,
+}: {
+  product: Product;
+  index: number;
+}) {
+  const { handleMouseMove, handleMouseLeave, style } = use3DTilt(8);
+
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={cardReveal}
+      transition={{ delay: index * 0.1 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={style}
+      className="break-inside-avoid group cursor-pointer"
+    >
+      <Link href="/gallery">
+        <div className="relative w-full rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-sm hover:shadow-2xl transition-shadow duration-300">
+          <motion.div
+            variants={imageZoom}
+            initial="rest"
+            whileHover="hover"
+            className={`w-full ${getAspectClass(index)} bg-cover bg-center`}
+            style={{
+              backgroundImage: `url("${product.imageUrl || product.thumbnailUrl}")`,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+            <p className="text-white text-lg font-bold line-clamp-2">
+              {product.title}
+            </p>
+            <p className="text-white/85 text-sm font-medium">
+              Đã bán: {product.sales || 0}
+            </p>
+            <p className="text-white text-sm font-semibold mt-1">
+              {product.price.toLocaleString("vi-VN")}đ
+            </p>
+          </div>
+        </div>
+      </Link>
     </motion.div>
   );
 }
@@ -47,6 +111,10 @@ function FadeIn({
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [isFeaturedLoading, setIsFeaturedLoading] = useState(true);
+
+  // Magnetic hover for CTA buttons
+  const magneticGenerate = useMagneticHover(0.25);
+  const magneticGallery = useMagneticHover(0.2);
 
   // AuthProvider in layout already calls initializeAuth() — no need to call here again
   useEffect(() => {
@@ -121,18 +189,38 @@ export default function Home() {
 
             <FadeIn>
               <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-                <Link
-                  href="/generate"
-                  className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 text-white text-sm sm:text-base font-bold transition-all hover:-translate-y-0.5"
+                <motion.div
+                  variants={buttonTap}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
+                  onMouseMove={magneticGenerate.handleMouseMove}
+                  onMouseLeave={magneticGenerate.handleMouseLeave}
+                  style={magneticGenerate.style}
                 >
-                  Tạo Tranh AI
-                </Link>
-                <Link
-                  href="/gallery"
-                  className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 border-2 border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary text-sm sm:text-base font-bold transition-all"
+                  <Link
+                    href="/generate"
+                    className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 text-white text-sm sm:text-base font-bold transition-all"
+                  >
+                    Tạo Tranh AI
+                  </Link>
+                </motion.div>
+                <motion.div
+                  variants={buttonTap}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
+                  onMouseMove={magneticGallery.handleMouseMove}
+                  onMouseLeave={magneticGallery.handleMouseLeave}
+                  style={magneticGallery.style}
                 >
-                  Khám Phá Gallery
-                </Link>
+                  <Link
+                    href="/gallery"
+                    className="flex min-w-[140px] sm:min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 sm:h-14 px-6 sm:px-8 border-2 border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary text-sm sm:text-base font-bold transition-all"
+                  >
+                    Khám Phá Gallery
+                  </Link>
+                </motion.div>
               </div>
             </FadeIn>
           </div>
@@ -154,7 +242,13 @@ export default function Home() {
 
       {/* Featured Templates */}
       <section className="w-full max-w-[1440px] px-6 md:px-10 py-12">
-        <div className="flex items-center justify-between mb-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+          className="flex items-center justify-between mb-8"
+        >
           <h2 className="text-slate-900 dark:text-white text-2xl md:text-3xl font-bold tracking-tight">
             Sản Phẩm Nổi Bật
           </h2>
@@ -169,46 +263,29 @@ export default function Home() {
               </span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
+        >
           {isFeaturedLoading &&
             Array.from({ length: 4 }).map((_, index) => (
-              <div
+              <motion.div
                 key={`featured-skeleton-${index}`}
+                variants={staggerItem}
                 className="break-inside-avoid"
               >
                 <div className="w-full aspect-square rounded-xl bg-slate-200/70 animate-pulse" />
-              </div>
+              </motion.div>
             ))}
 
           {!isFeaturedLoading &&
             featuredProducts.map((product, index) => (
-              <Link
-                key={product.id}
-                href="/gallery"
-                className="break-inside-avoid group cursor-pointer block"
-              >
-                <div className="relative w-full rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-sm hover:shadow-xl transition-all duration-300">
-                  <div
-                    className={`w-full ${getAspectClass(index)} bg-cover bg-center group-hover:scale-105 transition-transform duration-500`}
-                    style={{
-                      backgroundImage: `url("${product.imageUrl || product.thumbnailUrl}")`,
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
-                    <p className="text-white text-lg font-bold line-clamp-2">
-                      {product.title}
-                    </p>
-                    <p className="text-white/85 text-sm font-medium">
-                      Đã bán: {product.sales || 0}
-                    </p>
-                    <p className="text-white text-sm font-semibold mt-1">
-                      {product.price.toLocaleString("vi-VN")}đ
-                    </p>
-                  </div>
-                </div>
-              </Link>
+              <ProductCard3D key={product.id} product={product} index={index} />
             ))}
 
           {!isFeaturedLoading && featuredProducts.length === 0 && (
@@ -217,19 +294,32 @@ export default function Home() {
               Gallery.
             </div>
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex justify-center mt-12">
-          <Link
-            href="/gallery"
-            className="flex items-center justify-center gap-2 rounded-full h-12 px-8 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 text-sm font-bold transition-all shadow-sm"
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="flex justify-center mt-12"
+        >
+          <motion.div
+            variants={buttonTap}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
           >
-            Xem Thêm
-            <span className="material-symbols-outlined text-[18px]">
-              expand_more
-            </span>
-          </Link>
-        </div>
+            <Link
+              href="/gallery"
+              className="flex items-center justify-center gap-2 rounded-full h-12 px-8 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-surface-dark hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-200 text-sm font-bold transition-all shadow-sm hover:shadow-md"
+            >
+              Xem Thêm
+              <span className="material-symbols-outlined text-[18px]">
+                expand_more
+              </span>
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Về Chúng Tôi */}

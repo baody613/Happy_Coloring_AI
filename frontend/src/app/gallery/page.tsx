@@ -21,6 +21,8 @@ import { useFavoriteStore } from "@/store/favoriteStore";
 import { useAuthStore } from "@/store/authStore";
 import { useHydration } from "@/hooks";
 import api from "@/lib/api";
+import { use3DTilt } from "@/hooks/useAnimations";
+import { buttonTap, cardReveal, badgePulse } from "@/utils/animations";
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   all: "Tất Cả",
@@ -200,6 +202,9 @@ function ProductCard({
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
   const { user } = useAuthStore();
 
+  // 3D Tilt Effect
+  const { handleMouseMove, handleMouseLeave, style: tiltStyle } = use3DTilt(6);
+
   const favorited = hydrated && isFavorite(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -239,30 +244,39 @@ function ProductCard({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      variants={cardReveal}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={tiltStyle}
       className="group cursor-pointer"
       onClick={() => onViewDetail(product)}
     >
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
         {/* Image */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
           <Image
             src={product.imageUrl || product.thumbnailUrl}
             alt={product.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1">
             {isNew && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-sm animate-pulse">
+              <motion.span
+                variants={badgePulse}
+                initial="initial"
+                animate="animate"
+                className="text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-sm"
+              >
                 ✨ Mới
-              </span>
+              </motion.span>
             )}
             <span
               className={`text-xs font-semibold px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[product.difficulty]}`}
@@ -270,23 +284,32 @@ function ProductCard({
               {DIFFICULTY_LABELS[product.difficulty]}
             </span>
             {discountPercent > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
+              <motion.span
+                variants={badgePulse}
+                initial="initial"
+                animate="animate"
+                className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white"
+              >
                 -{discountPercent}%
-              </span>
+              </motion.span>
             )}
           </div>
 
           {/* Favorite button */}
-          <button
+          <motion.button
+            variants={buttonTap}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
             onClick={handleToggleFavorite}
             className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
               favorited
-                ? "bg-red-500 text-white scale-110"
+                ? "bg-red-500 text-white"
                 : "bg-white/90 text-gray-400 hover:text-red-400 hover:bg-white"
             }`}
           >
             <FaHeart className="text-sm" />
-          </button>
+          </motion.button>
 
           {/* Colors info */}
           {product.colors > 0 && (
@@ -321,13 +344,17 @@ function ProductCard({
                 )}
             </div>
 
-            <button
+            <motion.button
+              variants={buttonTap}
+              initial="rest"
+              whileHover="hover"
+              whileTap="tap"
               onClick={handleAddToCart}
-              className="w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md hover:shadow-purple-300 hover:scale-110 transition-all duration-200"
+              className="w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-md hover:shadow-purple-300 transition-all duration-200"
               title="Thêm vào giỏ hàng"
             >
               <FaShoppingCart className="text-sm" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
