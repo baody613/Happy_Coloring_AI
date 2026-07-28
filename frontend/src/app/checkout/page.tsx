@@ -15,11 +15,11 @@ import api from "@/lib/api";
 export default function CheckoutPage() {
   const router = useRouter();
   const hydrated = useHydration();
-  const { user } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const {
     items,
     selectedItems,
-    getTotalPrice,
+    getSelectedTotal,
     clearCart,
     addItem,
     getDiscountedTotal,
@@ -56,6 +56,8 @@ export default function CheckoutPage() {
   useEffect(() => {
     // Không redirect khi đang xử lý thanh toán
     if (isProcessing) return;
+    // Đợi Firebase khôi phục phiên đăng nhập trước khi kết luận chưa đăng nhập
+    if (authLoading) return;
 
     if (!user) {
       toast.error("Vui lòng đăng nhập để thanh toán!");
@@ -67,7 +69,7 @@ export default function CheckoutPage() {
       toast.error("Vui lòng chọn sản phẩm để thanh toán!");
       router.push("/cart");
     }
-  }, [user, selectedCartItems.length, router, isProcessing]);
+  }, [user, selectedCartItems.length, router, isProcessing, authLoading]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -133,7 +135,7 @@ export default function CheckoutPage() {
           city: formData.city,
         },
         totalAmount: getDiscountedTotal(),
-        originalAmount: getTotalPrice(),
+        originalAmount: getSelectedTotal(),
         voucherCode: voucherCode || null,
         voucherDiscount: voucherDiscount || 0,
         paymentMethod: formData.paymentMethod,
@@ -181,7 +183,11 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!hydrated || !user || items.length === 0) {
+  if (!hydrated || authLoading) {
+    return null;
+  }
+
+  if (!user || items.length === 0) {
     return null;
   }
 
@@ -520,7 +526,7 @@ export default function CheckoutPage() {
                     <div className="flex justify-between text-gray-600">
                       <span>Tạm tính:</span>
                       <span className="font-semibold">
-                        {getDiscountedTotal().toLocaleString("vi-VN")} VNĐ
+                        {getSelectedTotal().toLocaleString("vi-VN")} VNĐ
                       </span>
                     </div>
                     {voucherDiscount > 0 && (
@@ -531,9 +537,8 @@ export default function CheckoutPage() {
                         <span className="font-semibold">
                           -
                           {(
-                            (getDiscountedTotal() / (100 - voucherDiscount)) *
-                              100 -
-                            getDiscountedTotal()
+                            (getSelectedTotal() * voucherDiscount) /
+                            100
                           ).toLocaleString("vi-VN")}{" "}
                           VNĐ
                         </span>

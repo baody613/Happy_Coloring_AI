@@ -321,40 +321,51 @@ export default function CartPage() {
                   </div>
 
                   {/* Quantity Controls */}
-                  <div className="flex flex-col items-end justify-between">
-                    <div className="flex items-center gap-1 sm:gap-3 bg-gray-100 rounded-lg p-1.5 sm:p-2">
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.product.id,
-                            Math.max(1, item.quantity - 1),
-                          )
-                        }
-                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
-                      >
-                        <FaMinus className="text-purple-600" />
-                      </button>
-                      <span className="text-base sm:text-xl font-bold w-7 sm:w-12 text-center text-gray-900">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(item.product.id, item.quantity + 1)
-                        }
-                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
-                      >
-                        <FaPlus className="text-purple-600" />
-                      </button>
+                  {item.product.id.startsWith("sanphamAI") ? (
+                    // Sản phẩm AI: chỉ hiển thị tổng tiền, không cho phép đổi số lượng
+                    <div className="flex flex-col items-end justify-between">
+                      <p className="text-xs sm:text-lg font-bold text-gray-800">
+                        Tổng:{" "}
+                        {(item.product.price || 0).toLocaleString("vi-VN")} VNĐ
+                      </p>
                     </div>
+                  ) : (
+                    // Sản phẩm thường: giữ nguyên ô +/- số lượng như cũ
+                    <div className="flex flex-col items-end justify-between">
+                      <div className="flex items-center gap-1 sm:gap-3 bg-gray-100 rounded-lg p-1.5 sm:p-2">
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.product.id,
+                              Math.max(1, item.quantity - 1),
+                            )
+                          }
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
+                        >
+                          <FaMinus className="text-purple-600" />
+                        </button>
+                        <span className="text-base sm:text-xl font-bold w-7 sm:w-12 text-center text-gray-900">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(item.product.id, item.quantity + 1)
+                          }
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-white rounded-lg hover:bg-purple-100 transition"
+                        >
+                          <FaPlus className="text-purple-600" />
+                        </button>
+                      </div>
 
-                    <p className="text-xs sm:text-lg font-bold text-gray-800">
-                      Tổng:{" "}
-                      {(
-                        (item.product.price || 0) * item.quantity
-                      ).toLocaleString("vi-VN")}{" "}
-                      VNĐ
-                    </p>
-                  </div>
+                      <p className="text-xs sm:text-lg font-bold text-gray-800">
+                        Tổng:{" "}
+                        {(
+                          (item.product.price || 0) * item.quantity
+                        ).toLocaleString("vi-VN")}{" "}
+                        VNĐ
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

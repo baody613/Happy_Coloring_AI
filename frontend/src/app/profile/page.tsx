@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import api from "@/lib/api";
 
 export default function ProfilePage() {
-  const { user, setUser, signOut } = useAuthStore();
+  const { user, setUser, signOut, loading: authLoading } = useAuthStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("info");
   const hydrated = useHydration();
@@ -52,6 +52,11 @@ export default function ProfilePage() {
   useEffect(() => {
     setCurrentUser(user?.uid || null);
 
+    // Wait for Firebase to finish restoring the session before deciding
+    // there's no user — otherwise a logged-in user gets bounced to /login
+    // during the brief moment auth state is still initializing.
+    if (authLoading) return;
+
     if (!user) {
       router.push("/login");
       return;
@@ -76,7 +81,7 @@ export default function ProfilePage() {
         setPhoneNumber(user.phoneNumber || "");
         setAddress(user.address || "");
       });
-  }, [user, router, setCurrentUser]);
+  }, [user, authLoading, router, setCurrentUser]);
 
   const handleSaveInfo = async () => {
     if (!user) return;
@@ -108,6 +113,14 @@ export default function ProfilePage() {
   };
 
   // fetchOrders is defined above with useCallback
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl text-purple-600">Đang tải...</div>
+      </div>
+    );
+  }
 
   if (!user) return null;
 

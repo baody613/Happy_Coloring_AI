@@ -196,33 +196,6 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
-
-          {/* Settings */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              ⚙️ Cài Đặt Hệ Thống
-            </h2>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push("/admin/settings?tab=config")}
-                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                🔧 Cấu Hình
-              </button>
-              <button
-                onClick={() => router.push("/admin/settings?tab=payment")}
-                className="w-full bg-violet-500 hover:bg-violet-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                💳 Thanh Toán
-              </button>
-              <button
-                onClick={() => router.push("/admin/settings?tab=email")}
-                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition"
-              >
-                📧 Email & Thông Báo
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

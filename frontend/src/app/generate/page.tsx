@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 
 export default function GeneratePage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, loading: authLoading } = useAuthStore();
   const { addItem } = useCartStore();
   const { addFavorite, removeFavorite, isFavorite, setCurrentUser } =
     useFavoriteStore();
@@ -43,6 +43,15 @@ export default function GeneratePage() {
     };
   }, []);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để sử dụng tính năng này!");
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
   useEffect(() => {
     setCurrentUser(user?.uid || null);
   }, [setCurrentUser, user?.uid]);
@@ -54,7 +63,7 @@ export default function GeneratePage() {
   };
 
   const buildAiProduct = () => ({
-    id: `ai-${crypto.randomUUID()}`,
+    id: `sanphamAI-${crypto.randomUUID()}`,
     title: `Tranh AI: ${prompt.slice(0, 60) || "Custom"}`,
     description: prompt,
     category: "ai-products",
@@ -75,12 +84,6 @@ export default function GeneratePage() {
   const isAiFavorite = aiProduct ? isFavorite(aiProduct.id) : false;
 
   const handleGenerate = async () => {
-    if (!user) {
-      toast.error("Vui lòng đăng nhập để sử dụng tính năng này");
-      router.push("/login");
-      return;
-    }
-
     if (!prompt.trim()) {
       toast.error("Vui lòng nhập mô tả tranh");
       return;
@@ -221,6 +224,20 @@ export default function GeneratePage() {
       setDownloading(false);
     }
   };
+
+  // Show loading screen while auth state is being determined
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-purple-600 font-semibold">
+            Đang kiểm tra đăng nhập...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-6 sm:py-12 relative">

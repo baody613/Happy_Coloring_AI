@@ -1,9 +1,9 @@
 ﻿// ============================================================
 // ROUTE: /api/generate
-// Chức năng: Tạo tranh tô màu theo số bằng Google AI Studio
+// Chức năng: Tạo tranh tô màu theo số bằng AI (OpenAI ưu tiên, Google dự phòng)
 // Luồng: Frontend gửi prompt → Backend tạo record Firestore
-//        → Gọi AI sinh ảnh (async) → Upload Storage
-//        → Frontend polling mỗi 5s để lấy kết quả
+//        → Gọi AI sinh ảnh (async, tự động fallback nếu 1 provider lỗi/hết quota)
+//        → Upload Storage → Frontend polling mỗi 5s để lấy kết quả
 // ============================================================
 
 import express from "express";
@@ -14,7 +14,10 @@ import { uploadToStorage } from "../utils/storageHelpers.js";
 
 const router = express.Router();
 
-// Lấy API key Google AI Studio từ biến môi trường (.env)
+// Lấy API key từ biến môi trường (.env)
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
+
 const GOOGLE_API_KEY = process.env.GOOGLE_AI_API_KEY;
 
 // Danh sách model AI được dùng để tạo ảnh (thử lần lượt nếu lỗi)
@@ -107,6 +110,8 @@ SECTION 4 — ABSOLUTE PROHIBITIONS
   ✗ Any colour fill, grey shading, or tint inside drawing regions (regions must stay pure white)
   ✗ Any text other than single digits (no colour names, labels, titles, watermarks, signatures)
   ✗ Drawing a different subject instead of "{{USER_PROMPT}}"
+
+
 
 Final output: 1024×1024 px, crisp print-ready black-and-white line art with numbered regions, plus a fully populated colour palette row at the bottom.`;
 
@@ -214,10 +219,7 @@ async function generatePaintByNumbers(generationId, prompt, style, complexity) {
     // 2. Xây dựng lệnh đưa cho AI
     const lineArtPrompt = buildLineArtPrompt(englishPrompt, style, complexity);
 
-    let imageBuffer;
-
-    console.log("Generating with Google AI Studio image model...");
-    imageBuffer = await generateWithGoogleImage(lineArtPrompt);
+    const imageBuffer = await generateImage(lineArtPrompt);
 
     const fileName = `generation-${generationId}-lineart.png`;
     const imageUrl = await uploadToStorage(
@@ -241,6 +243,89 @@ async function generatePaintByNumbers(generationId, prompt, style, complexity) {
       error: error.message,
       failedAt: new Date().toISOString(),
     });
+  }
+}
+
+// ============================================================
+// HÀM HELPER: generateImage
+// Thử lần lượt từng provider đã cấu hình API key. OpenAI được ưu tiên
+// (hạn mức/tốc độ ổn định hơn cho gói trả phí), Google AI Studio là
+// phương án dự phòng tự động nếu OpenAI lỗi hoặc hết quota — giúp tránh
+// tình trạng "hết token" giữa buổi bảo vệ đồ án.
+// ============================================================
+async function generateImage(prompt) {
+  const providers = [];
+  if (OPENAI_API_KEY) {
+    providers.push({
+      name: "OpenAI",
+      fn: () => generateWithOpenAIImage(prompt),
+    });
+  }
+  if (GOOGLE_API_KEY) {
+    providers.push({
+      name: "Google AI Studio",
+      fn: () => generateWithGoogleImage(prompt),
+    });
+  }
+
+  if (providers.length === 0) {
+    throw new Error(
+      "No image generation API key configured. Set OPENAI_API_KEY and/or GOOGLE_AI_API_KEY in backend/.env",
+    );
+  }
+
+  let lastError;
+  for (const provider of providers) {
+    try {
+      console.log(`Generating image with ${provider.name}...`);
+      return await provider.fn();
+    } catch (error) {
+      lastError = error;
+      console.error(`${provider.name} image generation failed:`, error.message);
+    }
+  }
+
+  throw lastError;
+}
+
+// ============================================================
+// HÀM HELPER: generateWithOpenAIImage
+// ============================================================
+async function generateWithOpenAIImage(prompt) {
+  if (!OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is missing in backend environment");
+  }
+
+  try {
+    const response = await axios.post(
+      "https://api.openai.com/v1/images/generations",
+      {
+        model: OPENAI_IMAGE_MODEL,
+        prompt,
+        size: "1024x1024",
+        n: 1,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 120000,
+      },
+    );
+
+    const b64 = response.data?.data?.[0]?.b64_json;
+    if (!b64) {
+      throw new Error("No image data returned by OpenAI");
+    }
+
+    return Buffer.from(b64, "base64");
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.error?.message ||
+        error.message ||
+        "OpenAI image generation failed",
+    );
   }
 }
 
