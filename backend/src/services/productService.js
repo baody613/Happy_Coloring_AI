@@ -40,19 +40,10 @@ const sortProducts = (products, sortBy, sortOrder = "desc") => {
   });
 };
 
-const PAID_PAYMENT_STATUSES = new Set(["paid", "success", "completed", "done"]);
+const isCountedOrder = (order) =>
+  String(order?.status || "").toLowerCase() !== "cancelled";
 
-const PAID_ORDER_STATUSES = new Set(["delivered", "completed"]);
-
-const isPaidOrder = (order) => {
-  const paymentStatus = String(order?.paymentStatus || "").toLowerCase();
-  const status = String(order?.status || "").toLowerCase();
-  return (
-    PAID_PAYMENT_STATUSES.has(paymentStatus) || PAID_ORDER_STATUSES.has(status)
-  );
-};
-
-const attachPaidSalesToProducts = async (products) => {
+const attachOrderSalesToProducts = async (products) => {
   if (!Array.isArray(products) || products.length === 0) return products;
 
   const productIds = new Set(products.map((p) => p.id));
@@ -61,7 +52,7 @@ const attachPaidSalesToProducts = async (products) => {
   const ordersSnapshot = await db.collection("orders").get();
   ordersSnapshot.forEach((doc) => {
     const order = doc.data();
-    if (!isPaidOrder(order)) return;
+    if (!isCountedOrder(order)) return;
 
     const items = Array.isArray(order.items) ? order.items : [];
     items.forEach((item) => {
@@ -153,7 +144,7 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
         ...doc.data(),
       }));
 
-      const withSales = await attachPaidSalesToProducts(allProducts);
+      const withSales = await attachOrderSalesToProducts(allProducts);
       const sorted = sortProducts(
         withSales,
         "sales",
@@ -252,8 +243,9 @@ export const getAllProducts = async (page = 1, limit = 10, filters = {}) => {
       products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     }
 
+    const productsWithSales = await attachOrderSalesToProducts(products);
     const sortedProducts = sortProducts(
-      products,
+      productsWithSales,
       filters.sortBy,
       filters.sortOrder,
     );

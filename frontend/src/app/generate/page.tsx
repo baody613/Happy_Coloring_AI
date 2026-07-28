@@ -63,7 +63,7 @@ export default function GeneratePage() {
   };
 
   const buildAiProduct = () => ({
-    id: `sanphamAI-${crypto.randomUUID()}`,
+    id: `sanphamAI ,-${crypto.randomUUID()}`,
     title: `Tranh AI: ${prompt.slice(0, 60) || "Custom"}`,
     description: prompt,
     category: "ai-products",

@@ -21,6 +21,7 @@ import {
 } from "@/hooks/useAnimations";
 
 const FEATURED_LIMIT = 8;
+const FEATURED_CANDIDATE_LIMIT = 50;
 const HERO_TITLE = "Color with Pure Elegance";
 
 const getAspectClass = (index: number) => {
@@ -124,7 +125,7 @@ export default function Home() {
         const response = await api.get("/products", {
           params: {
             page: 1,
-            limit: FEATURED_LIMIT,
+            limit: FEATURED_CANDIDATE_LIMIT,
             sortBy: "sales",
             sortOrder: "desc",
             status: "active",
@@ -132,9 +133,9 @@ export default function Home() {
         });
 
         const products: Product[] = response.data?.data?.products || [];
-        const topSelling = products.filter(
-          (item) => item.imageUrl || item.thumbnailUrl,
-        );
+        const topSelling = products
+          .filter((item) => item.imageUrl || item.thumbnailUrl)
+          .slice(0, FEATURED_LIMIT);
 
         setFeaturedProducts(topSelling);
       } catch (error) {
