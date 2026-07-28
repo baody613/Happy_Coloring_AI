@@ -10,7 +10,7 @@ import { storage } from "../config/firebase.js";
 export const uploadToStorage = async (
   fileBuffer,
   fileName,
-  folder = "products"
+  folder = "products",
 ) => {
   try {
     const bucket = storage.bucket();
@@ -22,6 +22,7 @@ export const uploadToStorage = async (
 
     // Upload file
     await file.save(fileBuffer, {
+      resumable: false,
       metadata: {
         contentType: getContentType(fileName),
         metadata: {
@@ -39,7 +40,9 @@ export const uploadToStorage = async (
     return publicUrl;
   } catch (error) {
     console.error("Upload to storage error:", error);
-    throw new Error("Failed to upload file to storage");
+    throw new Error(
+      `Failed to upload file to storage: ${error.message || "Unknown storage error"}`,
+    );
   }
 };
 
@@ -94,7 +97,9 @@ const extractPathFromURL = (url, bucketName) => {
     // Firebase Storage public URL format
     // https://storage.googleapis.com/{bucket}/{path}
     if (urlObj.hostname === "storage.googleapis.com") {
-      const pathMatch = urlObj.pathname.match(new RegExp(`/${bucketName}/(.+)`));
+      const pathMatch = urlObj.pathname.match(
+        new RegExp(`/${bucketName}/(.+)`),
+      );
       if (pathMatch && pathMatch[1]) {
         return decodeURIComponent(pathMatch[1]);
       }
