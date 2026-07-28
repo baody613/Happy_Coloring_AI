@@ -60,6 +60,8 @@ function seqNumbers(max) {
 // ============================================================
 const LINE_ART_PROMPT_TEMPLATE = `Generate a PAINT-BY-NUMBERS WORKSHEET that looks exactly like a professionally printed paint-by-numbers kit sold in art stores.
 
+CRITICAL: This is an UNPAINTED line-art template. The drawing zone must be pure white with only black outlines and numbers. Users will paint the colors themselves using the palette guide.
+
 Subject to draw: "{{USER_PROMPT}}"
 
 ════════════════════════════════════════
@@ -79,10 +81,16 @@ ART STYLE:
   {{DETAIL}}
   The composition must be dense — every part of the drawing zone covered with meaningful shapes, not empty white space.
 
-LINE ART RULES (strictly enforced):
-  • Use pure black (#000000) outlines on a pure white (#ffffff) background ONLY
-  • Zero grey tones, zero colour tints, zero gradients, zero drop-shadows, zero halftones anywhere in the drawing zone
+LINE ART RULES (STRICTLY ENFORCED — CRITICAL):
+  • The drawing zone must contain ONLY two elements:
+    1. Pure black (#000000) outlines/borders defining shapes
+    2. Pure white (#ffffff) background filling every region
+  • ABSOLUTELY FORBIDDEN in the drawing zone:
+    ✗ Any color fills, tints, or shading of any kind (no yellow, green, blue, grey, or any color except black lines and white background)
+    ✗ Grey tones, gradients, drop-shadows, halftones, or any non-white fill
+    ✗ Pre-colored regions — users will paint these themselves using the palette
   • All outlines must be fully CLOSED — every shape/region is a completely enclosed area with no gaps or open endpoints
+  • The ONLY place where colors appear is in the palette row at the bottom 22% of the canvas
 
 NUMBERING RULES (strictly enforced):
   • Divide the entire drawing into enclosed regions. Every single region — large or tiny — must contain exactly one small black number
@@ -109,9 +117,11 @@ SECTION 3 — COLOUR PALETTE ROW (bottom 22%)
 ════════════════════════════════════════
 SECTION 4 — ABSOLUTE PROHIBITIONS
 ════════════════════════════════════════
+  ✗ Any colour fill, shading, tint, or paint inside the drawing zone regions (regions must stay PURE WHITE with only black outlines and numbers)
+  ✗ Pre-coloring any part of the drawing — this is a paint-by-numbers template where users paint it themselves
   ✗ Any number greater than {{COLOR_MAX}} anywhere on the image
   ✗ Any integer between 1 and {{COLOR_MAX}} that is missing from either the drawing or the palette
-  ✗ Any colour fill, grey shading, or tint inside drawing regions (regions must stay pure white)
+  ✗ Grey tones, gradients, or any color except pure black lines and pure white background in the drawing zone
   ✗ Any text other than single digits (no colour names, labels, titles, watermarks, signatures)
   ✗ Drawing a different subject instead of "{{USER_PROMPT}}"
 
