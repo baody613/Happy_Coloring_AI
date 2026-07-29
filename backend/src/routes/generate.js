@@ -54,7 +54,7 @@ function seqNumbers(max) {
 }
 
 // ============================================================
-// PROMPT TEMPLATE – Hướng dẫn chi tiết gửi tới AI
+//
 // {{USER_PROMPT}}, {{STYLE}}, {{COLOR_MAX}}, {{SEQ_NUMBERS}}, {{DETAIL}}
 // sẽ được thay thế bằng dữ liệu thật khi gọi buildLineArtPrompt()
 // ============================================================
