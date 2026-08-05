@@ -322,6 +322,7 @@ export default function CartPage() {
 
                   {/* Quantity Controls */}
                   {item.product.id.startsWith("sanphamAI") ? (
+
                     // Sản phẩm AI: chỉ hiển thị tổng tiền, không cho phép đổi số lượng
                     <div className="flex flex-col items-end justify-between">
                       <p className="text-xs sm:text-lg font-bold text-gray-800">
@@ -330,6 +331,7 @@ export default function CartPage() {
                       </p>
                     </div>
                   ) : (
+                    
                     // Sản phẩm thường: giữ nguyên ô +/- số lượng như cũ
                     <div className="flex flex-col items-end justify-between">
                       <div className="flex items-center gap-1 sm:gap-3 bg-gray-100 rounded-lg p-1.5 sm:p-2">

@@ -636,7 +636,7 @@ export default function GalleryPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white py-14 px-4">
         <div className="max-w-6xl mx-auto text-center">
@@ -710,9 +710,9 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 border border-gray-100 max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Filter Bar */}
-        <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-8">
           <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
             {/* Search */}
             <div className="relative flex-1">

@@ -30,19 +30,19 @@ const GOOGLE_IMAGE_MODELS = ["models/gemini-2.5-flash-image"];
 const COMPLEXITY_CONFIG = {
   easy: {
     label: "Easy",
-    max: 16,
+    max: 20,
     detail:
       "simplified cartoon style with thick outlines (3-4px). Large flat regions, minimum 40x40px each. Only 5-10 main recognisable shapes. Bold, child-friendly composition with very minimal fine detail.",
   },
   medium: {
     label: "Medium",
-    max: 28,
+    max: 36,
     detail:
       "semi-realistic illustrative style with standard outlines (2-3px). Medium regions (minimum 18x18px). 15-25 distinct shapes with a balanced level of detail. Suitable for adults with some painting experience.",
   },
   hard: {
     label: "Hard",
-    max: 44,
+    max: 48,
     detail:
       "realistic detailed style with fine outlines (1.5-2px). Many small intricate regions (as small as 8x8px). 35-50 distinct shapes with rich texture, shadows as outlines, and complex overlapping elements.",
   },

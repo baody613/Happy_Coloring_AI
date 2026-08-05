@@ -35,6 +35,7 @@ export default function GeneratePage() {
   const [generatedImage, setGeneratedImage] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Clear polling interval on unmount to prevent memory leak
   useEffect(() => {
@@ -272,6 +273,7 @@ export default function GeneratePage() {
                 </h2>
               </div>
               <textarea
+                ref={promptInputRef}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Mô tả chi tiết tranh bạn muốn tạo...&#10;&#10;VD: Con mèo dễ thương ngồi trên cửa sổ, nhìn ra khu vườn hoa rực rỡ"
@@ -535,7 +537,20 @@ export default function GeneratePage() {
                 {examplePrompts.map((example, index) => (
                   <button
                     key={index}
-                    onClick={() => setPrompt(example)}
+                    onClick={() => {
+                      setPrompt(example);
+                      // Scroll to prompt input on mobile
+                      if (promptInputRef.current) {
+                        promptInputRef.current.scrollIntoView({
+                          behavior: "smooth",
+                          block: "center",
+                        });
+                        // Focus after scroll completes
+                        setTimeout(() => {
+                          promptInputRef.current?.focus();
+                        }, 500);
+                      }
+                    }}
                     className="w-full text-left p-3 rounded-lg bg-pink-50 text-pink-600 hover:bg-purple-100 hover:text-pink-700 hover:scale-[1.015] transition-all text-sm font-medium"
                   >
                     "{example}"
