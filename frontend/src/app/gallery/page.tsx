@@ -670,7 +670,7 @@ export default function GalleryPage() {
       </div>
 
       {/* Category Tabs */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-20 shadow-sm">
+      <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex flex-wrap justify-center gap-2">
             {["all", ...uniqueCategories].map((cat) => {
